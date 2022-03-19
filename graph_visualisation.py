@@ -72,7 +72,12 @@ def main():
 
         rpm = give_rpm(target - pos)
 
-        acc += rpm * 0.1
+        # calculation not accurate
+        acc = rpm * 0.1 - 9.81 #gravity
+
+        #air resistance
+        acc *= 0.98
+
         vel += (acc + last_acc) / 2 * delta_time
         pos += (vel + last_vel) / 2 * delta_time
         #print(f'pos: {round(pos, 2)}, vel: {round(vel, 2)}, acc: {round(acc, 2)}, total_time: {round(time.time() - test_start, 4)}')
