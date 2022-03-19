@@ -3,7 +3,7 @@ import time
 import sys
 import pygame
 
-from pid_controller import give_rpm
+from pid_controller import PID_Controller
 
 HEIGHT = 1300
 WIDTH = 2500
@@ -44,6 +44,9 @@ def main():
 
     target = 1
 
+    error = target - pos
+    pid_controller = PID_Controller(error, pos)
+
     randomize_start = 0
     test_start = time.time()
 
@@ -59,7 +62,7 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-        if (time.time() - test_start) > 0 and time.time() - randomize_start > 100:
+        if (time.time() - test_start) > 0 and time.time() - randomize_start > 0.1:
             randomize_start = time.time()
             if random.randint(0, 1) == 1:
                 target -= random.random() * 0.1
@@ -70,7 +73,7 @@ def main():
         delta_time = time.time() - last_time
         last_time = time.time()
 
-        rpm = give_rpm(target - pos)
+        rpm = pid_controller.give_rpm(target - pos, pos)
 
         # calculation not accurate
         acc = rpm * 0.1 - 9.81 #gravity
