@@ -27,6 +27,11 @@ def draw_curve(points):
 def draw_target(target):
     pygame.draw.line(window, BLACK, (0, int(-target*100 + HEIGHT/2)), (WIDTH, int(-target*100 + HEIGHT/2)))
 
+def random_num_p_or_n(upper_limit):
+    if random.randint(0, 1) == 1:
+        return random.random() * upper_limit
+    return -random.random() * upper_limit
+
 def main():
     global window
 
@@ -64,16 +69,13 @@ def main():
 
         if (time.time() - test_start) > 0 and time.time() - randomize_start > 0.1:
             randomize_start = time.time()
-            if random.randint(0, 1) == 1:
-                target -= random.random() * 0.1
-            else:
-                target += random.random() * 0.1
+            target += random_num_p_or_n(0.2)
 
 
         delta_time = time.time() - last_time
         last_time = time.time()
 
-        rpm = pid_controller.give_rpm(target - pos, pos)
+        rpm = pid_controller.give_rpm(target - pos + random_num_p_or_n(0.1), pos + random_num_p_or_n(0.1)) #inaccuracy
 
         # calculation not accurate
         acc = rpm * 0.1 - 9.81 #gravity
