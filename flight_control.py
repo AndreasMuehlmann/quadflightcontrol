@@ -2,9 +2,9 @@ from transform_input import give_heights
 from pid_controller import PID_Controller
 
 '''
-rotor2 -> \ / <- rotor1
-           °
-rotor3 -> / \ <- rotor4
+(fl) rotor2 -> \ / <- rotor1 (fr)
+                °
+(bl) rotor3 -> / \ <- rotor4 (br)
 
 [rotor1, rotor2, rotor2, rotor4]
 '''
