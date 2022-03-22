@@ -12,6 +12,13 @@ WHITE = (255, 255, 255)
 GREY = (200, 200, 200)
 BLACK = (0, 0, 0)
 
+
+
+CHECKS_PER_SECOND = 100
+INACCURACY = 0.1 #in m, of measurement
+
+
+
 def center(point):
     return (int(point[0]), int(point[1] + HEIGHT/2))
 
@@ -55,11 +62,16 @@ def main():
     randomize_start = 0
     test_start = time.time()
 
-    points = []
+    clock = pygame.time.Clock()
+
+    points_pos = []
+    points_measured_pos = []
     while True:
+        clock.tick(CHECKS_PER_SECOND)
         window.fill(WHITE)
         draw_target(target)
-        draw_curve(points)
+        draw_curve(points_pos)
+        draw_curve(points_measured_pos)
         pygame.display.update()
 
         for event in pygame.event.get():
@@ -75,10 +87,11 @@ def main():
         delta_time = time.time() - last_time
         last_time = time.time()
 
-        rpm = pid_controller.give_rpm(target - pos + random_num_p_or_n(0.1), pos + random_num_p_or_n(0.1)) #inaccuracy
+        measured_pos = pos + random_num_p_or_n(INACCURACY) 
+        rpm = pid_controller.give_rpm(target - measured_pos, measured_pos) 
 
         # calculation not accurate
-        acc = rpm * 0.1 - 9.81 #gravity
+        acc = rpm * 0.1
 
         #air resistance
         acc *= 0.98
@@ -87,7 +100,8 @@ def main():
         pos += (vel + last_vel) / 2 * delta_time
         #print(f'pos: {round(pos, 2)}, vel: {round(vel, 2)}, acc: {round(acc, 2)}, total_time: {round(time.time() - test_start, 4)}')
 
-        points.append([(time.time() - test_start) * 100, -pos*100])
+        points_measured_pos.append([(time.time() - test_start) * 100, -pid_controller.iir_measurement.outputs[-1]*100])
+        points_pos.append([(time.time() - test_start) * 100, -pos*100])
 
         last_acc = acc
         last_vel = vel
