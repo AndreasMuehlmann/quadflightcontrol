@@ -57,7 +57,7 @@ def main():
     target = 1
 
     error = target - pos
-    pid_controller = PID_Controller(error, pos)
+    pid_controller = PID_Controller(error, pos, 100)
 
     randomize_start = 0
     test_start = time.time()

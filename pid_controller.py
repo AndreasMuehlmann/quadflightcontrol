@@ -7,7 +7,9 @@ class PID_Controller:
     i_faktor = 15
     d_faktor = 20
 
-    def __init__(self, error, measurement):
+    def __init__(self, error, measurement, maximum):
+        self.maximum = maximum
+
         self.last_error = error
         self.last_measurement = measurement
 
@@ -26,7 +28,11 @@ class PID_Controller:
         error = self.iir_error.give_filtered(error)
         measurement = self.iir_measurement.give_filtered(measurement)
 
-        rpm = self._proportional(error) + self._integral(error) + self._derivative(measurement)
+        self._integral(error)
+        if self.integrator > self.maximum:
+            self.integrator = self.maximum
+
+        rpm = self._proportional(error) + self.integrator + self._derivative(measurement)
 
         self.last_output_time = time.time()
 
