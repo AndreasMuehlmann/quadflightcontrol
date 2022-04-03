@@ -15,5 +15,4 @@ class IIR_Filter:
         output = (1 - self.faktor) * sum(self.inputs) / len(self.inputs) + self.faktor * sum(self.outputs) / len(self.outputs)
         self.outputs.append(output)
 
-        print(output)
         return output

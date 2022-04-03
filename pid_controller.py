@@ -1,11 +1,10 @@
-import time
 from iir_filter import IIR_Filter
 
 class PID_Controller:
 
-    p_faktor = 30
-    i_faktor = 15
-    d_faktor = 20
+    p_faktor = 4 * 5
+    i_faktor = 2 * 5
+    d_faktor = 3 * 5
 
     def __init__(self, error, measurement, maximum):
         self.maximum = maximum
@@ -16,15 +15,12 @@ class PID_Controller:
         self.integrator = 0
         self.differentiator = 0
 
-        self.last_output_time = time.time()
-        self.delta_time = self.last_output_time - time.time()
+        self.delta_time = 0.01
 
         self.iir_error = IIR_Filter(0.8, 2)
         self.iir_measurement = IIR_Filter(0.8, 2)
 
     def give_rpm(self, error, measurement):
-        self.delta_time = time.time() - self.last_output_time
-
         error = self.iir_error.give_filtered(error)
         measurement = self.iir_measurement.give_filtered(measurement)
 
@@ -34,12 +30,8 @@ class PID_Controller:
 
         rpm = self._proportional(error) + self.integrator + self._derivative(measurement)
 
-        self.last_output_time = time.time()
-
         self.last_error = error
         self.last_measurement = measurement
-
-        print(f'prop: {self._proportional(error)}, int: {self.integrator}, dev: {self.differentiator}')
 
         return rpm
 
