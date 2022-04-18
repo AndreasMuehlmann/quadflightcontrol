@@ -1,3 +1,4 @@
+import os
 import pygame
 import numpy as np
 from sac import Agent
@@ -11,13 +12,16 @@ if __name__ == '__main__':
 
     range_avg = 5
     filename = 'learning_curve.png'
-
-    figure_file = 'C:\\Andi_Arbeit\\Programmieren\\pytorch_testing\\sac\\plots\\' + filename
+    print(os.getcwd())
+    figure_file = f'{os.path.dirname(os.path.abspath(__file__))}\\plots\\' + filename
 
     best_score = env.reward_range[0]
     score_history = []
     avg_score_history = []
-    load_checkpoint = False
+
+    load_checkpoint = True
+    save_model = False
+    learn = True
 
     if load_checkpoint:
         agent.load_models()
@@ -35,7 +39,7 @@ if __name__ == '__main__':
             score += reward
             agent.remember(observation, action, reward, observation_, done)
             env.render()
-            if episode > range_avg or not load_checkpoint: 
+            if (episode > range_avg or not load_checkpoint) and learn: 
                 agent.learn()
             observation = observation_
         score_history.append(score)
@@ -44,7 +48,7 @@ if __name__ == '__main__':
         avg_score_history.append(avg_score)
         if avg_score > best_score:
             best_score = avg_score
-            if episode > range_avg or not load_checkpoint:
+            if (episode > range_avg or not load_checkpoint) and learn and save_model:
                 agent.save_models()
                 
         draw_plot(episode, avg_score_history)
