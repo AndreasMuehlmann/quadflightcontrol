@@ -1,5 +1,5 @@
 from transform_input import give_heights
-from pid_controller import PID_Controller
+from adaptive_pid_controller import pid_controller as pid
 
 '''
 (fl) rotor2 -> \ / <- rotor1 (fr)
@@ -13,7 +13,7 @@ class Flight_Control:
 
     def __init__(self, x, y, pos):
         heights = give_heights(x, y)
-        self.pid_controllers = map(lambda height : PID_Controller(height - pos, pos), heights)
+        self.pid_controllers = map(lambda height : pid.PID_Controller(height - pos, pos), heights)
 
     def input_to_rpm(self, x, y, strength, pos): # pos has to be changed to angel later
         #height and pos is relativ to the center of the Drone

@@ -3,7 +3,7 @@ from iir_filter import IIR_Filter
 class PID_Controller:
 
     p_faktor = 4 * 5
-    i_faktor = 2 * 5
+    i_faktor = 1 * 5
     d_faktor = 3 * 5
 
     def __init__(self, error, measurement, maximum):
