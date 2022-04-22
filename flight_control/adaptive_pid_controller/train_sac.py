@@ -3,10 +3,11 @@ import pygame
 import numpy as np
 from sac import Agent
 from utils import init_changing_plot, draw_plot, plot_learning_curve
-from fly_env import PidEnv
+from vel_env import VelEnv
+from pos_env import PosEnv
 
 if __name__ == '__main__':
-    env = PidEnv()
+    env = PosEnv()
     agent = Agent(env)
     episodes = 500 
 
