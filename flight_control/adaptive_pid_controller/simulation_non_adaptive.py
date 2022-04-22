@@ -26,12 +26,12 @@ def main():
     target = 1
 
     error = target - pos
-    pid_controller = pid.PID_Controller(error, pos, 6000)
+    pid_controller = pid.PidController(error, pos, 6000)
 
     randomize_time = 0
 
     clock = pygame.time.Clock()
-    graph = gr.Graph_Repr(1600, 1000)
+    graph = gr.GraphRepr(1600, 1000)
     while True:
         clock.tick(SPEED_OF_SIMULATION)
 
@@ -40,7 +40,7 @@ def main():
             target += random_num_p_or_n(0.2)
 
         measured_pos = pos + random_num_p_or_n(INACCURACY) 
-        rpm = pid_controller.give_rpm(target - measured_pos, measured_pos) 
+        rpm = pid_controller.give_output(target - measured_pos, measured_pos) 
 
         # calculation not accurate
         acc = rpm * 0.1

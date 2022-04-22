@@ -2,7 +2,7 @@ import os
 import torch as T
 import torch.nn.functional as F
 import numpy as np
-from replay_buffer import Replay_Buffer
+from replay_buffer import ReplayBuffer
 from networks import ActorNetwork, CriticNetwork, ValueNetwork
 
 class Agent():
@@ -14,7 +14,7 @@ class Agent():
 
         self.gamma = gamma
         self.tau = tau
-        self.memory = Replay_Buffer(max_size, input_dims, self.n_actions)
+        self.memory = ReplayBuffer(max_size, input_dims, self.n_actions)
         self.batch_size = batch_size
 
         self.actor = ActorNetwork(alpha, input_dims, n_actions=self.n_actions,
@@ -30,7 +30,7 @@ class Agent():
         self.update_network_parameters(tau=1)
 
     def choose_action(self, observation):
-        state = T.Tensor([observation]).to(self.actor.device)
+        state = T.Tensor(np.array([observation])).to(self.actor.device)
         actions, _ = self.actor.sample_normal(state, reparameterize=False)
 
         return actions.cpu().detach().numpy()[0]

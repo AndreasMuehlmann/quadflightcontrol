@@ -1,6 +1,6 @@
-from iir_filter import IIR_Filter
+from iir_filter import IirFilter
 
-class PID_Controller:
+class PidController:
 
     p_faktor = 4 * 5
     i_faktor = 1 * 5
@@ -17,10 +17,10 @@ class PID_Controller:
 
         self.delta_time = 0.01
 
-        self.iir_error = IIR_Filter(0.8, 2)
-        self.iir_measurement = IIR_Filter(0.8, 2)
+        self.iir_error = IirFilter(0.8, 2)
+        self.iir_measurement = IirFilter(0.8, 2)
 
-    def give_rpm(self, error, measurement):
+    def give_output(self, error, measurement):
         error = self.iir_error.give_filtered(error)
         measurement = self.iir_measurement.give_filtered(measurement)
 
@@ -28,12 +28,12 @@ class PID_Controller:
         if self.integrator > self.maximum:
             self.integrator = self.maximum
 
-        rpm = self._proportional(error) + self.integrator + self._derivative(measurement)
+        output = self._proportional(error) + self.integrator + self._derivative(measurement)
 
         self.last_error = error
         self.last_measurement = measurement
 
-        return rpm
+        return output
 
     def _proportional(self, error):
         return self.p_faktor * error

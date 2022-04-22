@@ -3,10 +3,10 @@ import pygame
 import numpy as np
 from sac import Agent
 from utils import init_changing_plot, draw_plot, plot_learning_curve
-from fly_env import Fly_Env
+from fly_env import PidEnv
 
 if __name__ == '__main__':
-    env = Fly_Env(6000)
+    env = PidEnv()
     agent = Agent(env)
     episodes = 500 
 
@@ -19,8 +19,8 @@ if __name__ == '__main__':
     score_history = []
     avg_score_history = []
 
-    load_checkpoint = True
-    save_model = False
+    load_checkpoint = False
+    save_model = True
     learn = True
 
     if load_checkpoint:
@@ -54,8 +54,9 @@ if __name__ == '__main__':
         draw_plot(episode, avg_score_history)
         print('episode ', episode, 'score %.1f' % score, 'avg_score %.1f' % avg_score)
 
-    x = [i+1 for i in range(episodes)]
-    plot_learning_curve(x, score_history, figure_file)
+    if learn and save_model:
+        x = [i+1 for i in range(episodes)]
+        plot_learning_curve(x, score_history, figure_file)
 
     pygame.quit()
     input('Press Enter to close')

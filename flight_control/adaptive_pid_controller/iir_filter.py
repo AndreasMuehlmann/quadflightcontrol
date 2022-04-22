@@ -1,6 +1,6 @@
 from collections import deque
 
-class IIR_Filter:
+class IirFilter:
 
     def __init__(self, faktor, order):
         self.outputs = deque(maxlen=order)
