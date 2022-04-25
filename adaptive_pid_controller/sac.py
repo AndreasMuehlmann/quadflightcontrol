@@ -6,7 +6,7 @@ from replay_buffer import ReplayBuffer
 from networks import ActorNetwork, CriticNetwork, ValueNetwork
 
 class Agent():
-    def __init__(self, env, alpha=0.0003, beta=0.0003, gamma=0.99, max_size=1000000,
+    def __init__(self, env, chkpt_dir, alpha=0.0003, beta=0.0003, gamma=0.99, max_size=1000000,
                          tau=0.005, layer1_size=256, layer2_size=256, layer3_size=128, layer4_size=128,
                           batch_size=256, reward_scale=2):
         input_dims = env.observation_space.shape
@@ -17,14 +17,12 @@ class Agent():
         self.memory = ReplayBuffer(max_size, input_dims, self.n_actions)
         self.batch_size = batch_size
 
-        self.actor = ActorNetwork(alpha, input_dims, n_actions=self.n_actions,
-                    name='actor', max_action=env.action_space.high)
-        self.critic_1 = CriticNetwork(beta, input_dims, n_actions=self.n_actions,
-                    name='critic_1')
-        self.critic_2 = CriticNetwork(beta, input_dims, n_actions=self.n_actions,
-                    name='critic_2')
-        self.value = ValueNetwork(beta, input_dims, name='value')
-        self.target_value = ValueNetwork(beta, input_dims, name='target_value')
+        self.actor = ActorNetwork(alpha, input_dims, env.action_space.high, chkpt_dir, n_actions=self.n_actions, name='actor')
+        self.critic_1 = CriticNetwork(beta, input_dims, self.n_actions, chkpt_dir, name='critic_1')
+        self.critic_2 = CriticNetwork(beta, input_dims, self.n_actions, chkpt_dir, name='critic_2')
+
+        self.value = ValueNetwork(beta, input_dims, chkpt_dir, name='value')
+        self.target_value = ValueNetwork(beta, input_dims, chkpt_dir, name='target_value')
 
         self.scale = reward_scale
         self.update_network_parameters(tau=1)

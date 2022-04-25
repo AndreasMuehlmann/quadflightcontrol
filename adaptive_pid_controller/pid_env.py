@@ -13,10 +13,6 @@ def random_change(to_change, range, upper_bound, lower_bound):
     return to_change
 
 
-#TODO: delay
-#TODO: simulate integral wind-up
-
-
 class PidEnv(gym.Env, metaclass=ABCMeta):
     def __init__(self):
         self.window_width = 2200

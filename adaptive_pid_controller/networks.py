@@ -7,8 +7,8 @@ from torch.distributions.normal import Normal
 import numpy as np
 
 class CriticNetwork(nn.Module):
-    def __init__(self, beta, input_dims, n_actions, fc1_dims=256, fc2_dims=256, fc3_dims=128, fc4_dims=128,
-            name='critic', chkpt_dir=f'{os.path.dirname(os.path.abspath(__file__))}\\checkpoints'):
+    def __init__(self, beta, input_dims, n_actions, chkpt_dir, fc1_dims=256, fc2_dims=256, fc3_dims=128, fc4_dims=128,
+            name='critic'):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -52,8 +52,8 @@ class CriticNetwork(nn.Module):
         self.load_state_dict(T.load(self.checkpoint_file))
 
 class ValueNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims=256, fc2_dims=256, fc3_dims=128, fc4_dims=128,
-            name='value', chkpt_dir=f'{os.path.dirname(os.path.abspath(__file__))}\\checkpoints'):
+    def __init__(self, beta, input_dims, chkpt_dir, fc1_dims=256, fc2_dims=256, fc3_dims=128, fc4_dims=128,
+            name='value'):
         super(ValueNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -96,8 +96,8 @@ class ValueNetwork(nn.Module):
         self.load_state_dict(T.load(self.checkpoint_file))
 
 class ActorNetwork(nn.Module):
-    def __init__(self, alpha, input_dims, max_action, fc1_dims=256, fc2_dims=256, fc3_dims=128, fc4_dims=128, n_actions=2,
-         name='actor', chkpt_dir=f'{os.path.dirname(os.path.abspath(__file__))}\\checkpoints'):
+    def __init__(self, alpha, input_dims, max_action, chkpt_dir, fc1_dims=256, fc2_dims=256, fc3_dims=128, fc4_dims=128, n_actions=2,
+         name='actor'):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims

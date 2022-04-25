@@ -1,8 +1,8 @@
 import random
 import pygame
 
-from adaptive_pid_controller import graph_repr as gr
-from adaptive_pid_controller import pid_controller as pid
+from  graph_repr import GraphRepr
+from  pid_controller import PidController
 
 SPEED_OF_SIMULATION = 100
 INACCURACY = 0.05 #in m, of measurement
@@ -26,12 +26,12 @@ def main():
     target = 1
 
     error = target - pos
-    pid_controller = pid.PidController(error, pos, 6000)
+    pid_controller = PidController(error, pos, 6000)
 
     randomize_time = 0
 
     clock = pygame.time.Clock()
-    graph = gr.GraphRepr(1600, 1000)
+    graph = GraphRepr(1600, 1000)
     while True:
         clock.tick(SPEED_OF_SIMULATION)
 

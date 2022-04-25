@@ -6,13 +6,26 @@ from utils import init_changing_plot, draw_plot, plot_learning_curve
 from vel_env import VelEnv
 from pos_env import PosEnv
 
+#TODO: more layers for agent
+#TODO: vel env: more negativ reward for acc and less for error
+#TODO: pos env: more aggressive flying needed
+#TODO: delay in env
+#TODO: simulate integral wind-up in env
+
+
 if __name__ == '__main__':
-    env = PosEnv()
-    agent = Agent(env)
+    env = VelEnv()
+    if type(env) == PosEnv:
+        env_kind = 'pos_env'
+    elif type(env) == VelEnv:
+        env_kind = 'vel_env'
+        
+    ckpt_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'checkpoints', env_kind)
+    agent = Agent(env, ckpt_dir)
     episodes = 500 
 
     range_avg = 5
-    filename = 'learning_curve.png'
+    filename = f'learning_curve_{env_kind}.png'
     print(os.getcwd())
     figure_file = f'{os.path.dirname(os.path.abspath(__file__))}\\plots\\' + filename
 
