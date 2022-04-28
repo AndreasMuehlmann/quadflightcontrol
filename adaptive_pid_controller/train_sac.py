@@ -6,7 +6,6 @@ from utils import init_changing_plot, draw_plot, plot_learning_curve
 from vel_env import VelEnv
 from pos_env import PosEnv
 
-#TODO: more layers for agent
 #TODO: vel env: more negativ reward for acc and less for error
 #TODO: pos env: more aggressive flying needed
 #TODO: delay in env
@@ -33,7 +32,7 @@ if __name__ == '__main__':
     score_history = []
     avg_score_history = []
 
-    load_checkpoint = True
+    load_checkpoint = False
     save_model = False
     learn = False
 
