@@ -26,7 +26,7 @@ def main():
     target = 1
 
     error = target - pos
-    pid_controller = PidController(error, pos, 6000)
+    pid_controller = PidController(6000)
 
     randomize_time = 0
 

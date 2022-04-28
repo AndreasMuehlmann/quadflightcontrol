@@ -13,7 +13,7 @@ from pos_env import PosEnv
 
 
 if __name__ == '__main__':
-    env = VelEnv()
+    env = PosEnv()
     if type(env) == PosEnv:
         env_kind = 'pos_env'
     elif type(env) == VelEnv:

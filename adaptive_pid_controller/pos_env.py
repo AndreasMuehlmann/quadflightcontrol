@@ -1,4 +1,3 @@
-from pid_controller import PidController
 import numpy as np
 from pid_env import PidEnv
 
@@ -7,19 +6,16 @@ class PosEnv(PidEnv):
     def __init__(self):
         super(PosEnv, self).__init__()
 
-    def give_delay(self):
-        return 0.05
+    def init_values(self):
+        self.delay = 0.05
+        self.inaccuracy = 0.05
 
-    def give_inaccuracy(self):
-        return 0.05
-        
-    def give_range_positive_reward(self):
-        return 0.05
+        self.range_positive_reward = 0.05
 
-    def give_pid(self):
-        return PidController(self.target - self.pos, self.give_measurement(), self.max_output)
+        self.time_without_small_target_change = 0.2
+        self.time_without_big_target_change = 4
+        self.time_without_env_acc_change = 3
 
-    def init_max_mins(self):
         self.max_faktor = 0.1
         self.min_faktor = 0.01
 
@@ -51,20 +47,11 @@ class PosEnv(PidEnv):
         self.vel += (self.acc + self.last_acc) / 2 * self.delta_time
         self.pos += (self.vel + self.last_vel) / 2 * self.delta_time
 
-    def give_measurement(self):
-        return self.pos + np.random.uniform(-self.inaccuracy, self.inaccuracy) 
-
     def should_reset(self):
         return abs(self.output) > 10000 or abs(self.acc) > 500 or abs(self.vel) > 500 or abs(self.pos) > 500
 
-    def get_reward_error(self):
-        return (-abs(self.target - self.pos) + self.range_positive_reward) * 100
+    def give_error(self):
+        return self.target - self.pos
 
-    def get_reward_in_positive_range(self, reward):
-        return (reward * 50) ** 2
-
-    def get_reward_acc(self):
-        return self.acc *10000
-
-    def get_reward_when_reset(self):
-        return 10**8 * self.time_available
+    def give_measurement(self):
+        return self.pos + np.random.uniform(-self.inaccuracy, self.inaccuracy) 

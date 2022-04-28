@@ -13,7 +13,7 @@ class FlightControl:
 
     def __init__(self, x, y, pos):
         heights = give_heights(x, y)
-        self.pid_controllers = map(lambda height : pid.PidController(height - pos, pos), heights)
+        self.pid_controllers = map(lambda height : pid.PidController(6000))
 
     def input_to_rpm(self, x, y, strength, pos): # pos has to be changed to angel later
         #height and pos is relativ to the center of the Drone

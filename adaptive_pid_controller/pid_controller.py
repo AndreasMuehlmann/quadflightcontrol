@@ -6,11 +6,11 @@ class PidController:
     i_faktor = 1 * 5
     d_faktor = 3 * 5
 
-    def __init__(self, error, measurement, maximum):
+    def __init__(self, maximum):
         self.maximum = maximum
 
-        self.last_error = error
-        self.last_measurement = measurement
+        self.last_error = 0
+        self.last_measurement = 0
 
         self.integrator = 0
         self.differentiator = 0

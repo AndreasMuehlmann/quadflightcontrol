@@ -3,6 +3,8 @@ import pygame
 import numpy as np
 from abc import ABCMeta, abstractmethod
 
+
+from pid_controller import PidController
 from graph_repr import GraphRepr
 
 
@@ -14,7 +16,35 @@ def random_change(to_change, range, upper_bound, lower_bound):
 
 
 class PidEnv(gym.Env, metaclass=ABCMeta):
+
+    @abstractmethod
+    def init_values(self):
+        pass
+
+    @abstractmethod
+    def init_physical_values(self):
+        pass
+        
+    @abstractmethod
+    def calc_physical_values(self):
+        pass
+
+    @abstractmethod
+    def should_reset(self):
+        pass
+
+    @abstractmethod
+    def give_error(self):
+        pass
+
+    @abstractmethod
+    def give_measurement(self):
+        pass
+
     def __init__(self):
+        self.init_values()
+        self.init_physical_values()
+
         self.window_width = 2200
         self.window_height = 1200 
 
@@ -25,18 +55,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
 
         self.fps = 500
 
-        #maybe into subclasses
-        self.time_without_small_target_change = 0.2
-        self.time_without_big_target_change = 4
-        self.time_without_env_acc_change = 3
-
-
         self.clock = pygame.time.Clock()
-
-        self.inaccuracy = self.give_inaccuracy()
-        self.range_positive_reward = self.give_range_positive_reward() 
-        self.init_physical_values()
-        self.init_max_mins()
 
         self.last_small_target_change = self.time_available
         self.last_big_target_change = self.time_available
@@ -49,7 +68,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.output = 0
         self.measurement = self.give_measurement()
 
-        self.pid_controller = self.give_pid()
+        self.pid_controller = PidController(self.max_output)
         self.pid_controller.p_faktor = 0
         self.pid_controller.i_faktor = 0
         self.pid_controller.d_faktor = 0
@@ -62,37 +81,8 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         for _ in range(amount_last_errors):
             self.last_errors.append(0)
 
-
         self.action_space = gym.spaces.Box(-1, 1, shape=(3,))
         self.observation_space = gym.spaces.Box(float('-inf'), float('inf'), shape=(amount_last_errors + 7,))
-
-    @abstractmethod
-    def give_pid(self):
-        pass
-
-    @abstractmethod
-    def give_delay(self):
-        pass
-
-    @abstractmethod
-    def give_inaccuracy(self):
-        pass
-        
-    @abstractmethod
-    def give_range_positive_reward(self):
-        pass
-
-    @abstractmethod
-    def init_max_mins(self):
-        pass
-
-    @abstractmethod
-    def init_physical_values(self):
-        pass
-        
-    @abstractmethod
-    def calc_physical_values(self):
-        pass
 
     def get_state(self):
         state = np.array([*self.last_errors, self.acc, self.vel, self.pid_controller.differentiator, self.pid_controller.integrator,\
@@ -122,10 +112,6 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
 
         return self.get_state(), self.get_reward(), self.is_done(), {}
 
-    @abstractmethod
-    def give_measurement(self):
-        pass
-
     def change_val(self, to_change_value, last_change, time_without_change, max_change,  max_val, min_val):
         if last_change - self.time_available >= time_without_change:
             to_change_value = random_change(to_change_value, max_change, max_val, min_val)
@@ -150,36 +136,13 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
             self.was_reset = True
             self.reset()
 
-        reward = self.get_reward_error()
-        if reward > 0:
-            self.get_reward_in_positive_range(reward)
-
-        reward -= self.get_reward_acc()
+        reward = self.give_error() + self.range_positive_reward
+        reward -= self.acc
 
         if self.was_reset:
-            reward -= self.get_reward_when_reset()
+            reward -= 1000
 
         return reward
-
-    @abstractmethod
-    def should_reset(self):
-        pass
-
-    @abstractmethod
-    def get_reward_error(self, error):
-        pass
-
-    @abstractmethod
-    def get_reward_in_positive_range(self, reward):
-        pass
-
-    @abstractmethod
-    def get_reward_acc(self):
-        pass
-
-    @abstractmethod
-    def get_reward_when_reset(self):
-        pass
 
     def render(self, mode='human'):
         self.clock.tick(self.fps)
@@ -206,7 +169,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
 
         self.output = 0
 
-        self.pid_controller = self.give_pid()
+        self.pid_controller = PidController(self.max_output)
         self.pid_controller.p_faktor = 0
         self.pid_controller.i_faktor = 0
         self.pid_controller.d_faktor = 0
