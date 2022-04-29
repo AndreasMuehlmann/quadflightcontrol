@@ -67,9 +67,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.env_acc = np.random.uniform(self.min_env_acc, self.max_env_acc)
         
         self.output = 0
-        self.outputs = deque(maxlen = int(self.fps * self.delay))
-        for _ in range(int(self.fps * self.delay)):
-            self.outputs.append(0)
+        self.init_prev_outputs()
 
         self.measurement = self.give_measurement()
 
@@ -81,16 +79,26 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.graph = 0
         self.was_reset = False
 
-        amount_last_errors = 5
-        self.last_errors = []
-        for _ in range(amount_last_errors):
-            self.last_errors.append(0)
+        self.amount_prev_errors = 5
+        self.init_prev_errors()
 
         self.action_space = gym.spaces.Box(-1, 1, shape=(3,))
-        self.observation_space = gym.spaces.Box(float('-inf'), float('inf'), shape=(amount_last_errors + 7,))
+        self.observation_space = gym.spaces.Box(float('-inf'), float('inf'), shape=(self.amount_prev_errors + 7,))
+
+
+    def init_prev_outputs(self):
+        self.prev_outputs = deque(maxlen = int(self.fps * self.delay))
+        for _ in range(int(self.fps * self.delay)):
+            self.prev_outputs.append(0)
+
+    def init_prev_errors(self):
+        self.prev_errors = []
+        for _ in range(self.amount_prev_errors):
+            self.prev_errors.append(0)
+
 
     def get_state(self):
-        state = np.array([*self.last_errors, self.acc, self.vel, self.pid_controller.differentiator, self.pid_controller.integrator,\
+        state = np.array([*self.prev_errors, self.acc, self.vel, self.pid_controller.differentiator, self.pid_controller.integrator,\
             self.pid_controller.p_faktor, self.pid_controller.i_faktor, self.pid_controller.d_faktor])
         return state
 
@@ -100,9 +108,9 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.perform_action(action)
 
         self.measurement = self.give_measurement()
-        self.outputs.append(self.pid_controller.give_output(self.target - self.measurement, self.measurement))
+        self.prev_outputs.append(self.pid_controller.give_output(self.target - self.measurement, self.measurement))
 
-        self.output = self.outputs.pop()
+        self.output = self.prev_outputs.pop()
         self.calc_physical_values()
 
         self.target, self.last_small_target_change = self.change_val(self.target, self.last_small_target_change,
@@ -112,8 +120,8 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.env_acc, self.last_env_acc_change = self.change_val(self.env_acc, self.last_env_acc_change,
                                                                      self.time_without_env_acc_change, self.max_env_acc_change, self.max_env_acc, self.min_env_acc)
 
-        self.last_errors.append(self.pid_controller.iir_error.outputs[-1])
-        self.last_errors.pop()
+        self.prev_errors.append(self.pid_controller.iir_error.outputs[-1])
+        self.prev_errors.pop()
 
         self.was_reset = False
 
@@ -175,6 +183,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.init_physical_values()
 
         self.output = 0
+        self.init_prev_outputs()
 
         self.pid_controller = PidController(self.max_output)
         self.pid_controller.p_faktor = 0
@@ -184,5 +193,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
 
         if  self.graph != 0:
             self.graph = 0
+
+        self.init_prev_errors()
 
         return self.get_state()
