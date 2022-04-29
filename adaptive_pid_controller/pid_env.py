@@ -1,5 +1,6 @@
 import gym
 import pygame
+from collections import deque
 import numpy as np
 from abc import ABCMeta, abstractmethod
 
@@ -66,6 +67,10 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.env_acc = np.random.uniform(self.min_env_acc, self.max_env_acc)
         
         self.output = 0
+        self.outputs = deque(maxlen = int(self.fps * self.delay))
+        for _ in range(int(self.fps * self.delay)):
+            self.outputs.append(0)
+
         self.measurement = self.give_measurement()
 
         self.pid_controller = PidController(self.max_output)
@@ -95,7 +100,9 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.perform_action(action)
 
         self.measurement = self.give_measurement()
-        self.output = self.pid_controller.give_output(self.target - self.measurement, self.measurement) 
+        self.outputs.append(self.pid_controller.give_output(self.target - self.measurement, self.measurement))
+
+        self.output = self.outputs.pop()
         self.calc_physical_values()
 
         self.target, self.last_small_target_change = self.change_val(self.target, self.last_small_target_change,
