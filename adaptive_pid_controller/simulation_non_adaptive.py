@@ -26,7 +26,7 @@ def main():
     target = 1
 
     error = target - pos
-    pid_controller = PidController(6000)
+    pid_controller = PidController(0.9, 10, 6000)
 
     randomize_time = 0
 
@@ -37,7 +37,7 @@ def main():
 
         if randomize_time > 0.1:
             randomize_time = 0
-            target += random_num_p_or_n(0.2)
+            target += random_num_p_or_n(0.8)
 
         measured_pos = pos + random_num_p_or_n(INACCURACY) 
         rpm = pid_controller.give_output(target - measured_pos, measured_pos) 
@@ -49,7 +49,8 @@ def main():
         pos += (vel + last_vel) / 2 * delta_time
         
 
-        graph.add_point(pid_controller.iir_measurement.outputs[-1])
+        #graph.add_point(pid_controller.iir_measurement.outputs[-1])
+        graph.add_point(pos)
         graph.target = target
         graph.re_draw()
 

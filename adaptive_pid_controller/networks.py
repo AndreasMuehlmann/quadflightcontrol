@@ -24,7 +24,7 @@ class CriticNetwork(nn.Module):
         self.fc1 = nn.Linear(self.input_dims[0] + n_actions, fc_dims[0])
         self.fcs.append(self.fc1)
 
-        for fc_count in range(2, len(fc_dims)):
+        for fc_count in range(1, len(fc_dims)):
             self.fc = nn.Linear(fc_dims[fc_count - 1], fc_dims[fc_count])
             self.fc.to(self.device)
             self.fcs.append(self.fc)
@@ -68,7 +68,7 @@ class ValueNetwork(nn.Module):
         self.fc1 = nn.Linear(*self.input_dims, fc_dims[0])
         self.fcs.append(self.fc1)
 
-        for fc_count in range(2, len(fc_dims)):
+        for fc_count in range(1, len(fc_dims)):
             self.fc = nn.Linear(fc_dims[fc_count - 1], fc_dims[fc_count])
             self.fc.to(self.device)
             self.fcs.append(self.fc)
@@ -116,7 +116,7 @@ class ActorNetwork(nn.Module):
         self.fc1 = nn.Linear(*self.input_dims, fc_dims[0])
         self.fcs.append(self.fc1)
 
-        for fc_count in range(2, len(fc_dims)):
+        for fc_count in range(1, len(fc_dims)):
             self.fc = nn.Linear(fc_dims[fc_count - 1], fc_dims[fc_count])
             self.fc.to(self.device)
             self.fcs.append(self.fc)

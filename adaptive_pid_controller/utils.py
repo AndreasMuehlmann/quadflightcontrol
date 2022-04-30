@@ -8,7 +8,7 @@ def init_changing_plot():
     plt.ylabel('score')
     plt.plot([], [])
     plt.draw()
-    plt.pause(5)
+    plt.pause(3)
 
 def draw_plot(episode, avg_scores):
     plt.plot([j + 1 for j in range(episode + 1)], avg_scores)

@@ -2,11 +2,11 @@ from iir_filter import IirFilter
 
 class PidController:
 
-    p_faktor = 4 * 5
-    i_faktor = 1 * 5
-    d_faktor = 3 * 5
+    p_faktor = 9 * 5
+    i_faktor = 4 * 5
+    d_faktor = 6 * 5
 
-    def __init__(self, maximum):
+    def __init__(self, iir_faktor, iir_order, maximum):
         self.maximum = maximum
 
         self.last_error = 0
@@ -17,8 +17,8 @@ class PidController:
 
         self.delta_time = 0.01
 
-        self.iir_error = IirFilter(0.8, 2)
-        self.iir_measurement = IirFilter(0.8, 2)
+        self.iir_error = IirFilter(iir_faktor, iir_order)
+        self.iir_measurement = IirFilter(iir_faktor, iir_order)
 
     def give_output(self, error, measurement):
         error = self.iir_error.give_filtered(error)

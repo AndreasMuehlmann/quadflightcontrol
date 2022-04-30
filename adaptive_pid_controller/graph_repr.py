@@ -18,7 +18,6 @@ class GraphRepr:
 
         self.points = []
         self.target = None
-        self.time = 0 #in s
 
     def center(self, point):
         return (int(point[0]), int(point[1] + self.height/2))
@@ -39,10 +38,10 @@ class GraphRepr:
         self.y_stretch = self.get_stretch(9 * self.height / 20, self.target, self.y_stretch)
         pygame.draw.line(self.window, BLACK, (0, int(-self.target * self.y_stretch + self.height / 2)), (self.width, int(-self.target * self.y_stretch + self.height / 2)))
 
-    def add_point(self, point):
+    def add_point(self, time, point):
         self.y_stretch = self.get_stretch(9 * self.height / 20, point, self.y_stretch)
-        self.x_stretch = self.get_stretch(9 * self.width / 10, self.time, self.x_stretch)
-        self.points.append([self.time, point])
+        self.x_stretch = self.get_stretch(9 * self.width / 10, time, self.x_stretch)
+        self.points.append([time, point])
 
     def get_stretch(self, stretch_to, val, stretch):
         # 9 * window_length / (10 * 2) = stretch * max_val
@@ -62,5 +61,3 @@ class GraphRepr:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
-        self.time += 0.01 #an iteration is 10 ms

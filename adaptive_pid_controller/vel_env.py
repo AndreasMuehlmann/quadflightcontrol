@@ -8,19 +8,24 @@ class VelEnv(PidEnv):
 
     def init_values(self):
         self.delay = 0.05
-        self.inaccuracy = 0.05
+
+        self.inaccuracy = 0.2
+        self.iir_faktor = 0.9
+        self.iir_order = 8
 
         self.range_positive_reward = 0.5
+        self.bad_error = 3
+        self.bad_produced_acc = 10
 
         self.time_without_small_target_change = 0.2
         self.time_without_big_target_change = 4
-        self.time_without_env_acc_change = 3
+        self.time_without_env_force_change = 3
 
         self.max_faktor = 0.1
-        self.min_faktor = 0.01
+        self.min_faktor = 0.04
 
-        self.max_env_acc = 30
-        self.min_env_acc = -self.max_env_acc
+        self.max_env_force = 15
+        self.min_env_force = -self.max_env_force
 
         self.max_target = 10
         self.min_target = -self.max_target
@@ -30,7 +35,7 @@ class VelEnv(PidEnv):
 
         self.max_small_target_change = 0.6
         self.max_big_target_change = abs(self.max_target) + abs(self.min_target)
-        self.max_env_acc_change = abs(self.max_env_acc) + abs(self.min_env_acc)
+        self.max_env_force_change = abs(self.max_env_force) + abs(self.min_env_force)
 
     def init_physical_values(self):
         self.measured_vel = 0
@@ -42,7 +47,7 @@ class VelEnv(PidEnv):
         self.last_acc = self.acc
         
     def calc_physical_values(self):
-        self.acc = self.faktor * self.output + self.env_acc
+        self.acc = self.faktor * self.output + self.faktor * self.env_force
         self.vel += (self.acc + self.last_acc) / 2 * self.delta_time
 
     def should_reset(self):
