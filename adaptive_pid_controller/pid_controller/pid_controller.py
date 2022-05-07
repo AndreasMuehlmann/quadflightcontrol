@@ -26,6 +26,9 @@ class PidController:
         if self.integrator > self.maximum:
             self.integrator = self.maximum
 
+        elif self.integrator < self.maximum:
+            self.integrator = -self.maximum
+
         output = self._proportional(error) + self.integrator + self._derivative(measurement)
 
         self.last_error = error
