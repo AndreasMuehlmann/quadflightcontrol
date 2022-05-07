@@ -4,7 +4,6 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributions.normal import Normal
-import numpy as np
 
 class CriticNetwork(nn.Module):
     def __init__(self, beta, input_dims, n_actions, fc_dims, chkpt_dir, fc1_dims=256, fc2_dims=256, fc3_dims=128, fc4_dims=128,

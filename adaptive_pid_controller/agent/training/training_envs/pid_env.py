@@ -1,11 +1,21 @@
+import sys
+import os
 import gym
 import pygame
 from collections import deque
 import numpy as np
 from abc import ABCMeta, abstractmethod
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent1 = os.path.dirname(current_dir)
+parent2 = os.path.dirname(parent1)
+parent3 = os.path.dirname(parent2)
+sys.path.append(parent3)
 
+child_parent3 = os.path.join(parent3, 'pid_controller')
+sys.path.append(child_parent3)
 from pid_controller import PidController
+
 from graph_repr import GraphRepr
 
 

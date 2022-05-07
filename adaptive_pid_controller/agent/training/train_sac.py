@@ -1,8 +1,19 @@
+import sys
 import os
 import pygame
 import numpy as np
-from sac import Agent
+
 from utils import init_changing_plot, draw_plot, plot_learning_curve
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+parent = os.path.dirname(current_dir)
+sys.path.append(parent)
+from sac import Agent
+
+child = os.path.join(current_dir, 'training_envs')
+sys.path.append(child)
+
 from vel_env import VelEnv
 from pos_env import PosEnv
 
@@ -14,15 +25,17 @@ if __name__ == '__main__':
         env_kind = 'pos_env'
     elif type(env) == VelEnv:
         env_kind = 'vel_env'
-        
-    ckpt_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'checkpoints', env_kind)
+
+    dir_path = os.path.dirname(os.path.abspath(__file__))
+    ckpt_dir = os.path.join(dir_path, '..', 'checkpoints', env_kind)
+
+    figure_file_name = f'learning_curve_{env_kind}.png'
+    figure_file = os.path.join(dir_path, 'plots', figure_file_name)
+
     agent = Agent(env, ckpt_dir)
+
     episodes = 500 
-
     range_avg = 5
-    filename = f'learning_curve_{env_kind}.png'
-    figure_file = f'{os.path.dirname(os.path.abspath(__file__))}\\plots\\' + filename
-
     best_score = env.reward_range[0]
     score_history = []
     avg_score_history = []
