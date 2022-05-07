@@ -1,12 +1,10 @@
 from iir_filter import IirFilter
 
 class PidController:
-
-    p_faktor = 9 * 5
-    i_faktor = 4 * 5
-    d_faktor = 6 * 5
-
-    def __init__(self, iir_faktor, iir_order, maximum):
+    def __init__(self, p_faktor, i_faktor, d_faktor, iir_faktor, iir_order, maximum):
+        self.p_faktor = p_faktor
+        self.i_faktor = i_faktor
+        self.d_faktor = d_faktor
         self.maximum = maximum
 
         self.last_error = 0

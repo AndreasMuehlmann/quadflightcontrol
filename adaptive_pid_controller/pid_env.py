@@ -70,10 +70,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
 
         self.measurement = self.give_measurement()
 
-        self.pid_controller = PidController(self.iir_faktor, self.iir_order, self.max_output)
-        self.pid_controller.p_faktor = 0
-        self.pid_controller.i_faktor = 0
-        self.pid_controller.d_faktor = 0
+        self.pid_controller = PidController(0, 0, 0,self.iir_faktor, self.iir_order, self.max_output)
 
         self.graph = 0
         self.was_reset = False
@@ -192,11 +189,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.output = 0
         self.init_prev_outputs()
 
-        self.pid_controller = PidController(self.iir_faktor, self.iir_order, self.max_output)
-        self.pid_controller.p_faktor = 0
-        self.pid_controller.i_faktor = 0
-        self.pid_controller.d_faktor = 0
-
+        self.pid_controller = PidController(0, 0, 0, self.iir_faktor, self.iir_order, self.max_output)
 
         if  self.graph != 0:
             self.graph = 0

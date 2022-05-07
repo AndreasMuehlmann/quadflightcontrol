@@ -7,9 +7,6 @@ from vel_env import VelEnv
 from pos_env import PosEnv
 
 
-#TODO: simulate integral wind-up in env
-
-
 if __name__ == '__main__':
     env = PosEnv()
 
