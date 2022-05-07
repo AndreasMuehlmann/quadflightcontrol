@@ -77,9 +77,9 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
 
         self.graph = 0
         self.was_reset = False
-        self.max_positive_reward = self.bad_error
+        self.max_positive_reward = self.bad_error * 10
 
-        self.amount_prev_errors = 5
+        self.amount_prev_errors = int(2 / self.delta_time)
         self.init_prev_errors()
 
         self.action_space = gym.spaces.Box(-1, 1, shape=(3,))

@@ -12,6 +12,7 @@ from pos_env import PosEnv
 
 if __name__ == '__main__':
     env = PosEnv()
+
     if type(env) == PosEnv:
         env_kind = 'pos_env'
     elif type(env) == VelEnv:
@@ -19,7 +20,7 @@ if __name__ == '__main__':
         
     ckpt_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'checkpoints', env_kind)
     agent = Agent(env, ckpt_dir)
-    episodes = 10000 
+    episodes = 500 
 
     range_avg = 5
     filename = f'learning_curve_{env_kind}.png'
@@ -29,9 +30,9 @@ if __name__ == '__main__':
     score_history = []
     avg_score_history = []
 
-    load_checkpoint = False
-    save_model = True
-    learn = True
+    load_checkpoint = True
+    save_model = False
+    learn = False
 
     init_changing_plot()
 

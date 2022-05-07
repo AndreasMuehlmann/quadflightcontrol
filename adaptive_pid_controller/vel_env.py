@@ -10,8 +10,8 @@ class VelEnv(PidEnv):
         self.delay = 0.05
 
         self.inaccuracy = 0.2
-        self.iir_faktor = 0.9
-        self.iir_order = 8
+        self.iir_faktor = 0.85
+        self.iir_order = 5
 
         self.range_positive_reward = 0.5
         self.bad_error = 3

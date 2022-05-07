@@ -11,7 +11,7 @@ class PosEnv(PidEnv):
 
         self.inaccuracy = 0.05
         self.iir_faktor = 0.8
-        self.iir_order = 5
+        self.iir_order = 3
 
         self.range_positive_reward = 0.05
         self.bad_error = 0.2

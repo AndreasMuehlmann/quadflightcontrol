@@ -7,7 +7,7 @@ from networks import ActorNetwork, CriticNetwork, ValueNetwork
 
 class Agent():
     def __init__(self, env, chkpt_dir, alpha=0.0003, beta=0.0003, gamma=0.99, max_size=1000000,
-                         tau=0.005, layer_sizes=[250, 128, 64, 32],
+                         tau=0.005, layer_sizes=[256, 256, 128, 64, 32],
                           batch_size=256, reward_scale=2):
         input_dims = env.observation_space.shape
         self.n_actions = env.action_space.shape[0]
