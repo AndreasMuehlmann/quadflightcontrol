@@ -7,10 +7,11 @@ from interface_control import InterfaceControl
 
 class SimInterface(InterfaceControl):
     def __init__(self):
-        with open('sim_interface_dir_path.txt', 'r') as file:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        path_to_file_with_interface_dir = os.path.join(current_dir, 'sim_interface_dir_path.txt')
+        with open(path_to_file_with_interface_dir, 'r') as file:
             self.path_to_interface = file.read().strip()
         self.path_interface = os.path.join(self.path_to_interface, 'interface_sim-control')
-        print(self.path_interface)
 
         self.measurements_file = 'measurements.txt'
         self.outputs_file = 'outputs.txt'

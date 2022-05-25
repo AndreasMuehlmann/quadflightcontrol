@@ -12,13 +12,10 @@ from pid_controller import PidController
 child = os.path.join(current_dir, 'interfaces')
 sys.path.append(child)
 from sim_interface import SimInterface
-from interface_control import InterfaceControl
+from bluetooth_interface import BluetoothInterface
 
 from flight_control import FlightControl
 from transform_input import give_heights
-
-
-#TODO: use interface_user for inputs
 
 
 class RobustFlightControl(FlightControl):
@@ -27,7 +24,7 @@ class RobustFlightControl(FlightControl):
         self.rotor_controllers = [PidController(45, 20, 30, 0.8, 3, 1000) for i in range(4)]
 
         self.interface_control = SimInterface()
-        self.interface_user = None
+        self.interface_user = BluetoothInterface()
 
         self.clock = pygame.time.Clock()
 
@@ -50,7 +47,8 @@ class RobustFlightControl(FlightControl):
             self.interface_control.send_outputs(outputs)
 
     def give_outputs(self, measurements):
-        rotor_targets = give_heights(1, 1)
+        inputs = self.interface_user.give_inputs()
+        rotor_targets = give_heights(inputs[0], inputs[1])
 
         outputs = []
         for i, measurement in enumerate(measurements):
