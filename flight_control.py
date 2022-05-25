@@ -1,5 +1,4 @@
-from transform_input import give_heights
-from adaptive_pid_controller import pid_controller as pid
+from abc import ABCMeta, abstractmethod
 
 '''
 (fl) rotor2 -> \ / <- rotor1 (fr)
@@ -9,18 +8,7 @@ from adaptive_pid_controller import pid_controller as pid
 [rotor1, rotor2, rotor2, rotor4]
 '''
 
-class FlightControl:
-
-    def __init__(self, x, y, pos):
-        heights = give_heights(x, y)
-        self.pid_controllers = map(lambda height : pid.PidController(6000))
-
-    def input_to_rpm(self, x, y, strength, pos): # pos has to be changed to angel later
-        #height and pos is relativ to the center of the Drone
-        heights = give_heights(x, y)
-
-        rpm = []
-        for count, pid_controller in enumerate(self.pid_controllers):
-            rpm.append(pid_controller.give_output(heights[count] - pos[count], pos[count]) + strength)
-
-        return rpm
+class FlightControl(metaclass=ABCMeta):
+    @abstractmethod
+    def give_outputs(self, measurements):
+        pass
