@@ -41,7 +41,7 @@ class SimInterface(InterfaceControl):
                 lines = file.readlines()
         except IOError:
             time.sleep(1/1000)
-            return read_measurements()
+            return self.read_measurements()
 
         measurements = []
         for line in lines: 
@@ -55,7 +55,7 @@ class SimInterface(InterfaceControl):
             try:
                 for output in outputs:
                      file.write(f'{output}\n')
-            except IOExeption:
+            except IOError:
                 time.sleep(1/1000)
-                write_outputs(outputs_path, outputs)
+                self.send_outputs(self.outputs_path, outputs)
 
