@@ -24,10 +24,10 @@ class PosEnv(PidEnv):
         self.max_faktor = 0.1
         self.min_faktor = 0.02
 
-        self.max_env_force = 5
+        self.max_env_force = 10 # strength is same as output
         self.min_env_force = -self.max_env_force
 
-        self.max_target =  1
+        self.max_target =  0.5 # 1
         self.min_target = -self.max_target
 
         self.max_output = 1000

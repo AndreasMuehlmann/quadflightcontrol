@@ -8,8 +8,8 @@ from abc import ABCMeta, abstractmethod
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent = os.path.dirname(current_dir)
-child_parent = os.path.join(parent3, 'pid_controller')
-sys.path.append(child_parent3)
+child_parent = os.path.join(parent, 'pid_controller')
+sys.path.append(child_parent)
 from pid_controller import PidController
 
 from graph_repr import GraphRepr
@@ -51,15 +51,15 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.init_values()
         self.init_physical_values()
 
-        self.window_width = 2200
-        self.window_height = 1200 
+        self.window_width = 1200
+        self.window_height = 800 
 
         self.total_time = 30 #in s
         self.time_available = self.total_time
 
-        self.delta_time = 0.1
+        self.delta_time = 0.05
 
-        self.fps = 500
+        self.fps = 1  / self.delta_time
 
         self.clock = pygame.time.Clock()
 
@@ -89,15 +89,14 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.observation_space = gym.spaces.Box(float('-inf'), float('inf'), shape=(self.amount_prev_errors + 6,))
 
     def init_prev_outputs(self):
-        self.prev_outputs = deque(maxlen = int(self.fps * self.delay))
-        for _ in range(int(self.fps * self.delay)):
+        self.prev_outputs = deque(maxlen = round(self.fps * self.delay + 0.5))
+        for _ in range(round(self.fps * self.delay + 0.5)):
             self.prev_outputs.append(0)
 
     def init_prev_errors(self):
         self.prev_errors = []
         for _ in range(self.amount_prev_errors):
             self.prev_errors.append(0)
-
 
     def get_state(self):
         state = np.array([*self.prev_errors, self.output, self.pid_controller.differentiator, self.pid_controller.integrator,\
