@@ -4,6 +4,7 @@ This is the software used for a drone. To be more specific a quadrocopter.
 It is mainly developed by Andreas Mühlmann and hosted on GitHub https://github.com/AndreasMuehlmann/Drone.
 There is also a simulation available that is developed by Felix Ungerhofer and also hosted
 on GitHub https://github.com/AndreasMuehlmann/Drone-Simulation.
+An app for user input via Bluetooth is developed by Kilian Schreiner.
 
 If you want to use this Project be warned, you have to change everything yourself in 
 the code and the project also is unstable and unfinished.
