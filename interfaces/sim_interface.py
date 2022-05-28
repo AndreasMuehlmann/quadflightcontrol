@@ -47,7 +47,6 @@ class SimInterface(InterfaceControl):
         for line in lines: 
             measurements.append(float(line))
 
-        return [0.1, 0.1, -0.1, -0.1]
         return measurements
 
     def send_outputs(self,outputs):
