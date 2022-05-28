@@ -1,21 +1,21 @@
-#Drone
+# Drone
 This is the software used for a drone. To be more specific a quadrocopter.
 
-It is mainly developed by Andreas Mühlmann and hosted on GitHub [](https://github.com/AndreasMuehlmann/Drone).
+It is mainly developed by Andreas Mühlmann and hosted on GitHub https://github.com/AndreasMuehlmann/Drone.
 There is also a simulation available that is developed by Felix Ungerhofer and also hosted
-on GitHub [](https://github.com/AndreasMuehlmann/Drone-Simulation).
+on GitHub https://github.com/AndreasMuehlmann/Drone-Simulation.
 
 If you want to use this Project be warned, you have to change everything yourself in 
 the code and the project also stable or finished.
 
 
-#Quickstart:
+# Quickstart:
 - Clone the Project with 'git clone https://github.com/AndreasMuehlmann/Drone'
 
 You can then use the Project for maybe a raspberry pi and try controlling a drone with it,
 or you control the simulation
 
-##Simulation:
+## Simulation:
 - Change the interface_control variable to 'SimInterface' (you might have to import it from 'interface/sim_interface.py')
 - Write the path to where the interface should live to interfaces/sim_interface_dir_path.txt
 
@@ -32,11 +32,11 @@ As soon as that happens outputs are returned through outputs.txt.
 To run it you have to Unity installed. The Simulation has to read from the interface and
 then you hopefully see the drone flying.
 
-##Raspberry Pi:
+## Raspberry Pi:
 This is still in work, but technically you get a sensor with a raspberry pi and then you can
 try and make it work.
 
-##Bluetooth Control With Flutter App
+## Bluetooth Control With Flutter App
 This is also still in work but, there is going to be an app, that sends user inputs to
 the flight control. This is going to be in 'interfaces/bluetooth_interface.py'
 
