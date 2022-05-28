@@ -6,14 +6,14 @@ There is also a simulation available that is developed by Felix Ungerhofer and a
 on GitHub https://github.com/AndreasMuehlmann/Drone-Simulation.
 
 If you want to use this Project be warned, you have to change everything yourself in 
-the code and the project also stable or finished.
+the code and the project also is unstable and unfinished.
 
 
 # Quickstart:
 - Clone the Project with 'git clone https://github.com/AndreasMuehlmann/Drone'
 
 You can then use the Project for maybe a raspberry pi and try controlling a drone with it,
-or you control the simulation
+or you control the simulation.
 
 ## Simulation:
 - Change the interface_control variable to 'SimInterface' (you might have to import it from 'interface/sim_interface.py')
