@@ -1,6 +1,4 @@
-import time
 import os
-import sys
 
 from interface_control import InterfaceControl
 
@@ -40,22 +38,20 @@ class SimInterface(InterfaceControl):
             with open(self.measurements_path, 'r') as file:
                 lines = file.readlines()
         except IOError:
-            time.sleep(1/1000)
             return self.read_measurements()
 
         measurements = []
         for line in lines: 
+            line = line.replace(',', '.').strip()
             measurements.append(float(line))
 
-        return [0.1, 0.1, -0.1, -0.1]
         return measurements
 
     def send_outputs(self,outputs):
-        with open(self.outputs_path, 'w') as file:
-            try:
+        try:
+            with open(self.outputs_path, 'w') as file:
                 for output in outputs:
                      file.write(f'{output}\n')
-            except IOError:
-                time.sleep(1/1000)
-                self.send_outputs(self.outputs_path, outputs)
+        except IOError:
+            self.send_outputs(outputs)
 
