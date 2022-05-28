@@ -2,13 +2,17 @@ import sys
 import os
 import pygame
 from copy import deepcopy
-from abc import ABCMeta, abstractmethod
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
+
 child = os.path.join(current_dir, 'interfaces')
 sys.path.append(child)
 from sim_interface import SimInterface
 from bluetooth_interface import BluetoothInterface
+
+child = os.path.join(current_dir, 'pid_controller')
+sys.path.append(child)
+from pid_controller import PidController
 
 from transform_input import give_heights
 
@@ -22,19 +26,15 @@ from transform_input import give_heights
 '''
 
 
-class FlightControl(metaclass=ABCMeta):
+class FlightControl():
     def __init__(self):
-        self.rotor_controllers = [self.create_rotor_controller() for _ in range(4)]
+        self.rotor_controllers = [PidController(45, 20, 30, 0.9, 3, 1000) for _ in range(4)]
 
         self.interface_control = SimInterface()
         self.interface_user = BluetoothInterface()
 
         self.frequency = 100
         self.clock = pygame.time.Clock()
-
-    @abstractmethod
-    def create_rotor_controller():
-        pass
 
     def run(self):
         prev_measurements = None
@@ -60,11 +60,7 @@ class FlightControl(metaclass=ABCMeta):
     def give_outputs(self, targets, measurements):
         outputs = []
         for i, measurement in enumerate(measurements):
-            output = self.give_output_rotor_controller(self.rotor_controllers[i], targets[i], measurement)
+            output = self.rotor_controllers[i].give_output(targets[i] - measurement, measurement)
             outputs.append(output)
 
         return outputs
-
-    @abstractmethod
-    def give_output_rotor_controller(self, controller, target, measurement):
-        pass

@@ -1,8 +1,8 @@
-from robust_flight_control import RobustFlightControl
+from flight_control import FlightControl
 
 
 def main():
-    flight_contorl = RobustFlightControl()
+    flight_contorl = FlightControl()
     flight_contorl.run()
 
 
