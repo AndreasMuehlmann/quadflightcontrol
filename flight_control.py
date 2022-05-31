@@ -28,7 +28,7 @@ from transform_input import give_heights
 
 class FlightControl():
     def __init__(self):
-        self.rotor_controllers = [PidController(45, 20, 30, 0.9, 3, 1000) for _ in range(4)]
+        self.rotor_controllers = [PidController(4.5, 2.0, 3.0, 0.9, 3, 1000) for _ in range(4)]
 
         self.interface_control = SimInterface()
         self.interface_user = BluetoothInterface()
@@ -55,6 +55,7 @@ class FlightControl():
             rotor_targets = give_heights(inputs[0], inputs[1])
 
             outputs = self.give_outputs(rotor_targets, measurements)
+            print(outputs)
             self.interface_control.send_outputs(outputs)
 
     def give_outputs(self, targets, measurements):

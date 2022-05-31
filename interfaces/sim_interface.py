@@ -51,7 +51,8 @@ class SimInterface(InterfaceControl):
         try:
             with open(self.outputs_path, 'w') as file:
                 for output in outputs:
-                     file.write(f'{output}\n')
+                    output_string = str(output).replace('.', ',')
+                    file.write(f'{output_string}\n')
         except IOError:
             self.send_outputs(outputs)
 
