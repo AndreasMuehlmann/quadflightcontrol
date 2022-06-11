@@ -12,6 +12,7 @@ child_parent = os.path.join(parent, 'pid_controller')
 sys.path.append(child_parent)
 from pid_controller import PidController
 
+import config as conf
 from graph_repr import GraphRepr
 
 
@@ -51,13 +52,16 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.init_values()
         self.init_physical_values()
 
-        self.window_width = 1200
-        self.window_height = 800 
+        self.delay = conf.delay
 
-        self.total_time = 30 #in s
+        self.window_width = conf.window_width
+        self.window_height = conf.window_height
+
+        self.total_time = conf.total_time #in s
         self.time_available = self.total_time
 
-        self.delta_time = 0.05
+        self.delay = conf.delay
+        self.delta_time = conf.delta_time
 
         self.fps = 1  / self.delta_time
 

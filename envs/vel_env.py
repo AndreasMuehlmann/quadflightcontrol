@@ -1,5 +1,13 @@
+import os
+import sys
 from pid_env import PidEnv
 import numpy as np
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent = os.path.dirname(current_dir)
+sys.path.append(parent)
+
+import config as conf
 
 
 class VelEnv(PidEnv):
@@ -7,35 +15,33 @@ class VelEnv(PidEnv):
         super(VelEnv, self).__init__()
 
     def init_values(self):
-        self.delay = 0.05
+        self.inaccuracy = conf.vel_env_inaccuracy
+        self.iir_faktor = conf.vel_env_iir_faktor
+        self.iir_order = conf.vel_env_iir_order
 
-        self.inaccuracy = 0.2
-        self.iir_faktor = 0.85
-        self.iir_order = 5
+        self.range_positive_reward = conf.vel_env_range_positive_reward
+        self.bad_error = conf.vel_env_bad_error
+        self.bad_produced_acc = conf.vel_env_bad_produced_acc
 
-        self.range_positive_reward = 0.5
-        self.bad_error = 3
-        self.bad_produced_acc = 10
+        self.time_without_small_target_change = conf.vel_env_time_without_small_target_change
+        self.time_without_big_target_change = conf.vel_env_time_without_big_target_change
+        self.time_without_env_force_change = conf.vel_env_time_without_env_force_change
 
-        self.time_without_small_target_change = 0.2
-        self.time_without_big_target_change = 4
-        self.time_without_env_force_change = 3
+        self.max_faktor = conf.vel_env_max_faktor
+        self.min_faktor = conf.vel_env_min_faktor
 
-        self.max_faktor = 0.1
-        self.min_faktor = 0.04
+        self.max_env_force = conf.vel_env_max_env_force # strength is same as output
+        self.min_env_force = conf.vel_env_min_env_force
 
-        self.max_env_force = 15
-        self.min_env_force = -self.max_env_force
+        self.max_target =  conf.vel_env_max_target
+        self.min_target = conf.vel_env_min_target
 
-        self.max_target = 10
-        self.min_target = -self.max_target
+        self.max_output = conf.vel_env_max_output
+        self.min_output = conf.vel_env_min_output
 
-        self.max_output = 1000
-        self.min_output = -self.max_output
-
-        self.max_small_target_change = 0.6
-        self.max_big_target_change = abs(self.max_target) + abs(self.min_target)
-        self.max_env_force_change = abs(self.max_env_force) + abs(self.min_env_force)
+        self.max_small_target_change = conf.vel_env_max_small_target_change
+        self.max_big_target_change = conf.vel_env_max_big_target_change
+        self.max_env_force_change = conf.vel_env_max_env_force_change
 
     def init_physical_values(self):
         self.measured_vel = 0
