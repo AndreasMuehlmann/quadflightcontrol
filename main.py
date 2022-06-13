@@ -1,3 +1,6 @@
+from append_dirs_to_path import append_dirs_to_path
+append_dirs_to_path()
+
 from flight_control import FlightControl
 
 

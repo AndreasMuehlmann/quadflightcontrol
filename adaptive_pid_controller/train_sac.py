@@ -6,12 +6,10 @@ import numpy as np
 from utils import init_changing_plot, draw_plot, plot_learning_curve
 from sac import Agent
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent = os.path.dirname(current_dir)
-child = os.path.join(parent, 'envs')
-sys.path.append(child)
 from vel_env import VelEnv
 from pos_env import PosEnv
+
+# TODO: make the append dirs
 
 
 if __name__ == '__main__':

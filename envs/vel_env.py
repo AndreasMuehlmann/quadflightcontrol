@@ -1,13 +1,7 @@
-import os
-import sys
-from pid_env import PidEnv
 import numpy as np
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent = os.path.dirname(current_dir)
-sys.path.append(parent)
-
 import config as conf
+from pid_env import PidEnv
 
 
 class VelEnv(PidEnv):

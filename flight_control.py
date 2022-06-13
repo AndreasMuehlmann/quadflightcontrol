@@ -1,19 +1,10 @@
-import sys
-import os
-import pygame
 from copy import deepcopy
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
+import pygame
 
-child = os.path.join(current_dir, 'interfaces')
-sys.path.append(child)
 from sim_interface import SimInterface
 from bluetooth_interface import BluetoothInterface
-
-child = os.path.join(current_dir, 'pid_controller')
-sys.path.append(child)
 from pid_controller import PidController
-
 from transform_input import give_heights
 
 
