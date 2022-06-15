@@ -12,5 +12,5 @@ def append_dirs_to_path():
 
 
 def append_child(directory, child):
-    child = os.path.join(directory, 'envs')
+    child = os.path.join(directory, child)
     sys.path.append(child)
