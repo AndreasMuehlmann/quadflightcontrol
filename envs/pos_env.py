@@ -10,8 +10,6 @@ class PosEnv(PidEnv):
 
     def init_values(self):
         self.inaccuracy = conf.pos_env_inaccuracy
-        self.iir_faktor = conf.pos_env_iir_faktor
-        self.iir_order = conf.pos_env_iir_order
 
         self.range_positive_reward = conf.pos_env_range_positive_reward
         self.bad_error = conf.pos_env_bad_error
@@ -54,7 +52,8 @@ class PosEnv(PidEnv):
         self.pos += (self.vel + self.last_vel) / 2 * self.delta_time
 
     def should_reset(self):
-        return abs(self.output) > 10000 or abs(self.acc) > 500 or abs(self.vel) > 500 or abs(self.pos) > 500
+        return abs(self.output) > 10000 or abs(self.acc) > 500 or \
+            abs(self.vel) > 500 or abs(self.pos) > 500
 
     def give_error(self):
         return self.target - self.pos

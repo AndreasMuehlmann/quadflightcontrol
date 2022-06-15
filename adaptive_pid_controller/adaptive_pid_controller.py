@@ -14,13 +14,13 @@ class AdaptivePidController(Controller):
                                             iir_faktor, iir_order, maximum)
 
         self.agent = Agent(conf.input_dims, conf.n_actions, conf.chkpt_dir,
-                           conf.layer_sizes, conf.batch_size)
+                           conf.layer_sizes, conf.batch_size, conf.action_space_high)
 
-        self.prev_errors = [0 for _ in range(amount_prev_observations)]
-        self.prev_measurements = [0 for _ in range(amount_prev_observations)]
-        self.prev_outputs = [0 for _ in range(amount_prev_observations)]
+        self.prev_errors = [0 for _ in range(conf.amount_prev_observations)]
+        self.prev_measurements = [0 for _ in range(conf.amount_prev_observations)]
+        self.prev_outputs = [0 for _ in range(conf.amount_prev_observations)]
 
-    def compose_obserbation(self):
+    def compose_input_agent(self):
         return np.array([*self.prev_errors, *self.prev_measurements, *self.prev_outputs,
                          self.pid_controller.differentiator, self.pid_controller.integrator,
                          self.pid_controller.p_faktor, self.pid_controller.i_faktor,
@@ -40,7 +40,7 @@ class AdaptivePidController(Controller):
         self.prev_outputs.append(output)
 
     def give_output(self, error, measurement):
-        action = self.agent.choose_action(self.observation)
+        action = self.agent.choose_action(self.compose_input_agent())
         self.perform_action(action)
 
         output = self.pid_controller.give_output(error, measurement)

@@ -1,7 +1,6 @@
 from collections import deque
 from abc import ABCMeta, abstractmethod
 
-import pygame
 import numpy as np
 import gym
 
@@ -9,12 +8,9 @@ from pid_controller import PidController
 import config as conf
 from graph_repr import GraphRepr
 
-
-def random_change(to_change, range, upper_bound, lower_bound):
-    to_change += np.random.uniform(-range, range)
-    to_change = lower_bound if to_change < lower_bound else to_change
-    to_change = upper_bound if to_change > upper_bound else to_change
-    return to_change
+# TODO: fix prev outputs
+# TODO: observation should be jsut error and measurement real observation then composed in apc
+# TODO: controller in simulation
 
 
 class PidEnv(gym.Env, metaclass=ABCMeta):
@@ -57,10 +53,6 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.delay = conf.delay
         self.delta_time = conf.delta_time
 
-        self.fps = 1  / self.delta_time
-
-        self.clock = pygame.time.Clock()
-
         self.last_small_target_change = self.time_available
         self.last_big_target_change = self.time_available
         self.last_env_force_change = self.time_available
@@ -72,43 +64,24 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.output = 0
         self.init_prev_outputs()
 
-        self.measurement = self.give_measurement()
-
-        self.pid_controller = PidController(0, 0, 0,self.iir_faktor, self.iir_order, self.max_output)
-
         self.graph = 0
         self.was_reset = False
         self.max_positive_reward = self.bad_error * 10
 
-        self.amount_prev_errors = int(2 / self.delta_time)
-        self.init_prev_errors()
-
         self.action_space = gym.spaces.Box(-1, 1, shape=(3,))
-        self.observation_space = gym.spaces.Box(float('-inf'), float('inf'), shape=(self.amount_prev_errors + 6,))
+        self.observation_space = gym.spaces.Box(float('-inf'), float('inf'),
+                                                shape=(conf.amount_prev_observations * 3 + 6,))
 
     def init_prev_outputs(self):
-        self.prev_outputs = deque(maxlen = round(self.fps * self.delay + 0.5))
-        for _ in range(round(self.fps * self.delay + 0.5)):
+        prev_outputs_needed_for_delay = round(self.delay / self.delta_time + 0.5) # 0.5 for rounding up (to be sure)
+        self.prev_outputs = deque(maxlen = prev_outputs_needed_for_delay)
+        for _ in range(prev_outputs_needed_for_delay):
             self.prev_outputs.append(0)
 
-    def init_prev_errors(self):
-        self.prev_errors = []
-        for _ in range(self.amount_prev_errors):
-            self.prev_errors.append(0)
-
-    def get_state(self):
-        state = np.array([*self.prev_errors, self.output, self.pid_controller.differentiator, self.pid_controller.integrator,\
-            self.pid_controller.p_faktor, self.pid_controller.i_faktor, self.pid_controller.d_faktor])
-        return state
-
-    def step(self, action):
+    def step(self, new_output):
         self.time_available -= self.delta_time
 
-        self.perform_action(action)
-
-        self.measurement = self.give_measurement()
-        self.prev_outputs.append(self.pid_controller.give_output(self.target - self.measurement, self.measurement))
-
+        self.prev_outputs.append(new_output)
         self.output = self.prev_outputs.pop()
         self.calc_physical_values()
 
@@ -119,18 +92,24 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.env_force, self.last_env_force_change = self.change_val(self.env_force, self.last_env_force_change,
                                                                      self.time_without_env_force_change, self.max_env_force_change, self.max_env_force, self.min_env_force)
 
-        self.prev_errors.append(self.pid_controller.iir_error.outputs[-1])
-        self.prev_errors.pop()
-
         self.was_reset = False
 
-        return self.get_state(), self.get_reward(), self.is_done(), {}
+        self.measurement = self.give_measurement()
+        self.error = self.give_error()
+
+        return [self.error, self.measurement], self.get_reward(), self.is_done(), {}
 
     def change_val(self, to_change_value, last_change, time_without_change, max_change,  max_val, min_val):
         if last_change - self.time_available >= time_without_change:
-            to_change_value = random_change(to_change_value, max_change, max_val, min_val)
+            to_change_value = self.random_change(to_change_value, max_change, max_val, min_val)
             last_change = self.time_available
         return to_change_value, last_change
+
+    def random_change(self, to_change, range, upper_bound, lower_bound):
+        to_change += np.random.uniform(-range, range)
+        to_change = lower_bound if to_change < lower_bound else to_change
+        to_change = upper_bound if to_change > upper_bound else to_change
+        return to_change
 
     def is_done(self):
         if self.time_available <= 0:
@@ -140,11 +119,6 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         else:
             return False
 
-    def perform_action(self, action):
-        self.pid_controller.p_faktor += action[0]
-        self.pid_controller.i_faktor += action[1]
-        self.pid_controller.d_faktor += action[2]
-
     def get_reward(self):
         if self.should_reset():
             self.was_reset = True
@@ -152,14 +126,11 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
 
         produced_acc = abs(self.output * self.faktor)
 
-        reward = abs(self.give_error()) + self.range_positive_reward
+        reward = abs(self.error) + self.range_positive_reward
         if reward > 0:
             reward *= self.max_positive_reward / self.range_positive_reward
 
         reward -= ((produced_acc / self.bad_produced_acc) ** 2 ) * self.max_positive_reward
-
-        if self.pid_controller.integrator >= self.max_output:
-            reward -= self.bad_produced_acc * 1000
 
         if self.was_reset:
             reward -= (self.bad_error + self.bad_produced_acc) *  self.time_available * 100
@@ -167,7 +138,6 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         return reward
 
     def render(self, mode='human'):
-        self.clock.tick(self.fps)
         if self.graph == 0:
             self.graph = GraphRepr(self.window_width, self.window_height)
 
@@ -188,15 +158,9 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
 
         self.init_physical_values()
-
-        self.output = 0
         self.init_prev_outputs()
-
-        self.pid_controller = PidController(0, 0, 0, self.iir_faktor, self.iir_order, self.max_output)
 
         if  self.graph != 0:
             self.graph = 0
 
-        self.init_prev_errors()
-
-        return self.get_state()
+        return [self.give_error(), self.give_measurement()]

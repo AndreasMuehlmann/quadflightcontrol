@@ -10,12 +10,11 @@ class VelEnv(PidEnv):
 
     def init_values(self):
         self.inaccuracy = conf.vel_env_inaccuracy
-        self.iir_faktor = conf.vel_env_iir_faktor
-        self.iir_order = conf.vel_env_iir_order
 
         self.range_positive_reward = conf.vel_env_range_positive_reward
         self.bad_error = conf.vel_env_bad_error
         self.bad_produced_acc = conf.vel_env_bad_produced_acc
+
 
         self.time_without_small_target_change = conf.vel_env_time_without_small_target_change
         self.time_without_big_target_change = conf.vel_env_time_without_big_target_change
@@ -38,8 +37,6 @@ class VelEnv(PidEnv):
         self.max_env_force_change = conf.vel_env_max_env_force_change
 
     def init_physical_values(self):
-        self.measured_vel = 0
-
         self.vel = 0
         self.last_vel = self.vel
 

@@ -1,25 +1,24 @@
 import os
+
 import torch as T
 import torch.nn.functional as F
 import numpy as np
+
 from replay_buffer import ReplayBuffer
 from networks import ActorNetwork, CriticNetwork, ValueNetwork
 
-class Agent():
-    def __init__(self, env, chkpt_dir, alpha=0.0003, beta=0.0003, gamma=0.99, max_size=1000000,
-                         tau=0.005, layer_sizes=[256, 256, 128, 64, 32],
-                          batch_size=256, reward_scale=2):
-        input_dims = env.observation_space.shape
-        self.n_actions = env.action_space.shape[0]
 
+class Agent():
+    def __init__(self, input_dims, n_actions, chkpt_dir, layer_sizes, batch_size, action_space_high,
+                 alpha=0.0003, beta=0.0003, gamma=0.99, max_size=1000000, tau=0.005, reward_scale=2):
         self.gamma = gamma
         self.tau = tau
-        self.memory = ReplayBuffer(max_size, input_dims, self.n_actions)
+        self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
 
-        self.actor = ActorNetwork(alpha, input_dims, self.n_actions, env.action_space.high, layer_sizes, chkpt_dir, name='actor')
-        self.critic_1 = CriticNetwork(beta, input_dims, self.n_actions, layer_sizes, chkpt_dir, name='critic_1')
-        self.critic_2 = CriticNetwork(beta, input_dims, self.n_actions, layer_sizes, chkpt_dir, name='critic_2')
+        self.actor = ActorNetwork(alpha, input_dims, n_actions, action_space_high, layer_sizes, chkpt_dir, name='actor')
+        self.critic_1 = CriticNetwork(beta, input_dims, n_actions, layer_sizes, chkpt_dir, name='critic_1')
+        self.critic_2 = CriticNetwork(beta, input_dims, n_actions, layer_sizes, chkpt_dir, name='critic_2')
 
         self.value = ValueNetwork(beta, input_dims, layer_sizes, chkpt_dir, name='value')
         self.target_value = ValueNetwork(beta, input_dims, layer_sizes, chkpt_dir, name='target_value')

@@ -1,11 +1,14 @@
+import config as conf
 from iir_filter import IirFilter
+from controller import Controller
 
-class PidController:
+
+class PidController(Controller):
     def __init__(self, p_faktor, i_faktor, d_faktor, iir_faktor, iir_order, maximum):
         self.p_faktor = p_faktor
         self.i_faktor = i_faktor
         self.d_faktor = d_faktor
-        self.maximum = maximum
+        self.maximum = conf.max_output_controller
 
         self.last_error = 0
         self.last_measurement = 0
@@ -13,7 +16,7 @@ class PidController:
         self.integrator = 0
         self.differentiator = 0
 
-        self.delta_time = 0.01
+        self.delta_time = conf.delta_time
 
         self.iir_error = IirFilter(iir_faktor, iir_order)
         self.iir_measurement = IirFilter(iir_faktor, iir_order)
