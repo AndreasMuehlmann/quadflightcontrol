@@ -1,5 +1,4 @@
 import os
-import time
 
 import pygame
 import numpy as np
@@ -89,8 +88,6 @@ class SimEnv():
         done = False
         while not done:
             self.clock.tick(conf.fps)
-            time.sleep(conf.delta_time)
-
 
             output = controller.give_output(self.error, self.measurement)
 
