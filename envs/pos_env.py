@@ -1,10 +1,10 @@
 import numpy as np
 
 import config as conf
-from pid_env import PidEnv
+from controller_env import ControllerEnv
 
 
-class PosEnv(PidEnv):
+class PosEnv(ControllerEnv):
     def __init__(self):
         super(PosEnv, self).__init__()
 

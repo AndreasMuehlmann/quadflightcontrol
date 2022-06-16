@@ -4,16 +4,11 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import gym
 
-from pid_controller import PidController
 import config as conf
 from graph_repr import GraphRepr
 
-# TODO: fix prev outputs
-# TODO: observation should be jsut error and measurement real observation then composed in apc
-# TODO: controller in simulation
 
-
-class PidEnv(gym.Env, metaclass=ABCMeta):
+class ControllerEnv(gym.Env, metaclass=ABCMeta):
     @abstractmethod
     def init_values(self):
         pass
@@ -62,27 +57,28 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
         
         self.output = 0
-        self.init_prev_outputs()
+        self.init_delay_list()
 
         self.graph = 0
         self.was_reset = False
         self.max_positive_reward = self.bad_error * 10
 
-        self.action_space = gym.spaces.Box(-1, 1, shape=(3,))
+        self.action_space = gym.spaces.Box(-conf.action_space_high,
+                                           conf.action_space_high, shape=(3,))
         self.observation_space = gym.spaces.Box(float('-inf'), float('inf'),
                                                 shape=(conf.amount_prev_observations * 3 + 6,))
 
-    def init_prev_outputs(self):
-        prev_outputs_needed_for_delay = round(self.delay / self.delta_time + 0.5) # 0.5 for rounding up (to be sure)
-        self.prev_outputs = deque(maxlen = prev_outputs_needed_for_delay)
-        for _ in range(prev_outputs_needed_for_delay):
-            self.prev_outputs.append(0)
+    def init_delay_list(self):
+        length_needed_for_delay = round(self.delay / self.delta_time + 0.5) # 0.5 for rounding up (to be sure)
+        self.delay_list = deque(maxlen = length_needed_for_delay)
+        for _ in range(length_needed_for_delay):
+            self.delay_list.append(0)
 
     def step(self, new_output):
         self.time_available -= self.delta_time
 
-        self.prev_outputs.append(new_output)
-        self.output = self.prev_outputs.pop()
+        self.delay_list.append(new_output)
+        self.output = self.delay_list.pop()
         self.calc_physical_values()
 
         self.target, self.last_small_target_change = self.change_val(self.target, self.last_small_target_change,
@@ -96,8 +92,9 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
 
         self.measurement = self.give_measurement()
         self.error = self.give_error()
+        observation = [self.error, self.measurement]
 
-        return [self.error, self.measurement], self.get_reward(), self.is_done(), {}
+        return observation, self.get_reward(), self.is_done(), {}
 
     def change_val(self, to_change_value, last_change, time_without_change, max_change,  max_val, min_val):
         if last_change - self.time_available >= time_without_change:
@@ -158,7 +155,7 @@ class PidEnv(gym.Env, metaclass=ABCMeta):
         self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
 
         self.init_physical_values()
-        self.init_prev_outputs()
+        self.init_delay_list()
 
         if  self.graph != 0:
             self.graph = 0

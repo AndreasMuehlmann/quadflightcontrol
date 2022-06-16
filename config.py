@@ -29,6 +29,10 @@ layer_sizes = [256, 256, 128, 64, 32]
 batch_size = 256
 action_space_high = 1
 
+load_checkpoint = True
+save_model = False
+learn = False
+
 
 # PID_CONTROLLER
 p_faktor = 400
