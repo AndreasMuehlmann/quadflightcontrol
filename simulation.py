@@ -10,13 +10,11 @@ from pid_controller import PidController
 from adaptive_pid_controller import AdaptivePidController
 
 
-# TODO: adaptive_pid_controller has to be trainable
 # TODO: mark private methods
 # TODO: write documentation
 # TODO: make vel_env and pos_env abstract and inherit
-# TODO: make a test for the controller (if it is good enough)
+# TODO: make a test for the controller (if it is good enough), then also save model
 # TODO: make a learning curve
-# TODO: reset the controller after every episode
 
 
 def init_env():
@@ -40,18 +38,19 @@ def main():
     episodes = 1000
     for episode in range(episodes):
         observation = env.reset()
+        controller.reset()
         error, measurement = observation
 
         done = False
         while not done:
             clock.tick(conf.fps)
             output = controller.give_output(error, measurement)
-            print(f'p: {controller.pid_controller.p_faktor}, i: {controller.pid_controller.i_faktor}, d: {controller.pid_controller.d_faktor}')
 
-            prev_observation = observation
             observation, reward, done, info = env.step(output)
             error, measurement = observation
-            controller.learn(reward, done)
+
+            if conf.learn and type(controller) == AdaptivePidController:
+                controller.learn(reward, done)
 
             env.render()
 

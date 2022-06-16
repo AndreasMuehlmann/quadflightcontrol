@@ -49,3 +49,13 @@ class PidController(Controller):
     def _derivative(self, measurement):
         self.differentiator = -self.d_faktor * (measurement - self.last_measurement) / self.delta_time
         return self.differentiator
+
+    def reset(self):
+        self.last_error = 0
+        self.last_measurement = 0
+
+        self.integrator = 0
+        self.differentiator = 0
+
+        self.iir_error.reset()
+        self.iir_measurement.reset()

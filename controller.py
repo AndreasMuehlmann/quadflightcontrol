@@ -9,3 +9,7 @@ class Controller(metaclass=ABCMeta):
     @abstractmethod
     def give_output(self, error, measurement):
         pass
+
+    @abstractmethod
+    def reset(self):
+        pass

@@ -65,3 +65,13 @@ class AdaptivePidController(Controller):
 
     def save_agent_models(self):
         self.agent.save_models()
+
+    def reset(self): # this doesn't reset the agent
+        self.pid_controller.reset()
+        self.pid_controller.p_faktor, self.pid_controller.i_faktor, self.pid_controller.d_faktor = 0, 0, 0
+
+        self.prev_errors = [0 for _ in range(conf.amount_prev_observations)]
+        self.prev_measurements = [0 for _ in range(conf.amount_prev_observations)]
+        self.prev_outputs = [0 for _ in range(conf.amount_prev_observations)]
+
+        self.observation = self.compose_observation()
