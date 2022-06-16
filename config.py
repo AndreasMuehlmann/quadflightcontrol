@@ -11,7 +11,7 @@ delta_time = 0.05 # in s
 # SIMULATION IN ENVS
 episodes = 1000
 range_avg = 10
-fps = 5 / delta_time # 1 / delta_time is normal speed
+fps = 2 / delta_time # 1 / delta_time is normal speed
 window_width = 1200
 window_height = 800
 
@@ -44,6 +44,8 @@ action_space_high = 1
 
 
 # TRAINING
-load_checkpoint = False
-save_model = False
+load_checkpoint = True
+save_model = True
 learn = True
+
+count_episodes_avg_over_for_competing = 5
