@@ -1,4 +1,5 @@
 from collections import deque
+from copy import deepcopy
 
 import numpy as np
 
@@ -13,23 +14,29 @@ class AdaptivePidController(Controller):
         self.pid_controller = PidController(p_faktor, i_faktor, d_faktor,
                                             iir_faktor, iir_order, maximum)
 
+
         self.agent = Agent(conf.input_dims, conf.n_actions, conf.chkpt_dir,
                            conf.layer_sizes, conf.batch_size, conf.action_space_high)
+
+        if conf.load_checkpoint:
+            self.agent.load_models()
 
         self.prev_errors = [0 for _ in range(conf.amount_prev_observations)]
         self.prev_measurements = [0 for _ in range(conf.amount_prev_observations)]
         self.prev_outputs = [0 for _ in range(conf.amount_prev_observations)]
 
-    def compose_input_agent(self):
+        self.observation = self.compose_observation()
+
+    def compose_observation(self):
         return np.array([*self.prev_errors, *self.prev_measurements, *self.prev_outputs,
                          self.pid_controller.differentiator, self.pid_controller.integrator,
                          self.pid_controller.p_faktor, self.pid_controller.i_faktor,
                          self.pid_controller.d_faktor])
 
-    def perform_action(self, action):
-        self.pid_controller.p_faktor += action[0]
-        self.pid_controller.p_faktor += action[1]
-        self.pid_controller.p_faktor += action[2]
+    def perform_action(self):
+        self.pid_controller.p_faktor += self.action[0]
+        self.pid_controller.i_faktor += self.action[1]
+        self.pid_controller.d_faktor += self.action[2]
 
     def update_observations(self, error, measurement, output):
         self.prev_errors.pop()
@@ -40,11 +47,21 @@ class AdaptivePidController(Controller):
         self.prev_outputs.append(output)
 
     def give_output(self, error, measurement):
-        action = self.agent.choose_action(self.compose_input_agent())
-        self.perform_action(action)
+        self.prev_observation = deepcopy(self.observation)
+        self.observation = self.compose_observation()
+
+        self.action = self.agent.choose_action(self.observation)
+        self.perform_action()
 
         output = self.pid_controller.give_output(error, measurement)
 
         self.update_observations(error, measurement, output)
 
         return output
+
+    def learn(self, reward, done):
+        self.agent.remember(self.prev_observation, self.action, reward, self.observation, done)
+        self.agent.learn()
+
+    def save_agent_models(self):
+        self.agent.save_models()
