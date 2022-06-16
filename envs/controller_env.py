@@ -56,12 +56,10 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.faktor = np.random.uniform(self.min_faktor, self.max_faktor)
         self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
         
-        self.output = 0
         self.init_delay_list()
 
         self.graph = 0
         self.was_reset = False
-        self.max_positive_reward = self.bad_error * 10
 
         self.action_space = gym.spaces.Box(-conf.action_space_high,
                                            conf.action_space_high, shape=(3,))
