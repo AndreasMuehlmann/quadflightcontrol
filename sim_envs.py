@@ -84,13 +84,13 @@ def main():
         if score > best_score:
             best_score = score
             if conf.save_model and conf.learn and type(controller) == AdaptivePidController:
-                controller.save_models()
+                controller.save_agent_models()
 
         draw_plot(episode, score_history)
         print(f'episode: {episode}, score {round(score, 2)}, avg_score {round(avg_score, 2)}')
 
-    if learn and save_model:
-        x = [i+1 for i in range(episodes)]
+    if conf.learn and conf.save_model:
+        x = [i+1 for i in range(conf.episodes)]
         plot_learning_curve(x, score_history, figure_file)
 
 
