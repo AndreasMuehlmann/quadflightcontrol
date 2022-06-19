@@ -14,12 +14,8 @@ class AdaptivePidController(Controller):
         self.pid_controller = PidController(p_faktor, i_faktor, d_faktor,
                                             iir_faktor, iir_order, maximum)
 
-
         self.agent = Agent(conf.input_dims, conf.n_actions, conf.chkpt_dir,
                            conf.layer_sizes, conf.batch_size, conf.action_space_high)
-
-        if conf.load_checkpoint:
-            self.agent.load_models()
 
         self.prev_errors = [0 for _ in range(conf.amount_prev_observations)]
         self.prev_measurements = [0 for _ in range(conf.amount_prev_observations)]
@@ -62,6 +58,10 @@ class AdaptivePidController(Controller):
     def learn(self, reward, done):
         self.agent.remember(self.prev_observation, self.action, reward, self.observation, done)
         self.agent.learn()
+
+    def load_agent_checkpoints(self):
+        self.agent.load_models()
+
 
     def save_agent_models(self):
         self.agent.save_models()
