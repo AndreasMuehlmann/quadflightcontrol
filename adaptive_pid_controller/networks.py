@@ -53,6 +53,7 @@ class CriticNetwork(nn.Module):
 
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.checkpoint_file))
+        self.eval()
 
 class ValueNetwork(nn.Module):
     def __init__(self, beta, input_dims, fc_dims, chkpt_dir, name='value'):
@@ -97,6 +98,7 @@ class ValueNetwork(nn.Module):
 
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.checkpoint_file))
+        self.eval()
 
 class ActorNetwork(nn.Module):
     def __init__(self, alpha, input_dims, n_actions, max_action, fc_dims, chkpt_dir, name='actor'):
@@ -165,3 +167,4 @@ class ActorNetwork(nn.Module):
 
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.checkpoint_file))
+        self.eval()
