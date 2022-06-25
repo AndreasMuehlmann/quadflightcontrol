@@ -1,5 +1,8 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
+# tkinter has to be installed on the system (not through pip)
+matplotlib.use('TkAgg')
 
 def init_changing_plot():
     plt.ion()
@@ -10,8 +13,9 @@ def init_changing_plot():
     plt.draw()
     plt.pause(3)
 
-def draw_plot(episode, avg_scores):
-    plt.plot([j + 1 for j in range(episode + 1)], avg_scores)
+def draw_plot(x, ys):
+    print(f'x: {x}, ys: {ys}')
+    plt.plot([j + 1 for j in range(x)], ys)
     plt.draw()
     plt.pause(0.002)
 
