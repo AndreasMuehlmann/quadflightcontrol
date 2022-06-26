@@ -47,5 +47,5 @@ action_space_high = 1
 load_checkpoint = True
 learn = True
 
-episodes_before_competing = 10
-count_episodes_avg_over_for_competing = 100
+episodes_before_competing = 5
+count_episodes_avg_over_for_competing = 10

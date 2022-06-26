@@ -11,13 +11,11 @@ from init_controller import init_controller
 from init_env import init_env
 from adaptive_pid_controller import AdaptivePidController
 from run_episode import run_episode
-from plotting import init_changing_plot, draw_plot, plot_learning_curve
+from plotting import plot_learning_curve
 
 
 # TODO: mark private methods
 # TODO: write documentation
-# TODO: display the plot while it is running also in this venv (maybe dependencie missing)
-# TODO: make pygame not print and init
 # TODO: competition is inconsistent (maybe longer and load also current agent)
 # TODO: pygame window moves to top left
 
@@ -39,8 +37,6 @@ class Training():
 
         self.clock = pygame.time.Clock()
 
-        init_changing_plot()
-
         self.last_episode_with_competition = 0
 
     def train(self):
@@ -55,11 +51,10 @@ class Training():
                 if self.is_current_controller_better_than_saved():
                     self.controller.save_agent_models()
                     print('\n\n')
-                    draw_plot(episode // conf.episodes_before_competing, self.score_history_saved_agent_competition)
 
         if conf.learn:
             x = [i+1 for i in range(conf.episodes)]
-            plot_learning_curve(x, self.score_history, self.figure_file)
+            plot_learning_curve(x, self.score_history_saved_agent_competition, self.figure_file)
 
     def is_current_controller_better_than_saved(self):
         print('----------COMPETING----------\n')
