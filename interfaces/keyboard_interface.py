@@ -78,40 +78,36 @@ class KeyboardInterface(InterfaceUser):
         self.update_pressed_keys()
 
         if self.pressed['UP']:
-            self.strength_y_slope += 1
+            self.strength_y_slope += 0.3
 
         if self.pressed['DOWN']:
-            self.strength_y_slope -= 1
+            self.strength_y_slope -= 0.3
 
-        if self.pressed['LEFT']:
-            self.strength_x_slope += 1
+        if self.pressed['LEFT']: 
+            self.strength_x_slope -= 0.3
 
         if self.pressed['RIGHT']:
-            self.strength_x_slope -= 1
+            self.strength_x_slope += 0.3
 
         if self.pressed['w']:
-            self.base_output += 5
+            self.base_output += 0.1
 
         if self.pressed['s']:
-            self.base_output -= 5
+            self.base_output -= 0.1
 
         if self.pressed['a']:
-            self.strength_x_slope += 1
+            self.rotation_vel -= 0.1
 
         if self.pressed['d']:
-            self.strength_x_slope -= 1
+            self.rotation_vel += 0.1
 
         if self.base_output < 0:
             self.base_output = 0
 
-        if self.base_output > 1000:
-            self.base_output = 1000
+        if self.base_output > 40:
+            self.base_output = 40
 
         return self.base_output, self.strength_x_slope, self.strength_y_slope, self.rotation_vel
 
     def send_outputs(self, outputs):
         pass
-
-ki = KeyboardInterface()
-while True:
-    ki.give_inputs()
