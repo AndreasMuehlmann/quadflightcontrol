@@ -3,7 +3,8 @@ from copy import deepcopy
 import pygame
 
 from sim_interface import SimInterface
-from bluetooth_interface import BluetoothInterface
+from bluetooth_app_interface import BluetoothAppInterface
+from keyboard_interface import KeyboardInterface
 from pid_controller import PidController
 from transform_input import give_heights
 
@@ -22,37 +23,37 @@ class FlightControl():
         self.rotor_controllers = [PidController(4.5, 2.0, 3.0, 0.9, 3, 1000) for _ in range(4)]
 
         self.interface_control = SimInterface()
-        self.interface_user = BluetoothInterface()
+        self.interface_user = KeyboardInterface()
 
         self.frequency = 100
         self.clock = pygame.time.Clock()
 
     def run(self):
-        prev_measurements = None
         while True:
             self.clock.tick(self.frequency)
             
-            measurements = self.interface_control.give_measurements()
-
-            if len(measurements) == 4:
-                prev_measurements = deepcopy(measurements)
-            else:
+            angle_measurements = self.interface_control.give_measurements()
+            if len(angle_measurements) != 4:
                 print('failure in collecting measurements or in measuring')
-                if prev_measurements is None:
-                    continue
-                measurements = deepcopy(prev_measurements)
+                continue
 
             inputs = self.interface_user.give_inputs()
-            rotor_targets = give_heights(inputs[0], inputs[1])
+            inputs[0] = strength_x_slope
+            inputs[1] = strength_y_slope
+            inputs[2] = base_output
+            inputs[3] = rotation_vel
 
-            outputs = self.give_outputs(rotor_targets, measurements)
-            print(outputs)
+            rotor_targets = give_heights(strength_x_slope, strength_x_slope)
+
+            outputs = self.give_outputs_rotor_controllers(rotor_targets, angle_measurements)
+            outputs = [output + base_output for output in outputs]
+
             self.interface_control.send_outputs(outputs)
 
-    def give_outputs(self, targets, measurements):
+    def give_outputs_rotor_controllers(self, targets, angle_measurements):
         outputs = []
-        for i, measurement in enumerate(measurements):
-            output = self.rotor_controllers[i].give_output(targets[i] - measurement, measurement)
+        for i, measurement in enumerate(angle_measurements):
+            output = self.rotor_controllers[i].give_output(targets[i] - angle_measurements, angle_measurements)
             outputs.append(output)
 
         return outputs
