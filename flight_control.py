@@ -20,7 +20,7 @@ from transform_input import give_heights
 
 class FlightControl():
     def __init__(self):
-        self.rotor_controllers = [PidController(4.5, 2.0, 3.0, 0.9, 3, 1000) for _ in range(4)]
+        self.rotor_controllers = [PidController(0.1, 0.04, 0.06, 0.8, 3, 100) for _ in range(4)]
 
         self.interface_control = SimInterface()
         self.interface_user = KeyboardInterface()
@@ -31,20 +31,19 @@ class FlightControl():
     def run(self):
         while True:
             self.clock.tick(self.frequency)
-            
+
+            inputs = self.interface_user.give_inputs()
+            base_output = inputs[0]
+            strength_x_slope = inputs[1]
+            strength_y_slope = inputs[2]
+            rotation_vel = inputs[3]
+
             angle_measurements = self.interface_control.give_measurements()
             if len(angle_measurements) != 4:
                 print('failure in collecting measurements or in measuring')
                 continue
 
-            inputs = self.interface_user.give_inputs()
-            inputs[0] = strength_x_slope
-            inputs[1] = strength_y_slope
-            inputs[2] = base_output
-            inputs[3] = rotation_vel
-
-            rotor_targets = give_heights(strength_x_slope, strength_x_slope)
-
+            rotor_targets = give_heights(strength_x_slope, strength_y_slope)
             outputs = self.give_outputs_rotor_controllers(rotor_targets, angle_measurements)
             outputs = [output + base_output for output in outputs]
 
@@ -52,8 +51,8 @@ class FlightControl():
 
     def give_outputs_rotor_controllers(self, targets, angle_measurements):
         outputs = []
-        for i, measurement in enumerate(angle_measurements):
-            output = self.rotor_controllers[i].give_output(targets[i] - angle_measurements, angle_measurements)
+        for i, angle_measurement in enumerate(angle_measurements):
+            output = self.rotor_controllers[i].give_output(targets[i] - angle_measurement, angle_measurement)
             outputs.append(output)
 
         return outputs
