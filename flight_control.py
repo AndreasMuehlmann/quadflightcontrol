@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import pygame
 
+import config as conf
 from sim_interface import SimInterface
 from bluetooth_app_interface import BluetoothAppInterface
 from keyboard_interface import KeyboardInterface
@@ -20,7 +21,10 @@ from transform_input import give_heights
 
 class FlightControl():
     def __init__(self):
-        self.rotor_controllers = [PidController(0.1, 0.04, 0.06, 0.8, 3, 100) for _ in range(4)]
+        self.rotor_controllers = [PidController(conf.p_faktor, conf.i_faktor,
+                                                conf.d_faktor, conf.iir_faktor,
+                                                conf.iir_order, conf.max_output_controller) \
+                                  for _ in range(4)]
 
         self.interface_control = SimInterface()
         self.interface_user = KeyboardInterface()
