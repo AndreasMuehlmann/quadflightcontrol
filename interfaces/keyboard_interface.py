@@ -104,8 +104,8 @@ class KeyboardInterface(InterfaceUser):
         if self.base_output < 0:
             self.base_output = 0
 
-        if self.base_output > 40:
-            self.base_output = 40
+        if self.base_output > conf.max_output:
+            self.base_output = conf.max_output
 
         return self.base_output, self.strength_x_slope, self.strength_y_slope, self.rotation_vel
 

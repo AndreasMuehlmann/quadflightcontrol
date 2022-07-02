@@ -1,24 +1,13 @@
 import os
 
 
-# ENVIRONMENT
-env = 'unity_sim_env' # The environments should be configured in quadflightcontrol/envs
-total_time = 30 # per episode in s
-delay = 0.05 # in s
-delta_time = 0.05 # in s
-
-
-# SIMULATION IN ENVS
-episodes = 100
-range_avg = 10
-fps = 1 / delta_time # 1 / delta_time is normal speed
-window_width = 1200
-window_height = 800
+# FLIGHT CONTROL
+frequency = 100
 
 
 # CONTROLLER
 controller = 'pid_controller'
-max_output_controller = 50
+max_output = 50
 
 
 # PID_CONTROLLER
@@ -49,3 +38,17 @@ learn = True
 
 episodes_before_competing = 5
 count_episodes_avg_over_for_competing = 10
+
+# TESTING ENVIRONMENT
+env = 'unity_sim_env' # The environments should be configured in quadflightcontrol/envs
+total_time = 30 # per episode in s
+delay = 0.05 # in s
+delta_time = 0.05 # in s
+
+
+# SIMULATION IN ENVS
+episodes = 100
+range_avg = 10
+fps = 1 / delta_time # 1 / delta_time is normal speed
+window_width = 1200
+window_height = 800
