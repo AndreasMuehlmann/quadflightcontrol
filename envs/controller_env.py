@@ -34,8 +34,8 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         pass
 
     def __init__(self):
-        self.init_values()
-        self.init_physical_values()
+        self._init_values()
+        self._init_physical_values()
 
         self.delay = conf.delay
 
@@ -56,7 +56,7 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.faktor = np.random.uniform(self.min_faktor, self.max_faktor)
         self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
         
-        self.init_delay_list()
+        self._init_delay_list()
 
         self.graph = 0
         self.was_reset = False
@@ -77,7 +77,7 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
 
         self.delay_list.append(new_output)
         self.output = self.delay_list.pop()
-        self.calc_physical_values()
+        self._calc_physical_values()
 
         self.target, self.last_small_target_change = self._change_val(self.target, self.last_small_target_change,
                                                                     self.time_without_small_target_change, self.max_small_target_change, self.max_target, self.min_target)
@@ -88,8 +88,8 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
 
         self.was_reset = False
 
-        self.measurement = self.give_measurement()
-        self.error = self.give_error()
+        self.measurement = self._give_measurement()
+        self.error = self._give_error()
         observation = [self.error, self.measurement]
 
         return observation, self._get_reward(), self._is_done(), {}
@@ -115,7 +115,7 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
             return False
 
     def _get_reward(self):
-        if self.should_reset():
+        if self._should_reset():
             self.was_reset = True
             self.reset()
 
@@ -152,10 +152,10 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.faktor = np.random.uniform(self.min_faktor, self.max_faktor)
         self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
 
-        self.init_physical_values()
+        self._init_physical_values()
         self._init_delay_list()
 
         if  self.graph != 0:
             self.graph = 0
 
-        return [self.give_error(), self.give_measurement()]
+        return [self._give_error(), self._give_measurement()]
