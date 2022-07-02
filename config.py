@@ -3,11 +3,27 @@ import os
 
 # FLIGHT CONTROL
 frequency = 100
+max_angle_drone = 30
 
 
 # CONTROLLER
 controller = 'pid_controller'
 max_output = 50
+
+
+# TRAINING
+load_checkpoint = True
+learn = True
+
+episodes_before_competing = 5
+count_episodes_avg_over_for_competing = 10
+
+
+# TESTING ENVIRONMENT
+env = 'unity_sim_env' # The environments should be configured in quadflightcontrol/envs
+total_time = 30 # per episode in s
+delay = 0.05 # in s
+delta_time = 0.05 # in s
 
 
 # PID_CONTROLLER
@@ -31,19 +47,6 @@ layer_sizes = [256, 256, 128, 64, 32]
 batch_size = 256
 action_space_high = 1
 
-
-# TRAINING
-load_checkpoint = True
-learn = True
-
-episodes_before_competing = 5
-count_episodes_avg_over_for_competing = 10
-
-# TESTING ENVIRONMENT
-env = 'unity_sim_env' # The environments should be configured in quadflightcontrol/envs
-total_time = 30 # per episode in s
-delay = 0.05 # in s
-delta_time = 0.05 # in s
 
 
 # SIMULATION IN ENVS

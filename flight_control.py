@@ -5,14 +5,14 @@ from sim_interface import SimInterface
 from bluetooth_app_interface import BluetoothAppInterface
 from keyboard_interface import KeyboardInterface
 from pid_controller import PidController
-from transform_input import give_heights
+from give_rotor_angle_targets import give_rotor_angle_targets
 
 
 class FlightControl():
     def __init__(self):
         self.rotor_controllers = [PidController(conf.p_faktor, conf.i_faktor,
                                                 conf.d_faktor, conf.iir_faktor,
-                                                conf.iir_order, conf.max_output_controller) \
+                                                conf.iir_order, conf.max_output) \
                                   for _ in range(4)]
 
         self.interface_user = KeyboardInterface()

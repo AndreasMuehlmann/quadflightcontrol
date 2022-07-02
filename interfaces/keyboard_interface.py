@@ -1,6 +1,7 @@
 import pygame
 import sys
 
+import config as conf
 from interface_user import InterfaceUser
 
 

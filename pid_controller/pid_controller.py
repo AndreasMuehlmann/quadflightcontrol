@@ -8,7 +8,7 @@ class PidController(Controller):
         self.p_faktor = p_faktor
         self.i_faktor = i_faktor
         self.d_faktor = d_faktor
-        self.maximum = conf.max_output_controller
+        self.maximum = maximum
 
         self.last_error = 0
         self.last_measurement = 0
