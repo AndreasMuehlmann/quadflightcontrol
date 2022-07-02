@@ -39,4 +39,5 @@ if __name__ == '__main__':
     controller = init_controller()
     if type(controller) == AdaptivePidController:
         controller.load_agent_checkpoints()
-    run_episode(init_env(), init_controller())
+    score = run_episode(init_env(), init_controller())
+    print(score)
