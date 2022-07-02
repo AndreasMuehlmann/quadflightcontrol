@@ -29,7 +29,7 @@ delta_time = 0.05 # in s
 # PID_CONTROLLER
 p_faktor = 15
 i_faktor = 3
-d_faktor = 12
+d_faktor = 18
 iir_faktor = 0.8 # for vel_env 0.85
 iir_order = 3 # for vel_env 5
 
