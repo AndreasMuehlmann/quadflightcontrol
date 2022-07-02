@@ -1,4 +1,4 @@
-# Drone
+# Quadrocopter
 This is the software used for a quadrocopter in the context of a school project.
 
 The flight control is developed by "Andreas Mühlmann" and hosted on GitHub under:
