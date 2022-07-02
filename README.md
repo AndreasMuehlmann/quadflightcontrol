@@ -39,7 +39,7 @@ primarily if you want to make a real drone.
   - You can inherit either from VelEnv, when you control the velocity or from PosEnv, when you control the position (like UnitySimEnv).
 
 
-## Quickstart:
+## Quickstart
 - If you want to use this project you should first read the explanation above, because you will have to do many things yourself.
 - Clone the Project with "git clone https://github.com/AndreasMuehlmann/quadflightcontrol.git".
 - By running "python main.py" you run the project.
@@ -55,7 +55,7 @@ The KeyboardInterface is the easiest way of controlling the drone. Just set it i
 in "flight_control.py" to "KeyboardInterface()". This obviously doesn't work for an actual drone.
 
 
-### Simulation:
+### Simulation
 - Change the interface_control variable to "SimInterface".
 - Write the path to where the interface should live, to interfaces/sim_interface_dir_path.txt.
 
@@ -78,7 +78,7 @@ the flight control via bluetooth. Set the "user_interface" in "flight_control.py
 You will have to install the app on your mobile phone.
 
 
-### Raspberry Pi And Solid Actual Quadrocopter:
+### Raspberry Pi And Solid Actual Quadrocopter
 For this you need:
     - sensors
     - batterys
