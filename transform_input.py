@@ -85,8 +85,6 @@ def _give_radius(x, y):
 def _calculate_heights(x, y, abweichung):
     return abweichung * (1/4 * pi - x), abweichung * (1/4 * pi - y)
 
-def main():
-    print(give_heights(-1, 0))
 
 if __name__ == "__main__":
-    main()
+    print(give_heights(-1, 0))

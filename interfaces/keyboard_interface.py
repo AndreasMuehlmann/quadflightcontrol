@@ -13,7 +13,7 @@ class KeyboardInterface(InterfaceUser):
         self.pressed = {'w': False, 's': False, 'a': False, 'd': False, 'UP': False,
                         'DOWN': False, 'LEFT': False, 'RIGHT': False}
 
-    def update_pressed_keys(self):
+    def _update_pressed_keys(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -75,7 +75,7 @@ class KeyboardInterface(InterfaceUser):
         self.strength_y_slope = 0
         self.rotation_vel = 0
 
-        self.update_pressed_keys()
+        self._update_pressed_keys()
 
         if self.pressed['UP']:
             self.strength_y_slope += 0.3

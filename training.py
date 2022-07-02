@@ -28,14 +28,14 @@ class Training():
             self.controller.load_agent_checkpoints()
         self.controller.save_agent_models()
 
-        self.figure_file = self.give_figure_file_path()
+        self.figure_file = self._give_figure_file_path()
 
         self.competition_score_history = []
         self.last_episode_with_competition = 0
 
         self.clock = pygame.time.Clock()
 
-    def give_figure_file_path(self):
+    def _give_figure_file_path(self):
         self.dir_path = os.path.dirname(os.path.abspath(__file__))
         self.figure_file_name = f'learning_curve_{conf.env}.png'
         return os.path.join(self.dir_path, 'adaptive_pid_controller','plots', self.figure_file_name)
@@ -45,10 +45,10 @@ class Training():
             score = run_episode(self.env, self.controller, conf.learn)
             print(f'episode: {episode}, score: {round(score, 2)}')
 
-            if should_compete():
+            if _should_compete():
                 self.last_episode_with_competition = episode
 
-                if self.is_current_controller_better_than_saved():
+                if self._is_current_controller_better_than_saved():
                     self.controller.save_agent_models()
                     print('\n\n')
 
@@ -56,14 +56,14 @@ class Training():
             x_axis = [x + 1 for x in range(conf.episodes)]
             plot_learning_curve(x_axis, self.competition_score_history, self.figure_file)
 
-    def should_compete(self):
+    def _should_compete(self):
         return conf.learn and episode - self.last_episode_with_competition  >= conf.episodes_before_competing
 
-    def is_current_controller_better_than_saved(self):
+    def _is_current_controller_better_than_saved(self):
         print('----------COMPETING----------\n')
         print('current agent')
 
-        avg_current_controller = self.avg_over_episodes(self.controller)
+        avg_current_controller = self._avg_over_episodes(self.controller)
         print(f'average {conf.count_episodes_avg_over_for_competing} episodes: '\
               + f' {avg_current_controller}\n\n')
 
@@ -72,7 +72,7 @@ class Training():
         prev_best_controller = init_controller()
         prev_best_controller.load_agent_checkpoints()
 
-        avg_prev_best_controller = self.avg_over_episodes(prev_best_controller)
+        avg_prev_best_controller = self._avg_over_episodes(prev_best_controller)
         self.competition_score_history.append(avg_prev_best_controller)
 
         print(f'average {conf.count_episodes_avg_over_for_competing} episodes: '\
@@ -81,7 +81,7 @@ class Training():
 
         return avg_current_controller > avg_prev_best_controller
 
-    def avg_over_episodes(self, controller):
+    def _avg_over_episodes(self, controller):
         scores = []
         for episode in range(conf.count_episodes_avg_over_for_competing):
             score = run_episode(self.env, controller, False)

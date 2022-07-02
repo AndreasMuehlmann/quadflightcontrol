@@ -52,3 +52,6 @@ range_avg = 10
 fps = 1 / delta_time # 1 / delta_time is normal speed
 window_width = 1200
 window_height = 800
+
+default_x_stretch = 100
+default_y_stretch = 50

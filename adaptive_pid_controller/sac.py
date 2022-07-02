@@ -24,7 +24,7 @@ class Agent():
         self.target_value = ValueNetwork(beta, input_dims, layer_sizes, chkpt_dir, name='target_value')
 
         self.scale = reward_scale
-        self.update_network_parameters(tau=1)
+        self._update_network_parameters(tau=1)
 
     def choose_action(self, observation):
         state = T.Tensor(np.array([observation])).to(self.actor.device)
@@ -35,7 +35,7 @@ class Agent():
     def remember(self, state, action, reward, new_state, done):
         self.memory.store_transition(state, action, reward, new_state, done)
 
-    def update_network_parameters(self, tau=None):
+    def _update_network_parameters(self, tau=None):
         if tau is None:
             tau = self.tau
 
@@ -123,4 +123,4 @@ class Agent():
         self.critic_1.optimizer.step()
         self.critic_2.optimizer.step()
 
-        self.update_network_parameters()
+        self._update_network_parameters()

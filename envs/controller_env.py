@@ -10,27 +10,27 @@ from graph_repr import GraphRepr
 
 class ControllerEnv(gym.Env, metaclass=ABCMeta):
     @abstractmethod
-    def init_values(self):
+    def _init_values(self):
         pass
 
     @abstractmethod
-    def init_physical_values(self):
+    def _init_physical_values(self):
         pass
         
     @abstractmethod
-    def calc_physical_values(self):
+    def _calc_physical_values(self):
         pass
 
     @abstractmethod
-    def should_reset(self):
+    def _should_reset(self):
         pass
 
     @abstractmethod
-    def give_error(self):
+    def _give_error(self):
         pass
 
     @abstractmethod
-    def give_measurement(self):
+    def _give_measurement(self):
         pass
 
     def __init__(self):
@@ -66,7 +66,7 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.observation_space = gym.spaces.Box(float('-inf'), float('inf'),
                                                 shape=(conf.amount_prev_observations * 3 + 6,))
 
-    def init_delay_list(self):
+    def _init_delay_list(self):
         length_needed_for_delay = round(self.delay / self.delta_time + 0.5) # 0.5 for rounding up (to be sure)
         self.delay_list = deque(maxlen = length_needed_for_delay)
         for _ in range(length_needed_for_delay):
@@ -79,11 +79,11 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.output = self.delay_list.pop()
         self.calc_physical_values()
 
-        self.target, self.last_small_target_change = self.change_val(self.target, self.last_small_target_change,
+        self.target, self.last_small_target_change = self._change_val(self.target, self.last_small_target_change,
                                                                     self.time_without_small_target_change, self.max_small_target_change, self.max_target, self.min_target)
-        self.target, self.last_big_target_change = self.change_val(self.target, self.last_big_target_change,
+        self.target, self.last_big_target_change = self._change_val(self.target, self.last_big_target_change,
                                                                      self.time_without_big_target_change, self.max_big_target_change, self.max_target, self.min_target)
-        self.env_force, self.last_env_force_change = self.change_val(self.env_force, self.last_env_force_change,
+        self.env_force, self.last_env_force_change = self._change_val(self.env_force, self.last_env_force_change,
                                                                      self.time_without_env_force_change, self.max_env_force_change, self.max_env_force, self.min_env_force)
 
         self.was_reset = False
@@ -92,21 +92,21 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.error = self.give_error()
         observation = [self.error, self.measurement]
 
-        return observation, self.get_reward(), self.is_done(), {}
+        return observation, self._get_reward(), self._is_done(), {}
 
-    def change_val(self, to_change_value, last_change, time_without_change, max_change,  max_val, min_val):
+    def _change_val(self, to_change_value, last_change, time_without_change, max_change,  max_val, min_val):
         if last_change - self.time_available >= time_without_change:
-            to_change_value = self.random_change(to_change_value, max_change, max_val, min_val)
+            to_change_value = self._random_change(to_change_value, max_change, max_val, min_val)
             last_change = self.time_available
         return to_change_value, last_change
 
-    def random_change(self, to_change, range, upper_bound, lower_bound):
-        to_change += np.random.uniform(-range, range)
+    def _random_change(self, to_change, max_change, upper_bound, lower_bound):
+        to_change += np.random.uniform(-max_change, max_change)
         to_change = lower_bound if to_change < lower_bound else to_change
         to_change = upper_bound if to_change > upper_bound else to_change
         return to_change
 
-    def is_done(self):
+    def _is_done(self):
         if self.time_available <= 0:
             return True
         elif self.was_reset:
@@ -114,7 +114,7 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         else:
             return False
 
-    def get_reward(self):
+    def _get_reward(self):
         if self.should_reset():
             self.was_reset = True
             self.reset()
@@ -139,7 +139,7 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.graph.add_point(self.total_time - self.time_available, self.measurement)
 
         self.graph.target = self.target 
-        self.graph.re_draw()
+        self.graph.update()
 
     def reset(self):
         self.time_available = self.total_time # in s
@@ -153,7 +153,7 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
 
         self.init_physical_values()
-        self.init_delay_list()
+        self._init_delay_list()
 
         if  self.graph != 0:
             self.graph = 0

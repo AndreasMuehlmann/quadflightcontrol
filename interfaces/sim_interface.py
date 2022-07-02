@@ -17,19 +17,19 @@ class SimInterface(InterfaceControl):
         self.measurements_path = os.path.join(self.path_interface, self.measurements_file)
         self.outputs_path = os.path.join(self.path_interface, self.outputs_file)
 
-        self.create_interface()
+        self._create_interface()
 
-    def create_interface(self):
+    def _create_interface(self):
         try:
             os.mkdir(self.path_interface)
             print('created directory for interface.')
         except OSError:
             print('interface directory already exists.')
 
-        self.create_file(self.measurements_path)
-        self.create_file(self.outputs_path)
+        self._create_file(self.measurements_path)
+        self._create_file(self.outputs_path)
 
-    def create_file(self, path):
+    def _create_file(self, path):
         with open(path, 'w') as file:
             pass
 

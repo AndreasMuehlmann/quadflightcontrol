@@ -21,20 +21,20 @@ class AdaptivePidController(Controller):
         self.prev_measurements = [0 for _ in range(conf.amount_prev_observations)]
         self.prev_outputs = [0 for _ in range(conf.amount_prev_observations)]
 
-        self.observation = self.compose_observation()
+        self.observation = self._compose_observation()
 
-    def compose_observation(self):
+    def _compose_observation(self):
         return np.array([*self.prev_errors, *self.prev_measurements, *self.prev_outputs,
                          self.pid_controller.differentiator, self.pid_controller.integrator,
                          self.pid_controller.p_faktor, self.pid_controller.i_faktor,
                          self.pid_controller.d_faktor])
 
-    def perform_action(self):
+    def _perform_action(self):
         self.pid_controller.p_faktor += self.action[0]
         self.pid_controller.i_faktor += self.action[1]
         self.pid_controller.d_faktor += self.action[2]
 
-    def update_observations(self, error, measurement, output):
+    def _update_observations(self, error, measurement, output):
         self.prev_errors.pop()
         self.prev_measurements.pop()
         self.prev_outputs.pop()
@@ -44,14 +44,14 @@ class AdaptivePidController(Controller):
 
     def give_output(self, error, measurement):
         self.prev_observation = deepcopy(self.observation)
-        self.observation = self.compose_observation()
+        self.observation = self._compose_observation()
 
         self.action = self.agent.choose_action(self.observation)
-        self.perform_action()
+        self._perform_action()
 
         output = self.pid_controller.give_output(error, measurement)
 
-        self.update_observations(error, measurement, output)
+        self._update_observations(error, measurement, output)
 
         return output
 
@@ -74,4 +74,4 @@ class AdaptivePidController(Controller):
         self.prev_measurements = [0 for _ in range(conf.amount_prev_observations)]
         self.prev_outputs = [0 for _ in range(conf.amount_prev_observations)]
 
-        self.observation = self.compose_observation()
+        self.observation = self._compose_observation()

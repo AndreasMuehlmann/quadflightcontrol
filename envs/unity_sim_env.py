@@ -13,7 +13,7 @@ class UnitySimEnv(PosEnv):
     def __init__(self):
         super(UnitySimEnv, self).__init__()
 
-    def init_values(self):
+    def _init_values(self):
         self.inaccuracy = 0.05
 
         self.range_positive_reward = 0.05
