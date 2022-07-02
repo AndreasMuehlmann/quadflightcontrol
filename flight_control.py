@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import pygame
 
 import config as conf
