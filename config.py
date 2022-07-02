@@ -22,9 +22,9 @@ max_output_controller = 50
 
 
 # PID_CONTROLLER
-p_faktor = 6
-i_faktor = 2
-d_faktor = 7
+p_faktor = 15
+i_faktor = 3
+d_faktor = 12
 iir_faktor = 0.8 # for vel_env 0.85
 iir_order = 3 # for vel_env 5
 

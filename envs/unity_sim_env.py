@@ -6,6 +6,7 @@ from pos_env import PosEnv
 # TODO: should_reset into controller env
 # TODO: adjust values to UnitySim
 # TODO: make pid_controller faktor adjust to environment (inherit from pid_controller)
+# TODO: maybe remove self.faktor from self.env_force
 
 
 class UnitySimEnv(PosEnv):
@@ -24,7 +25,7 @@ class UnitySimEnv(PosEnv):
         self.time_without_big_target_change = 4
         self.time_without_env_force_change = 3
 
-        self.max_faktor = 1 / 2
+        self.max_faktor = 1 / 4
         self.min_faktor = self.max_faktor
 
         self.max_env_force = -1
