@@ -5,7 +5,8 @@ The flight control is developed by "Andreas Mühlmann" and hosted on GitHub unde
 "https://github.com/AndreasMuehlmann/quadflightcontrol".
 There is also a simulation available that is developed by "Felix Ungerhofer" and also hosted on GitHub under:
 "https://github.com/AndreasMuehlmann/Drone-Simulation".
-An app for user input via bluetooth is developed by "Kilian Schreiner".
+An app for user input via bluetooth is developed by "Kilian Schreiner" and also hosted on GitHub under:
+"https://github.com/Kilinutz1/Dronenapp".
 
 If you want to use this project, be warned, you have to do most things yourself
 primarily if you want to make a real drone.
