@@ -4,20 +4,14 @@ append_dirs_to_path()
 from flight_control import FlightControl
 
 
-# TODO: make better names
-# TODO: mark private methods
-# TODO: write documentation
-# TODO: make a .gitignore
-# TODO: adjust values to UnitySim
-# TODO: print reward afer run_episode
-# TODO: everything with init (no init_values) call super init in the end for default values
-# TODO: should_reset into controller env
 # TODO: make pid_controller faktor adjust to environment (inherit from pid_controller)
-# TODO: fix transform_inputs
-# TODO: make default values in PosEnv
-# TODO: maybe remove self.faktor from self.env_force
-# TODO: make drone stay on same height when tilted
-#
+# TODO: watchout because angle lets drone behave weird
+# TODO: unity_sim_env is not like unity simulation
+# TODO: also look in training.py for TODOS
+# TODO: make a sequence diagramm and put it in the README
+# TODO: add videos for the simulation and maybe also for the actual drone
+# TODO: low priority: make drone stay on same height when tilted
+
 
 def main():
     flight_control = FlightControl()

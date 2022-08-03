@@ -16,17 +16,17 @@ class UnitySimEnv(PosEnv):
 
         self.time_without_small_target_change = 0.2
         self.time_without_big_target_change = 4
-        self.time_without_env_force_change = 3
+        self.time_without_env_output_change = 3
 
         self.max_faktor = 1
         self.min_faktor = self.max_faktor
 
-        self.max_env_force = -0
-        self.min_env_force = self.max_env_force
+        self.max_env_output = -0
+        self.min_env_output = self.max_env_output
 
         self.max_target = 30
         self.min_target = -self.max_target
 
         self.max_small_target_change = 3
         self.max_big_target_change = abs(self.max_target) + abs(self.min_target)
-        self.max_env_force_change = abs(self.max_env_force) + abs(self.min_env_force)
+        self.max_env_output_change = abs(self.max_env_output) + abs(self.min_env_output)

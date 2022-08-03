@@ -50,11 +50,11 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
 
         self.last_small_target_change = self.time_available
         self.last_big_target_change = self.time_available
-        self.last_env_force_change = self.time_available
+        self.last_env_output_change = self.time_available
 
         self.target = np.random.uniform(self.min_target, self.max_target)
         self.faktor = np.random.uniform(self.min_faktor, self.max_faktor)
-        self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
+        self.env_output = np.random.uniform(self.min_env_output, self.max_env_output)
         
         self._init_delay_list()
 
@@ -83,8 +83,8 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
                                                                     self.time_without_small_target_change, self.max_small_target_change, self.max_target, self.min_target)
         self.target, self.last_big_target_change = self._change_val(self.target, self.last_big_target_change,
                                                                      self.time_without_big_target_change, self.max_big_target_change, self.max_target, self.min_target)
-        self.env_force, self.last_env_force_change = self._change_val(self.env_force, self.last_env_force_change,
-                                                                     self.time_without_env_force_change, self.max_env_force_change, self.max_env_force, self.min_env_force)
+        self.env_output, self.last_env_output_change = self._change_val(self.env_output, self.last_env_output_change,
+                                                                     self.time_without_env_output_change, self.max_env_output_change, self.max_env_output, self.min_env_output)
 
         self.was_reset = False
 
@@ -146,11 +146,11 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
 
         self.last_small_target_change = self.time_available
         self.last_big_target_change = self.time_available
-        self.last_env_force_change = self.time_available
+        self.last_env_output_change = self.time_available
 
         self.target = np.random.uniform(self.min_target, self.max_target)
         self.faktor = np.random.uniform(self.min_faktor, self.max_faktor)
-        self.env_force = np.random.uniform(self.min_env_force, self.max_env_force)
+        self.env_output = np.random.uniform(self.min_env_output, self.max_env_output)
 
         self._init_physical_values()
         self._init_delay_list()
