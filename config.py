@@ -27,10 +27,11 @@ delay = 0.05 # in s
 
 # UNITYSIM
 # PID_CONTROLLER
-p_faktor = 10
-i_faktor = 0.1
-d_faktor = 18
-iir_faktor = 0.8 # for vel_env 0.85
+faktor = 0.5
+p_faktor = 5
+i_faktor = 0.05
+d_faktor = 8
+iir_faktor = 0.7 # for vel_env 0.85
 iir_order = 3 # for vel_env 5
 
 '''
