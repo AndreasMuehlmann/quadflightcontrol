@@ -24,6 +24,8 @@ class GraphRepr:
         self.points = []
         self.target = None
 
+        self.size_coordinate_system_markers = 10
+
     def _draw_curve(self):
         if not self.points:
             return
@@ -42,6 +44,23 @@ class GraphRepr:
         self.y_stretch = self._get_stretch(9 * self.height / 20, self.target, self.y_stretch)
         pygame.draw.line(self.window, BLACK, (0, int(-self.target * self.y_stretch + self.height / 2)), (self.width, int(-self.target * self.y_stretch + self.height / 2)))
 
+    def _draw_coordinate_system(self):
+        for pixel in range(0, self.width, conf.x_dist_coord_sys):
+            pygame.draw.line(self.window, BLACK,
+                             (int(pixel * self.x_stretch), self.height),
+                             (int(pixel * self.x_stretch), self.height - self.size_coordinate_system_markers))
+
+        for pixel in range(0, self.height, conf.y_dist_coord_sys):
+            pygame.draw.line(self.window, BLACK,
+                             (self.width, int(pixel * self.y_stretch)),
+                             (self.width - self.size_coordinate_system_markers, int(pixel * self.y_stretch)))
+
+        pygame.draw.line(self.window, BLACK,
+                         (self.width, int(self.height / 2)),
+                         (self.width - self.size_coordinate_system_markers * 4, int(self.height / 2)))
+
+
+
     def add_point(self, time, point):
         self.y_stretch = self._get_stretch(9 * self.height / 20, point, self.y_stretch)
         self.x_stretch = self._get_stretch(9 * self.width / 10, time, self.x_stretch)
@@ -59,6 +78,7 @@ class GraphRepr:
         self.window.fill(WHITE)
         self._draw_target()
         self._draw_curve()
+        self._draw_coordinate_system()
         pygame.display.update()
 
         for event in pygame.event.get():
