@@ -16,7 +16,7 @@ class PidController(Controller):
         self.integrator = 0
         self.differentiator = 0
 
-        self.delta_time = conf.delta_time
+        self.delta_time = 1 / conf.frequency
 
         self.iir_error = IirFilter(iir_faktor, iir_order)
         self.iir_measurement = IirFilter(iir_faktor, iir_order)
