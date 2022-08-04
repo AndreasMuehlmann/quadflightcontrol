@@ -3,7 +3,7 @@ from pos_env import PosEnv
 
 class RealWorldEnv(PosEnv):
     def __init__(self):
-        super(UnitySimEnv, self).__init__()
+        super(RealWorldEnv, self).__init__()
 
     def _init_values(self):
         self.inaccuracy = 0.05

@@ -51,7 +51,6 @@ action_space_high = 1
 # SIMULATION IN ENVS
 episodes = 100
 range_avg = 10
-fps = 1 / frequency # 1 / delta_time is normal speed
 window_width = 1200
 window_height = 800
 

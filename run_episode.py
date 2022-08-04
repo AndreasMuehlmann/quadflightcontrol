@@ -20,7 +20,7 @@ def run_episode(env, controller, learn=False):
     score = 0
     done = False
     while not done:
-        clock.tick(conf.fps)
+        clock.tick(conf.frequency)
 
         output = controller.give_output(error, measurement)
 
