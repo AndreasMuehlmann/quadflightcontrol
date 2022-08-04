@@ -8,7 +8,7 @@ max_angle_drone = 30
 
 # CONTROLLER
 controller = 'pid_controller'
-max_output = 50
+max_output = 500
 
 
 # TRAINING
@@ -20,10 +20,9 @@ count_episodes_avg_over_for_competing = 10
 
 
 # TESTING ENVIRONMENT
-env = 'unity_sim_env' # The environments should be configured in quadflightcontrol/envs
+env = 'real_world_env' # The environments should be configured in quadflightcontrol/envs
 total_time = 30 # per episode in s
 delay = 0.05 # in s
-delta_time = 0.05 # in s
 
 
 # PID_CONTROLLER
@@ -52,7 +51,7 @@ action_space_high = 1
 # SIMULATION IN ENVS
 episodes = 100
 range_avg = 10
-fps = 1 / delta_time # 1 / delta_time is normal speed
+fps = 1 / frequency # 1 / delta_time is normal speed
 window_width = 1200
 window_height = 800
 

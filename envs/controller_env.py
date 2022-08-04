@@ -46,7 +46,7 @@ class ControllerEnv(gym.Env, metaclass=ABCMeta):
         self.time_available = self.total_time
 
         self.delay = conf.delay
-        self.delta_time = conf.delta_time
+        self.delta_time = 1 / conf.frequency
 
         self.last_small_target_change = self.time_available
         self.last_big_target_change = self.time_available
