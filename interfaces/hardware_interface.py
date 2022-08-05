@@ -8,7 +8,7 @@ from mpu9250_jmdev.mpu_9250 import MPU9250
 
 class HardwareInterface(InterfaceControl):
     def __init__(self):
-        GPIO.setmode(GPIO.BOARD)
+        gpio.setmode(gpio.BOARD)
         self.frequency_I2C = 50
         self.base_duty = 5000
 
@@ -37,8 +37,8 @@ class HardwareInterface(InterfaceControl):
         time.sleep(5)
 
     def _give_setup_pin(pin_number):
-        GPIO.setup(pin_number, GPIO.OUT)
-        pwm = GPIO.PWM(pin_number, self.frequency_I2C)
+        gpio.setup(pin_number, gpio.OUT)
+        pwm = gpio.PWM(pin_number, self.frequency_I2C)
         return pwm
 
     def give_measurements(self):
