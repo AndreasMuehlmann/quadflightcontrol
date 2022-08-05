@@ -1,20 +1,26 @@
-import RPi.GPIO as gpio # this just works on a raspberry pi
 from time import sleep
 
-from interface_control import InterfaceControl
+import RPi.GPIO as gpio # this just works on a raspberry pi
 from mpu9250_jmdev.registers import *
 from mpu9250_jmdev.mpu_9250 import MPU9250
+
+# import config as conf not for testing
+from interface_control import InterfaceControl
+
+
+# TODO: stop pwm and clean up GPIO
 
 
 class HardwareInterface(InterfaceControl):
     def __init__(self):
-        gpio.setmode(gpio.BOARD)
+        gpio.setmode(gpio.BCM)
         self.frequency_I2C = 50
-        self.base_duty = 5000
+        self.base_duty = 5
+        
+        self.pwm_pins = [self._give_setup_pin(6), self._give_setup_pin(13), self._give_setup_pin(19), self._give_setup_pin(26)]
+        self._set_up_output()
 
-        self.pwm_pins = [_give_setup_pin(22), _give_setup_pin(23), _give_setup_pin(26), _give_setup_pin(20)]
-
-        self.mpu = self._give_set_up_mpu_sensor()
+        # self.mpu = self._give_set_up_mpu_sensor()
 
     def _give_set_up_mpu_sensor(self):
         mpu = MPU9250(
@@ -31,12 +37,12 @@ class HardwareInterface(InterfaceControl):
         return mpu
 
     def _set_up_output(self):
-        for pwm_pin in pwm_pins:
+        for pwm_pin in self.pwm_pins:
             pwm_pin.start(self.base_duty)
 
-        time.sleep(5)
+        sleep(5)
 
-    def _give_setup_pin(pin_number):
+    def _give_setup_pin(self, pin_number):
         gpio.setup(pin_number, gpio.OUT)
         pwm = gpio.PWM(pin_number, self.frequency_I2C)
         return pwm
@@ -49,5 +55,6 @@ class HardwareInterface(InterfaceControl):
         print("\n")
 
     def send_outputs(self, outputs):
-        for pin_rotor, output in zip(self.pwm_pins, outputs):
-            self.pin_rotor.duty_u16(base_duty + output)
+        for pwm_pin, output in zip(self.pwm_pins, outputs):
+            # output += conf.max_ouptput / 2 not for testing
+            pwm_pin.ChangeDutyCycle(self.base_duty + output / 1000) # output nicht von 0 bis 1000
