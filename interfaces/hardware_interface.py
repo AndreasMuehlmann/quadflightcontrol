@@ -12,12 +12,12 @@ class HardwareInterface(InterfaceControl):
     def __init__(self):
         gpio.setmode(gpio.BCM)
         self.frequency_I2C = 50
-        self.base_duty = 5
+        self.base_duty = 7
         
         self.pwm_pins = [self._give_setup_pin(6), self._give_setup_pin(13), self._give_setup_pin(19), self._give_setup_pin(26)]
         self._set_up_output()
 
-        # self.mpu = self._give_set_up_mpu_sensor()
+        self.mpu = self._give_set_up_mpu_sensor()
 
     def _give_set_up_mpu_sensor(self):
         mpu = MPU9250(
@@ -54,9 +54,10 @@ class HardwareInterface(InterfaceControl):
     def send_outputs(self, outputs):
         for pwm_pin, output in zip(self.pwm_pins, outputs):
             # output += conf.max_ouptput / 2    not for testing
+            print(round(self.base_duty + output / 1000, 3))
             pwm_pin.ChangeDutyCycle(self.base_duty + output / 1000)
 
     def reset(self):
-        for pwm_pin in pwm_pins:
+        for pwm_pin in self.pwm_pins:
             pwm_pin.stop()
         gpio.cleanup()

@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-import config as conf
+# import config as conf
 from interface_user import InterfaceUser
 
 
@@ -105,8 +105,8 @@ class KeyboardInterface(InterfaceUser):
         if self.base_output < 0:
             self.base_output = 0
 
-        if self.base_output > conf.max_output:
-            self.base_output = conf.max_output
+        #if self.base_output > conf.max_output:
+            #self.base_output = conf.max_output
 
         return self.base_output, self.strength_x_slope, self.strength_y_slope, self.rotation_vel
 
