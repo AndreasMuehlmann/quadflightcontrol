@@ -4,11 +4,8 @@ import RPi.GPIO as gpio # this just works on a raspberry pi
 from mpu9250_jmdev.registers import *
 from mpu9250_jmdev.mpu_9250 import MPU9250
 
-# import config as conf not for testing
+# import config as conf     not for testing
 from interface_control import InterfaceControl
-
-
-# TODO: stop pwm and clean up GPIO
 
 
 class HardwareInterface(InterfaceControl):
@@ -56,5 +53,10 @@ class HardwareInterface(InterfaceControl):
 
     def send_outputs(self, outputs):
         for pwm_pin, output in zip(self.pwm_pins, outputs):
-            # output += conf.max_ouptput / 2 not for testing
-            pwm_pin.ChangeDutyCycle(self.base_duty + output / 1000) # output nicht von 0 bis 1000
+            # output += conf.max_ouptput / 2    not for testing
+            pwm_pin.ChangeDutyCycle(self.base_duty + output / 1000)
+
+    def reset(self):
+        for pwm_pin in pwm_pins:
+            pwm_pin.stop()
+        gpio.cleanup()
