@@ -82,6 +82,7 @@ class HardwareInterface(InterfaceControl):
         return [self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw]
 
     def send_outputs(self, outputs):
+        # TODO: this has to be redone
         for pwm_pin, output in zip(self.pwm_pins, outputs):
             # output += conf.max_ouptput / 2    not for testing
             print(round(self.base_duty + output / 1000, 3))

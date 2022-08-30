@@ -8,7 +8,7 @@ def main():
 
     try:
         while True:
-            hardware_interface.give_measurements()
+            print(hardware_interface.give_measurements())
             sleep(0.05)
 
     except KeyboardInterrupt:
