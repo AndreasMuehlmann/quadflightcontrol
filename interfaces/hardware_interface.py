@@ -51,8 +51,8 @@ class HardwareInterface(InterfaceControl):
         self.imu.caliberateAccelerometer()
         print ("Acceleration calib successful")
 
-        self.imu.caliberateMagPrecise()
-        print ("Mag calib successful")
+        #self.imu.caliberateMagPrecise()
+        #print ("Mag calib successful")
 
         # TODO: write the calibration
 
@@ -60,7 +60,7 @@ class HardwareInterface(InterfaceControl):
         for pwm_pin in self.pwm_pins:
             pwm_pin.start(self.base_duty)
 
-        sleep(5)
+        time.sleep(5)
 
     def _give_setup_pin(self, pin_number):
         gpio.setup(pin_number, gpio.OUT)
@@ -70,13 +70,17 @@ class HardwareInterface(InterfaceControl):
     def give_measurements(self):
         self.imu.readSensor()
         self.imu.computeOrientation()
-        self.newTime = time.time()
-        self.dt = newTime - current_time
+
+        newTime = time.time()
+        dt = newTime - self.current_time
         self.current_time = newTime
 
         self.sensorfusion.computeAndUpdateRollPitchYaw(
-            imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2], imu.GyroVals[0], imu.GyroVals[1], imu.Gyro[2],
-            imu.MagVals[0], imu.MagVals[1], imu.MagVals[2], dt
+            self.imu.AccelVals[0], self.imu.AccelVals[1],
+            self.imu.AccelVals[2], self.imu.GyroVals[0],
+            self.imu.GyroVals[1], self.imu.GyroVals[2],
+            self.imu.MagVals[0], self.imu.MagVals[1],
+            self.imu.MagVals[2], dt
         )
 
         return [self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw]
