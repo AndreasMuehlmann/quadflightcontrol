@@ -11,15 +11,18 @@ import RPi.GPIO as gpio # this just works on a raspberry pi
 
 from interface_control import InterfaceControl
 
+# import config as conf     not for testing
+from interface_control import InterfaceControl
+
 
 class HardwareInterface(InterfaceControl):
     def __init__(self):
         gpio.setmode(gpio.BCM)
         self.frequency_I2C = 50
-        self.base_duty = 5
-        self.max_duty = 8
-
-        self.pwm_pins = [_give_setup_pin(22), _give_setup_pin(23), _give_setup_pin(26), _give_setup_pin(20)]
+        self.base_duty = 8
+        
+        self.pwm_pins = [self._give_setup_pin(6), self._give_setup_pin(13), self._give_setup_pin(19), self._give_setup_pin(26)]
+        self._set_up_output()
 
         self.imu = self._give_set_up_imu()
         self.calibrate_sensor()
@@ -54,12 +57,12 @@ class HardwareInterface(InterfaceControl):
         # TODO: write the calibration
 
     def _set_up_output(self):
-        for pwm_pin in pwm_pins:
+        for pwm_pin in self.pwm_pins:
             pwm_pin.start(self.base_duty)
 
-        time.sleep(5)
+        sleep(5)
 
-    def _give_setup_pin(pin_number):
+    def _give_setup_pin(self, pin_number):
         gpio.setup(pin_number, gpio.OUT)
         pwm = gpio.PWM(pin_number, self.frequency_I2C)
         return pwm
@@ -79,5 +82,12 @@ class HardwareInterface(InterfaceControl):
         return [self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw]
 
     def send_outputs(self, outputs):
-        for pin_rotor, output in zip(self.pwm_pins, outputs):
-            self.pin_rotor.duty_u16(base_duty + output)
+        for pwm_pin, output in zip(self.pwm_pins, outputs):
+            # output += conf.max_ouptput / 2    not for testing
+            print(round(self.base_duty + output / 1000, 3))
+            pwm_pin.ChangeDutyCycle(self.base_duty + output / 1000)
+
+    def reset(self):
+        for pwm_pin in self.pwm_pins:
+            pwm_pin.stop()
+        gpio.cleanup()
