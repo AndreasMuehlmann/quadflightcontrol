@@ -20,7 +20,8 @@ class HardwareInterface(InterfaceControl):
         self.calibration_dir = 'sensor_calibration'
         gpio.setmode(gpio.BCM)
         self.frequency_I2C = 50
-        self.base_duty = 8
+        self.base_duty = 5.6
+        self.max_duty = 9
         
         self.pwm_pins = [self._give_setup_pin(6), self._give_setup_pin(13), self._give_setup_pin(19), self._give_setup_pin(26)]
         self._set_up_output()
