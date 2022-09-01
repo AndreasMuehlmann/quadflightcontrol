@@ -1,0 +1,9 @@
+#+TITLE: Todos
+#+AUTHOR: Todos
+
+* TODO make input for tilting
+* TODO calculate faktor for acceleration
+* TODO Calibrate Sensor with Cube
+* TODO measurements => right input for pid_controller
+** TODO adjust the simulation
+* TODO right duty cylcle

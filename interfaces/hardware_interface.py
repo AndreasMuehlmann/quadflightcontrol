@@ -11,12 +11,13 @@ import RPi.GPIO as gpio # this just works on a raspberry pi
 
 from interface_control import InterfaceControl
 
-# import config as conf     not for testing
+# import config as conf # not for testing
 from interface_control import InterfaceControl
 
 
 class HardwareInterface(InterfaceControl):
     def __init__(self):
+        self.calibration_dir = 'sensor_calibration'
         gpio.setmode(gpio.BCM)
         self.frequency_I2C = 50
         self.base_duty = 8
@@ -45,16 +46,17 @@ class HardwareInterface(InterfaceControl):
         return imu
 
     def read_calibration(self):
-        self.imu.loadCalibDataFromFile("/home/dronepi/calib_real_bolder.json")
+        self.imu.loadCalibDataFromFile(self.calibration_dir)
 
     def calibrate_sensor(self):
         self.imu.caliberateAccelerometer()
         print ("Acceleration calib successful")
 
+        # Magnetometer not working
         #self.imu.caliberateMagPrecise()
         #print ("Mag calib successful")
 
-        # TODO: write the calibration
+        self.imu.saveCalibDataToFile(self.calibration_dir)
 
     def _set_up_output(self):
         for pwm_pin in self.pwm_pins:
