@@ -20,29 +20,29 @@ count_episodes_avg_over_for_competing = 10
 
 
 # TESTING ENVIRONMENT
-env = 'unity_sim_env' # The environments should be configured in quadflightcontrol/envs
+env = 'real_world_env' # The environments should be configured in quadflightcontrol/envs
 total_time = 30 # per episode in s
 delay = 0.05 # in s
 
 
+'''
 # UNITYSIM
 # PID_CONTROLLER
-faktor = 0.5
 p_faktor = 5
 i_faktor = 0.05
 d_faktor = 8
 iir_faktor = 0.7 # for vel_env 0.85
 iir_order = 3 # for vel_env 5
-
 '''
+
 # REALWORLD
 # PID_CONTROLLER
+faktor = 15
 p_faktor = 100
-i_faktor = 1
-d_faktor = 180
+i_faktor = 0.005
+d_faktor = 220
 iir_faktor = 0.8 # for vel_env 0.85
 iir_order = 3 # for vel_env 5
-'''
 
 
 # ADAPTIVE_PID_CONTROLLER
