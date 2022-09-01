@@ -18,7 +18,7 @@ class RealWorldEnv(PosEnv):
         self.time_without_big_target_change = 4
         self.time_without_env_output_change = 3
 
-        self.max_faktor = 0.021166283
+        self.max_faktor = 0.00485
         self.min_faktor = self.max_faktor
 
         self.max_env_output = -0

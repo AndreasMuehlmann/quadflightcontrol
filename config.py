@@ -59,10 +59,12 @@ batch_size = 256
 action_space_high = 1
 
 
-
-# SIMULATION IN ENVS
+# TRAINING
 episodes = 100
 range_avg = 10
+
+
+# SIMULATION IN ENVS
 window_width = 1600
 window_height = 1000
 
