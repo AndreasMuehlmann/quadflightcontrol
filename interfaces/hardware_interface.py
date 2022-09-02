@@ -20,7 +20,7 @@ class HardwareInterface(InterfaceControl):
         self.calibration_file_path = '/home/dronepi/programming/quadflightcontrol/interfaces/sensor_calib.json'
         gpio.setmode(gpio.BCM)
         self.frequency_I2C = 50
-        self.base_duty = 5.2
+        self.base_duty = 5.6
         self.max_duty = 9
         
         self.pwm_pins = [self._give_setup_pin(6), self._give_setup_pin(13), self._give_setup_pin(19), self._give_setup_pin(26)]
