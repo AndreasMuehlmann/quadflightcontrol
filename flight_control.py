@@ -40,9 +40,9 @@ class FlightControl():
             if orientation[0] < 0:
                 pitch *= -1
 
-            roll = 0
+            roll = orientation[1]
 
-            measurements = [-pitch, roll, pitch, -roll]
+            measurements = [roll, pitch, -roll, -pitch]
             if len(measurements) != self.amount_measurements:
                 print('failure in collecting measurements or in measuring')
                 continue
@@ -53,7 +53,6 @@ class FlightControl():
             outputs = [output + base_output for output in outputs]
             outputs = self._remove_negatives(outputs)
 
-            print(outputs)
             self.interface_control.send_outputs(outputs)
 
     def _give_outputs_rotor_controllers(self, targets, measurements):
