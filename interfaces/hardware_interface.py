@@ -11,23 +11,24 @@ import RPi.GPIO as gpio # this just works on a raspberry pi
 
 from interface_control import InterfaceControl
 
-# import config as conf # not for testing
+import config as conf # not for testing
 from interface_control import InterfaceControl
 
 
 class HardwareInterface(InterfaceControl):
     def __init__(self):
-        self.calibration_dir = 'sensor_calibration'
+        self.calibration_file_path = '/home/dronepi/programming/quadflightcontrol/interfaces/sensor_calib.json'
         gpio.setmode(gpio.BCM)
         self.frequency_I2C = 50
-        self.base_duty = 5.6
+        self.base_duty = 5
         self.max_duty = 9
         
         self.pwm_pins = [self._give_setup_pin(6), self._give_setup_pin(13), self._give_setup_pin(19), self._give_setup_pin(26)]
         self._set_up_output()
 
         self.imu = self._give_set_up_imu()
-        self.calibrate_sensor()
+        # self.calibrate_sensor()
+        self.read_calibration()
 
         self.sensorfusion = kalman.Kalman()
 
@@ -47,7 +48,7 @@ class HardwareInterface(InterfaceControl):
         return imu
 
     def read_calibration(self):
-        self.imu.loadCalibDataFromFile(self.calibration_dir)
+        self.imu.loadCalibDataFromFile(self.calibration_file_path)
 
     def calibrate_sensor(self):
         self.imu.caliberateAccelerometer()
@@ -57,7 +58,7 @@ class HardwareInterface(InterfaceControl):
         #self.imu.caliberateMagPrecise()
         #print ("Mag calib successful")
 
-        self.imu.saveCalibDataToFile(self.calibration_dir)
+        self.imu.saveCalibDataToFile(self.calibration_file_path)
 
     def _set_up_output(self):
         for pwm_pin in self.pwm_pins:
@@ -89,11 +90,8 @@ class HardwareInterface(InterfaceControl):
         return [self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw]
 
     def send_outputs(self, outputs):
-        # TODO: this has to be redone
         for pwm_pin, output in zip(self.pwm_pins, outputs):
-            # output += conf.max_ouptput / 2    not for testing
-            print(round(self.base_duty + output / 1000, 3))
-            pwm_pin.ChangeDutyCycle(self.base_duty + output / 1000)
+            pwm_pin.ChangeDutyCycle(self.base_duty + ((self.max_duty - self.base_duty)  / (conf.max_output * 2) * output))
 
     def reset(self):
         for pwm_pin in self.pwm_pins:
