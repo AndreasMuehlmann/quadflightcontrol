@@ -6,7 +6,7 @@ class RealWorldEnv(PosEnv):
         super(RealWorldEnv, self).__init__()
 
     def _init_values(self):
-        self.inaccuracy = 0.05
+        self.inaccuracy = 0.5
 
         # this is not up to date
         self.range_positive_reward = 0.05
