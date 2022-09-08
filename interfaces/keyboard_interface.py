@@ -110,5 +110,5 @@ class KeyboardInterface(InterfaceUser):
 
         return self.base_output, self.strength_x_slope, self.strength_y_slope, self.rotation_vel
 
-    def send_outputs(self, outputs):
+    def send_message(self, message):
         pass

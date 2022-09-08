@@ -7,5 +7,5 @@ class InterfaceUser(metaclass=ABCMeta):
         pass
 
     @abstractmethod 
-    def send_outputs(self, outputs):
+    def send_message(self, message):
         pass
