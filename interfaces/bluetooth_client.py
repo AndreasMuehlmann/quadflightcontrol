@@ -16,7 +16,6 @@ class BluetoothClient():
 
     def send_data(self, data):
         self.socket.send(data)
-        received_data = self.socket.recv(self.size)
 
     def reset(self):
         self.socket.close()
