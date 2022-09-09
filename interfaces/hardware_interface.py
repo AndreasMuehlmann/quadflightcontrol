@@ -5,7 +5,7 @@ import smbus
 import numpy as np
 
 from imusensor.MPU9250 import MPU9250
-from imusensor.filters import kalman
+from imusensor.filters import complimentary
 
 import RPi.GPIO as gpio # this just works on a raspberry pi
 
@@ -30,7 +30,7 @@ class HardwareInterface(InterfaceControl):
         # self.calibrate_sensor()
         self.read_calibration()
 
-        self.sensorfusion = kalman.Kalman()
+        self.sensorfusion = complimentary.Complimentary(0.3)
 
         self.imu.readSensor()
         self.imu.computeOrientation()
@@ -79,7 +79,7 @@ class HardwareInterface(InterfaceControl):
         dt = newTime - self.current_time
         self.current_time = newTime
 
-        self.sensorfusion.computeAndUpdateRollPitchYaw(
+        self.sensorfusion.updateRollPitchYaw(
             self.imu.AccelVals[0], self.imu.AccelVals[1],
             self.imu.AccelVals[2], self.imu.GyroVals[0],
             self.imu.GyroVals[1], self.imu.GyroVals[2],
