@@ -79,13 +79,10 @@ class HardwareInterface(InterfaceControl):
         dt = newTime - self.current_time
         self.current_time = newTime
 
-        self.sensorfusion.updateRollPitchYaw(
-            self.imu.AccelVals[0], self.imu.AccelVals[1],
-            self.imu.AccelVals[2], self.imu.GyroVals[0],
-            self.imu.GyroVals[1], self.imu.GyroVals[2],
-            self.imu.MagVals[0], self.imu.MagVals[1],
-            self.imu.MagVals[2], dt
-        )
+
+        self.sensorfusion.updateRollPitchYaw(self.imu.roll, self.imu.pitch,
+                                             self.imu.yaw, self.imu.GyroVals[0],
+                                             self.imu.GyroVals[1], self.imu.GyroVals[2], dt)
 
         return [self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw]
 
