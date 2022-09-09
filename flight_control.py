@@ -36,13 +36,13 @@ class FlightControl():
             base_output, strength_x_slope, strength_y_slope, rotation_vel = inputs
 
             orientation = self.interface_control.give_measurements()
-            pitch = 180 - abs(orientation[0])
+            roll = 180 - abs(orientation[0])
             if orientation[0] < 0:
-                pitch *= -1
+                roll *= -1
 
-            roll = orientation[1]
+            pitch = orientation[1]
 
-            measurements = [roll, pitch, -roll, -pitch]
+            measurements = [pitch, roll, -pitch, -roll]
             if len(measurements) != self.amount_measurements:
                 print('failure in collecting measurements or in measuring')
                 continue
