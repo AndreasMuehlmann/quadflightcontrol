@@ -12,6 +12,7 @@ class BluetoothServerInterface(InterfaceUser):
 
         self.server_socket.bind(("", self.port))
         self.server_socket.listen(self.backlog)
+        print('Waiting for bluetooth connection by client...')
         self.client_socket, address = self.server_socket.accept()
         print("Accepted connection from", address)
         data = self.client_socket.recv(self.size)
