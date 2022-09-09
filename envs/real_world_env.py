@@ -6,7 +6,7 @@ class RealWorldEnv(PosEnv):
         super(RealWorldEnv, self).__init__()
 
     def _init_values(self):
-        self.inaccuracy = 0.05
+        self.inaccuracy = 0.5
 
         # this is not up to date
         self.range_positive_reward = 0.05
@@ -18,10 +18,10 @@ class RealWorldEnv(PosEnv):
         self.time_without_big_target_change = 4
         self.time_without_env_output_change = 3
 
-        self.max_faktor = 0.00485
+        self.max_faktor = 4.851
         self.min_faktor = self.max_faktor
 
-        self.max_env_output = -0
+        self.max_env_output = 0
         self.min_env_output = self.max_env_output
 
         self.max_target = 30
