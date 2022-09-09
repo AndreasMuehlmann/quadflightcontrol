@@ -17,11 +17,10 @@ class BluetoothServerInterface(InterfaceUser):
         data = self.client_socket.recv(self.size)
 
     def give_inputs(self):
-        self.client_socket.send(data)
-        self.data = client_sock.recv(self.size)
+        data = self.client_socket.recv(self.size)
 
-        string_inputs = str(data).split(',')
-        inputs = [int(string_input) for string_input in string_inputs]
+        string_inputs = data.decode('utf-8').split(',')
+        inputs = [float(string_input) for string_input in string_inputs]
 
         return inputs
 

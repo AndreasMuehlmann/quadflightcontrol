@@ -79,16 +79,16 @@ class KeyboardInterface(InterfaceUser):
         self._update_pressed_keys()
 
         if self.pressed['UP']:
-            self.strength_y_slope += 0.3
+            self.strength_y_slope += 0.1
 
         if self.pressed['DOWN']:
-            self.strength_y_slope -= 0.3
+            self.strength_y_slope -= 0.1
 
         if self.pressed['LEFT']: 
-            self.strength_x_slope -= 0.3
+            self.strength_x_slope -= 0.1
 
         if self.pressed['RIGHT']:
-            self.strength_x_slope += 0.3
+            self.strength_x_slope += 0.1
 
         if self.pressed['w']:
             self.base_output += 0.1
