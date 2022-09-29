@@ -11,7 +11,7 @@ class BluetoothServerInterface(InterfaceUser):
 
     def __init__(self):
         s=BluetoothServer(self.data_received)
-        pause()
+        
 
     def give_inputs(self):
         return [self.Height,self.Directionx,self.Directiony,self.Rotation]
