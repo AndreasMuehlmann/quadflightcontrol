@@ -30,6 +30,7 @@ class HardwareInterface(InterfaceControl):
         # self.calibrate_sensor()
         self.read_calibration()
 
+
         self.sensorfusion = complimentary.Complimentary(0.3)
 
         self.imu.readSensor()
@@ -84,7 +85,16 @@ class HardwareInterface(InterfaceControl):
                                              self.imu.yaw, self.imu.GyroVals[0],
                                              self.imu.GyroVals[1], self.imu.GyroVals[2], dt)
 
-        return [self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw]
+        orientation = [self.sensorfusion.roll, self.sensorfusion.pitch, self.sensorfusion.yaw]
+        roll = 180 - abs(orientation[0])
+        if orientation[0] < 0:
+            roll *= -1
+
+        pitch = orientation[1]
+
+        measurements = [pitch, roll, -pitch, -roll]
+
+        return measurements
 
     def send_outputs(self, outputs):
         for pwm_pin, output in zip(self.pwm_pins, outputs):
