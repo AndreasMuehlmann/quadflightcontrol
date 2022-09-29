@@ -23,10 +23,10 @@ class BluetoothServerInterface(InterfaceUser):
         if s[0]=="rotation:":
             self.Rotation = float(s[0])
         elif s[0]=="height:":
-            self.Height = float(s[1])
+            self.Height = float(s[1] * -1)
         elif s[0]=="direction:":
             self.Directionx = float(s[1])
-            self.Directiony = float(s[2])
+            self.Directiony = float(s[2]* -1)
 
     def send_message(self, message):
         pass
