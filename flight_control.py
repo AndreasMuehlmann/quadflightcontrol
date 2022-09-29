@@ -2,6 +2,7 @@ import pygame
 
 import config as conf
 from sim_interface import SimInterface
+from bluetooth_raspberry_interface import BluetoothRaspberryInterface
 from bluetooth_server_interface import BluetoothServerInterface
 from keyboard_interface import KeyboardInterface
 from hardware_interface import HardwareInterface
@@ -16,7 +17,7 @@ class FlightControl():
                                                 conf.iir_order, conf.max_output) \
                                   for _ in range(4)]
 
-        self.interface_user = BluetoothServerInterface()
+        self.interface_user = BluetoothRaspberryInterface()
         self.amount_inputs = 4
 
         self.interface_control = HardwareInterface()

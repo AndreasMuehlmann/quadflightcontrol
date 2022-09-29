@@ -3,7 +3,7 @@ from bluedot.btcomm import BluetoothServer
 from interface_user import InterfaceUser
 
 
-class BluetoothServerInterface(InterfaceUser):
+class BluetoothRaspberryInterface(InterfaceUser):
 
     def __init__(self):
         self.base_output = 0
@@ -20,14 +20,14 @@ class BluetoothServerInterface(InterfaceUser):
         split_data = data.split()
 
         if split_data[0]=="rotation:":
-            self.rotation_vel = float(split_text[0])
+            self.rotation_vel = float(split_data[1])
 
         elif split_data[0]=="height:":
-            self.base_output = float(split_text[1]) * -1
+            self.base_output = float(split_data[2]) * -1
 
         elif split_data[0]=="direction:":
-            self.strength_x_slope = float(split_text[1])
-            self.strength_y_slope = float(split_text[2]) * -1
+            self.strength_x_slope = float(split_data[1])
+            self.strength_y_slope = float(split_data[2]) * -1
 
     def send_message(self, message):
         pass
