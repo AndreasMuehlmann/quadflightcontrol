@@ -1,4 +1,5 @@
 import pygame
+import time
 
 import config as conf
 from sim_interface import SimInterface
@@ -37,6 +38,7 @@ class FlightControl():
             base_output, strength_x_slope, strength_y_slope, rotation_vel = inputs
 
             measurements = self.interface_control.give_measurements()
+            # print(f'{round(measurements[0], 2)}, {round(measurements[1], 2)}, {round(measurements[2], 2)}, {round(measurements[3], 2)}')
             if len(measurements) != self.amount_measurements:
                 print('failure in collecting measurements or in measuring')
                 continue

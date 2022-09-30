@@ -4,7 +4,6 @@ from interface_user import InterfaceUser
 
 
 class BluetoothRaspberryInterface(InterfaceUser):
-
     def __init__(self):
         self.base_output = 0
         self.strength_x_slope = 0
@@ -23,7 +22,13 @@ class BluetoothRaspberryInterface(InterfaceUser):
             self.rotation_vel = float(split_data[1])
 
         elif split_data[0]=="height:":
-            self.base_output = float(split_data[2]) * -1
+            input_value = float(split_data[2]) * -1
+
+            if input_value < 0:
+                self.base_output = 400 * (input_value + 1)
+
+            elif input_value >= 0:
+                self.base_output = 400 + 600 * input_value
 
         elif split_data[0]=="direction:":
             self.strength_x_slope = float(split_data[1])
@@ -34,8 +39,3 @@ class BluetoothRaspberryInterface(InterfaceUser):
 
     def reset():
         pass
-
-
-
-
-

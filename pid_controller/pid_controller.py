@@ -4,11 +4,13 @@ from controller import Controller
 
 
 class PidController(Controller):
-    def __init__(self, p_faktor, i_faktor, d_faktor, iir_faktor, iir_order, maximum):
+    def __init__(self, p_faktor, i_faktor, d_faktor, iir_faktor, iir_order, max_output):
         self.p_faktor = p_faktor
         self.i_faktor = i_faktor
         self.d_faktor = d_faktor
-        self.maximum = maximum
+
+        self.max_output = max_output
+        self.max_integrator = self.max_output / 5
 
         self.last_error = 0
         self.last_measurement = 0
@@ -26,19 +28,19 @@ class PidController(Controller):
         measurement = self.iir_measurement.give_filtered(measurement)
 
         self._integral(error)
-        if self.integrator > self.maximum:
-            self.integrator = self.maximum
+        if self.integrator > self.max_integrator:
+            self.integrator = self.max_integrator
 
-        elif self.integrator < -self.maximum:
-            self.integrator = -self.maximum
+        elif self.integrator < -self.max_integrator:
+            self.integrator = -self.max_integrator
 
         output = self._proportional(error) + self.integrator + self._derivative(measurement)
 
-        if output > self.maximum:
-            output = self.maximum
+        if output > self.max_output:
+            output = self.max_output
 
-        elif output < -self.maximum:
-            output = -self.maximum
+        elif output < -self.max_output:
+            output = -self.max_output
 
         self.last_error = error
         self.last_measurement = measurement
