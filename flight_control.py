@@ -1,5 +1,6 @@
 import pygame
 import time
+import sys
 
 import config as conf
 from sim_interface import SimInterface
@@ -27,6 +28,10 @@ class FlightControl():
         self.clock = pygame.time.Clock()
 
     def run(self):
+        '''
+        up = True
+        output = 0
+        '''
         while True:
             self.clock.tick(conf.frequency)
 
@@ -48,7 +53,26 @@ class FlightControl():
             outputs = self._give_outputs_rotor_controllers(targets, measurements)
             outputs = [output + base_output for output in outputs]
             outputs = self._remove_negatives(outputs)
+            '''
+            # outputs[1] += 10
+            # outputs[0] += 25 
+            command = input("give an input\n")
+            if command == "":
+                output += 1.0 if up else -1.0
+            elif command == "-":
+                up = False
+                output += 1.0 if up else -1.0
+            elif command == "+":
+                up = True
+                output += 1.0 if up else -1.0
+            else:
+                try:
+                    output = float(command)
+                except:
+                    pass
 
+            outputs = [output for _ in range(4)]
+            '''
             self.interface_control.send_outputs(outputs)
 
     def _give_outputs_rotor_controllers(self, targets, measurements):
@@ -63,4 +87,8 @@ class FlightControl():
             new_outputs.append(output)
         
         return new_outputs
+
+    def reset(self):
+        self.interface_control.reset()
+        
 

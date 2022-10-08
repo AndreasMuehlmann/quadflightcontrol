@@ -2,7 +2,7 @@ import os
 
 
 # FLIGHT CONTROL
-frequency = 100
+frequency = 100 
 max_angle_drone = 10
 
 
@@ -37,9 +37,9 @@ iir_order = 3 # for vel_env 5
 
 # REALWORLD
 # PID_CONTROLLER
-p_faktor = 1.2
-i_faktor = 0.3
-d_faktor = 1.8
+p_faktor = 1.5 # 1.2
+i_faktor = 0 # 0.05 # 0.3
+d_faktor = 0 # 0.5 # 1.8 
 iir_faktor = 0.7
 iir_order = 3
 

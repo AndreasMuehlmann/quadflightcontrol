@@ -14,8 +14,12 @@ from flight_control import FlightControl
 
 
 def main():
-    flight_control = FlightControl()
-    flight_control.run()
+    try:
+        flight_control = FlightControl()
+        flight_control.run()
+    except KeyboardInterrupt:
+        flight_control.reset()
+
 
 if __name__ == '__main__':
     main()
