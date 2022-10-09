@@ -1,4 +1,3 @@
-import os
 import sys
 import time
 from copy import deepcopy
@@ -18,25 +17,29 @@ from interface_control import InterfaceControl
 
 class HardwareInterface(InterfaceControl):
     def __init__(self):
-        self.calibration_file_path = '/home/dronepi/programming/quadflightcontrol/interfaces/sensor_calib.json'
 
         self.pwm_range = 0xffff
         self.prozent_to_duty_cycle = self.pwm_range / 100
-        self.base_duty = 5 * self.prozent_to_duty_cycle
-        self.max_duty = 10 * self.prozent_to_duty_cycle
+        self.base_duty = 40 * self.prozent_to_duty_cycle
+        self.max_duty = 80 * self.prozent_to_duty_cycle
 
-        i2c = busio.I2C(board.SCL, board.SDA)
-        pwm_generator = adafruit_pca9685.PCA9685(i2c)
-        pwm_generator.frequency = 50
+        try:
+            i2c = board.I2C()
+            self.sensor = adafruit_bno055.BNO055_I2C(i2c)
+            time.sleep(1)
+            self.vector = [0, 0, 0, 0]
+            self.base_euler = self.sensor.euler
 
-        self.pwm_pins = [pwm_generator.channels[i] for i in range(4)]
-        self._boot_motor_controller()
+            i2c = busio.I2C(board.SCL, board.SDA)
+            pwm_generator = adafruit_pca9685.PCA9685(i2c)
+            pwm_generator.frequency = 400
 
-        i2c = board.I2C()
-        self.sensor = adafruit_bno055.BNO055_I2C(i2c)
-        time.sleep(2)
-        self.vector = [0, 0, 0, 0]
-        self.base_euler = self.sensor.euler
+            self.pwm_pins = [pwm_generator.channels[i] for i in range(4)]
+            # self._calibrate_motor_controllers()
+            self._boot_motor_controller()
+        except KeyboardInterrupt:
+            self.reset()
+            sys.exit(1)
 
     def give_measurements(self):
         euler = self.sensor.euler
@@ -61,7 +64,34 @@ class HardwareInterface(InterfaceControl):
         for pwm_pin in self.pwm_pins:
             pwm_pin.duty_cycle = int(self.base_duty)
 
+        time.sleep(2)
+
+    def _calibrate_motor_controllers(self):
+        input("calibration")
+
+        '''
+        for pwm_pin in self.pwm_pins:
+            pwm_pin.duty_cycle = int(0)
+        input("beacon beeps")
+        '''
+
+        for pwm_pin in self.pwm_pins:
+            pwm_pin.duty_cycle = int(self.max_duty)
+            
         time.sleep(5)
+
+        input("max stored")
+
+        for pwm_pin in self.pwm_pins:
+            pwm_pin.duty_cycle = int(self.base_duty)
+
+        time.sleep(5)
+
+        input("min stored")
+
+        print("motor controllers are calibrated")
+
+
 
     def send_outputs(self, outputs):
         for pwm_pin, output in zip(self.pwm_pins, outputs):

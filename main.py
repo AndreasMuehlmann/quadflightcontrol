@@ -17,8 +17,9 @@ def main():
     try:
         flight_control = FlightControl()
         flight_control.run()
-    except KeyboardInterrupt:
+    except Exception as e:
         flight_control.reset()
+        print(e)
 
 
 if __name__ == '__main__':
