@@ -14,8 +14,9 @@ from flight_control import FlightControl
 
 
 def main():
+    flight_control = FlightControl()
+
     try:
-        flight_control = FlightControl()
         flight_control.run()
     except Exception as e:
         flight_control.reset()

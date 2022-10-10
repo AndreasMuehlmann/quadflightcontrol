@@ -11,13 +11,12 @@ import adafruit_pca9685
 
 from interface_control import InterfaceControl
 
-import config as conf # not for testing
+import config as conf
 from interface_control import InterfaceControl
 
 
 class HardwareInterface(InterfaceControl):
     def __init__(self):
-
         self.pwm_range = 0xffff
         self.prozent_to_duty_cycle = self.pwm_range / 100
         self.base_duty = 40 * self.prozent_to_duty_cycle
@@ -37,12 +36,19 @@ class HardwareInterface(InterfaceControl):
             self.pwm_pins = [pwm_generator.channels[i] for i in range(4)]
             # self._calibrate_motor_controllers()
             self._boot_motor_controller()
-        except KeyboardInterrupt:
+
+        except KeyboardInterrupt as e:
+            print(e)
             self.reset()
-            sys.exit(1)
+            sys.exit()
 
     def give_measurements(self):
-        euler = self.sensor.euler
+        try:
+            euler = self.sensor.euler
+
+        except Exception as e:
+            print('In measuring:')
+            print(e)
 
         if None in euler or self.is_differece_to_big(list(euler)[1:]):
             print('\n\nError in measuring\n\n')
@@ -61,43 +67,60 @@ class HardwareInterface(InterfaceControl):
         return False
 
     def _boot_motor_controller(self):
-        for pwm_pin in self.pwm_pins:
-            pwm_pin.duty_cycle = int(self.base_duty)
+        try:
+            for pwm_pin in self.pwm_pins:
+                pwm_pin.duty_cycle = int(self.base_duty)
 
-        time.sleep(2)
+        except KeyboardInterrupt as e:
+            print(e)
+            self.reset()
+            sys.exit()
+
+        time.sleep(1)
 
     def _calibrate_motor_controllers(self):
-        input("calibration")
+        input("CALIBRATION")
+        try:
+            for pwm_pin in self.pwm_pins:
+                pwm_pin.duty_cycle = int(self.max_duty)
+                
+            time.sleep(5)
 
-        '''
-        for pwm_pin in self.pwm_pins:
-            pwm_pin.duty_cycle = int(0)
-        input("beacon beeps")
-        '''
+            input("wait until beeping ends")
 
-        for pwm_pin in self.pwm_pins:
-            pwm_pin.duty_cycle = int(self.max_duty)
-            
+            for pwm_pin in self.pwm_pins:
+                pwm_pin.duty_cycle = int(self.base_duty)
+
+        except KeyboardInterrupt as e:
+            print(e)
+            self.reset()
+            sys.exit()
+
         time.sleep(5)
 
-        input("max stored")
-
-        for pwm_pin in self.pwm_pins:
-            pwm_pin.duty_cycle = int(self.base_duty)
-
-        time.sleep(5)
-
-        input("min stored")
+        input("wait until beeping ends")
 
         print("motor controllers are calibrated")
 
-
-
     def send_outputs(self, outputs):
-        for pwm_pin, output in zip(self.pwm_pins, outputs):
-            duty_cycle = self.base_duty + ((self.max_duty - self.base_duty)  / (conf.max_output * 2) * output)
-            pwm_pin.duty_cycle = round(duty_cycle)
+        try: 
+            for pwm_pin, output in zip(self.pwm_pins, outputs):
+                duty_cycle = self.base_duty + ((self.max_duty - self.base_duty)  / (conf.max_output * 2) * output)
+                pwm_pin.duty_cycle = round(duty_cycle)
 
-    def reset(self):
-        for pwm_pin in self.pwm_pins:
-            pwm_pin.duty_cycle = 0
+        except Exception as e:
+            print('In changing duty cycle:')
+            print(e)
+
+    def reset(self, counter=0):
+        try: 
+            for pwm_pin in self.pwm_pins:
+                pwm_pin.duty_cycle = 0
+
+        except Exception as e:
+            print('In resetting:')
+            print(e)
+
+            time.sleep(0.1)
+            if counter < 10:
+                self.reset(counter + 1)
