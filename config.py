@@ -37,9 +37,9 @@ iir_order = 3 # for vel_env 5
 
 # REALWORLD
 # PID_CONTROLLER
-p_faktor = 0.7
-i_faktor = 0.65
-d_faktor = 0.6
+p_faktor = 0.7 # 1.38 # 
+i_faktor = 0.65 # 1.25 # 
+d_faktor = 0.6 # 0.6
 iir_faktor = 0.7
 iir_order = 3
 

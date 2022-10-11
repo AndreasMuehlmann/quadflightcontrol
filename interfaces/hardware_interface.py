@@ -23,35 +23,39 @@ class HardwareInterface(InterfaceControl):
         self.max_duty = 80 * self.prozent_to_duty_cycle
 
         try:
+            i2c = busio.I2C(board.SCL, board.SDA)
+            pwm_generator = adafruit_pca9685.PCA9685(i2c)
+            pwm_generator.frequency = 400
+            self.pwm_pins = [pwm_generator.channels[i] for i in range(4)]
+
+            # self._calibrate_motor_controllers()
+            self._boot_motor_controller()
+
             i2c = board.I2C()
             self.sensor = adafruit_bno055.BNO055_I2C(i2c)
             time.sleep(1)
             self.vector = [0, 0, 0, 0]
             self.base_euler = self.sensor.euler
 
-            i2c = busio.I2C(board.SCL, board.SDA)
-            pwm_generator = adafruit_pca9685.PCA9685(i2c)
-            pwm_generator.frequency = 400
 
-            self.pwm_pins = [pwm_generator.channels[i] for i in range(4)]
-            # self._calibrate_motor_controllers()
-            self._boot_motor_controller()
-
-        except KeyboardInterrupt as e:
-            print(e)
+        except KeyboardInterrupt:
             self.reset()
             sys.exit()
 
     def give_measurements(self):
         try:
             euler = self.sensor.euler
+            
+        except KeyboardInterrupt:
+            self.reset()
+            sys.exit()
 
         except Exception as e:
             print('In measuring:')
             print(e)
 
         if None in euler or self.is_differece_to_big(list(euler)[1:]):
-            print('\n\nError in measuring\n\n')
+            print('measuring None')
         else:
             self.vector = [euler[0] - self.base_euler[0], euler[1] - self.base_euler[1], euler[2] - self.base_euler[2]]
 
@@ -71,12 +75,11 @@ class HardwareInterface(InterfaceControl):
             for pwm_pin in self.pwm_pins:
                 pwm_pin.duty_cycle = int(self.base_duty)
 
-        except KeyboardInterrupt as e:
-            print(e)
+        except KeyboardInterrupt:
             self.reset()
             sys.exit()
 
-        time.sleep(1)
+        time.sleep(2)
 
     def _calibrate_motor_controllers(self):
         input("CALIBRATION")
@@ -91,8 +94,7 @@ class HardwareInterface(InterfaceControl):
             for pwm_pin in self.pwm_pins:
                 pwm_pin.duty_cycle = int(self.base_duty)
 
-        except KeyboardInterrupt as e:
-            print(e)
+        except KeyboardInterrupt:
             self.reset()
             sys.exit()
 
@@ -108,6 +110,10 @@ class HardwareInterface(InterfaceControl):
                 duty_cycle = self.base_duty + ((self.max_duty - self.base_duty)  / (conf.max_output * 2) * output)
                 pwm_pin.duty_cycle = round(duty_cycle)
 
+        except KeyboardInterrupt:
+            self.reset()
+            sys.exit()
+
         except Exception as e:
             print('In changing duty cycle:')
             print(e)
@@ -122,5 +128,5 @@ class HardwareInterface(InterfaceControl):
             print(e)
 
             time.sleep(0.1)
-            if counter < 10:
+            if counter < 5:
                 self.reset(counter + 1)
