@@ -34,15 +34,17 @@ class HardwareInterface(InterfaceControl):
             i2c = board.I2C()
             self.sensor = adafruit_bno055.BNO055_I2C(i2c)
             time.sleep(1)
-            self.vector = [0, 0, 0, 0]
             self.base_euler = self.sensor.euler
+
+            self.rotor_angles = [0, 0, 0, 0]
+            self.rotation_vel = 0
 
 
         except KeyboardInterrupt:
             self.reset()
             sys.exit()
 
-    def give_measurements(self):
+    def give_rotor_angles(self):
         try:
             euler = self.sensor.euler
             
@@ -51,15 +53,15 @@ class HardwareInterface(InterfaceControl):
             sys.exit()
 
         except Exception as e:
-            print('In measuring:')
+            print('in getting rotor angles:')
             print(e)
 
         if None in euler or self.is_differece_to_big(list(euler)[1:]):
-            print('measuring None')
+            print('None in rotor angles')
         else:
-            self.vector = [euler[0] - self.base_euler[0], euler[1] - self.base_euler[1], euler[2] - self.base_euler[2]]
+            self.rotor_angles = [euler[0] - self.base_euler[0], euler[1] - self.base_euler[1], euler[2] - self.base_euler[2]]
 
-        return [-self.vector[1], self.vector[2], self.vector[1], -self.vector[2]]
+        return [-self.rotor_angles[1], self.rotor_angles[2], self.rotor_angles[1], -self.rotor_angles[2]]
 
     def is_differece_to_big(self, new_vector):
         count = 0
@@ -69,6 +71,25 @@ class HardwareInterface(InterfaceControl):
                 print(f'error in euler {count}')
                 return True
         return False
+
+    def give_rotation_vel(self):
+        try:
+            gyro_vals = self.sensor.gyro
+            
+        except KeyboardInterrupt:
+            self.reset()
+            sys.exit()
+
+        except Exception as e:
+            print('in getting rotation vel:')
+            print(e)
+
+        if None in gyro_vals:
+            print('None in anglular vels')
+        else:
+            self.rotation_vel = gyro_vals[0]
+
+        return self.rotation_vel
 
     def _boot_motor_controller(self):
         try:

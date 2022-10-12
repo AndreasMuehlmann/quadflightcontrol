@@ -14,24 +14,24 @@ from give_rotor_angle_targets import give_rotor_angle_targets
 
 class FlightControl():
     def __init__(self):
-        self.rotor_controllers = [PidController(conf.p_faktor, conf.i_faktor,
-                                                conf.d_faktor, conf.iir_faktor,
+        self.angle_controllers = [PidController(conf.angle_p_faktor, conf.angle_i_faktor,
+                                                conf.angle_d_faktor, conf.iir_faktor,
                                                 conf.iir_order, conf.max_output) \
-                                  for _ in range(4)]
+                                                        for _ in range(4)]
+
+        self.rotation_vel_controller = PidController(conf.rotation_vel_p_faktor, conf.rotation_vel_i_faktor,
+                                                conf.rotation_vel_d_faktor, conf.iir_faktor,
+                                                conf.iir_order, conf.max_output)
 
         self.interface_user = BluetoothRaspberryInterface()
         self.amount_inputs = 4
 
         self.interface_control = HardwareInterface()
-        self.amount_measurements = 4
+        self.amount_rotor_angles = 4
 
         self.clock = pygame.time.Clock()
 
     def run(self):
-        '''
-        up = True
-        output = 0
-        '''
         while True:
             self.clock.tick(conf.frequency)
 
@@ -40,44 +40,33 @@ class FlightControl():
                 print('failure in collecting inputs')
                 continue
 
-            base_output, strength_x_slope, strength_y_slope, rotation_vel = inputs
+            base_output, strength_x_slope_target, strength_y_slope_target, rotation_vel_target = inputs
 
-            measurements = self.interface_control.give_measurements()
-            # print(f'{round(measurements[0], 2)}, {round(measurements[1], 2)}, {round(measurements[2], 2)}, {round(measurements[3], 2)}')
-            if len(measurements) != self.amount_measurements:
-                print('failure in collecting measurements or in measuring')
+            rotor_angles = self.interface_control.give_rotor_angles()
+            if len(rotor_angles) != self.amount_rotor_angles:
+                print('failure in collecting rotor angles or in measuring')
                 continue
 
-            targets = give_rotor_angle_targets(strength_x_slope, strength_y_slope)
+            rotor_angle_targets = give_rotor_angle_targets(strength_x_slope_target, strength_y_slope_target)
+            rotation_vel = self.interface_control.give_rotation_vel()
 
-            outputs = self._give_outputs_rotor_controllers(targets, measurements)
-            outputs = [output + base_output for output in outputs]
+            angle_controller_outputs = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
+            rotation_vel_controller_outputs = self._give_outputs_rotation_controller(rotation_vel_target, rotation_vel)
+
+            outputs = [base_output +  angle_controller_output + rotation_vel_controller_output \
+                    for angle_controller_output, rotation_vel_controller_output in zip(angle_controller_outputs, rotation_vel_controller_outputs)]
             outputs = self._remove_negatives(outputs)
-            '''
-            # outputs[1] += 10
-            # outputs[0] += 25 
-            command = input("give an input\n")
-            if command == "":
-                output += 1.0 if up else -1.0
-            elif command == "-":
-                up = False
-                output += 1.0 if up else -1.0
-            elif command == "+":
-                up = True
-                output += 1.0 if up else -1.0
-            else:
-                try:
-                    output = float(command)
-                except:
-                    pass
 
-            outputs = [output for _ in range(4)]
-            '''
             self.interface_control.send_outputs(outputs)
 
-    def _give_outputs_rotor_controllers(self, targets, measurements):
-        return [self.rotor_controllers[i].give_output(targets[i] - measurement, measurement) \
-                for i, measurement in enumerate(measurements)]
+    def _give_outputs_angle_controllers(self, rotor_angle_targets, rotor_angles):
+        return [self.angle_controllers[i].give_output(rotor_angle_targets[i] - rotor_angle, rotor_angle) \
+                for i, rotor_angle in enumerate(rotor_angles)]
+
+    def _give_outputs_rotation_controller(self, rotation_vel_target, rotation_vel):
+        output = self.rotation_vel_controller.give_ouptut(target - rotation_vel, rotation_vel)
+        return [output, -output, output, -output]
+
 
     def _remove_negatives(self, outputs):
         new_outputs = []
@@ -90,5 +79,3 @@ class FlightControl():
 
     def reset(self):
         self.interface_control.reset()
-        
-
