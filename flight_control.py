@@ -19,8 +19,8 @@ class FlightControl():
                                                 conf.iir_order, conf.max_output) \
                                                         for _ in range(4)]
 
-        self.rotation_vel_controller = PidController(conf.rotation_vel_p_faktor, conf.rotation_vel_i_faktor,
-                                                conf.rotation_vel_d_faktor, conf.iir_faktor,
+        self.rotation_controller = PidController(conf.rotation_p_faktor, conf.rotation_i_faktor,
+                                                conf.rotation_d_faktor, conf.iir_faktor,
                                                 conf.iir_order, conf.max_output)
 
         self.interface_user = BluetoothRaspberryInterface()
@@ -40,7 +40,7 @@ class FlightControl():
                 print('failure in collecting inputs')
                 continue
 
-            base_output, strength_x_slope_target, strength_y_slope_target, rotation_vel_target = inputs
+            base_output, strength_x_slope_target, strength_y_slope_target, rotation_target = inputs
 
             rotor_angles = self.interface_control.give_rotor_angles()
             if len(rotor_angles) != self.amount_rotor_angles:
@@ -48,16 +48,15 @@ class FlightControl():
                 continue
 
             rotor_angle_targets = give_rotor_angle_targets(strength_x_slope_target, strength_y_slope_target)
-            # rotation_vel = self.interface_control.give_rotation_vel()
-            # print(round(rotation_vel, 2))
+            rotation = self.interface_control.give_rotation()
+            print(round(rotation, 2))
 
             angle_controller_outputs = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
-            rotation_vel_controller_outputs = [0, 0, 0, 0]
-            # rotation_vel_controller_outputs = self._give_outputs_rotation_controller(rotation_vel_target, rotation_vel)
-            # print(rotation_vel_controller_outputs)
+            rotation_controller_outputs = self._give_outputs_rotation_controller(rotation_target, rotation)
+            print(rotation_controller_outputs)
 
-            outputs = [base_output +  angle_controller_output + rotation_vel_controller_output \
-                    for angle_controller_output, rotation_vel_controller_output in zip(angle_controller_outputs, rotation_vel_controller_outputs)]
+            outputs = [base_output +  angle_controller_output + rotation_controller_output \
+                    for angle_controller_output, rotation_controller_output in zip(angle_controller_outputs, rotation_controller_outputs)]
             outputs = self._remove_negatives(outputs)
 
             self.interface_control.send_outputs(outputs)
@@ -66,8 +65,8 @@ class FlightControl():
         return [self.angle_controllers[i].give_output(rotor_angle_targets[i] - rotor_angle, rotor_angle) \
                 for i, rotor_angle in enumerate(rotor_angles)]
 
-    def _give_outputs_rotation_controller(self, rotation_vel_target, rotation_vel):
-        output = self.rotation_vel_controller.give_output(rotation_vel_target - rotation_vel, rotation_vel)
+    def _give_outputs_rotation_controller(self, rotation_target, rotation):
+        output = self.rotation_controller.give_output(rotation_target - rotation, rotation)
         return [output, -output, output, -output]
 
 

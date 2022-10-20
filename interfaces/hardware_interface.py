@@ -34,7 +34,7 @@ class HardwareInterface():
             self.base_euler = self.sensor.euler
 
             self.euler = [0, 0, 0]
-            self.yaw = self.base_euler[0]
+            self.rotation = self.base_euler[0]
 
 
         except KeyboardInterrupt:
@@ -61,7 +61,7 @@ class HardwareInterface():
         return [-self.euler[1], self.euler[2], self.euler[1], -self.euler[2]]
 
 
-    def give_yaw(self):
+    def give_rotation(self):
         try:
             new_euler = self.sensor.euler
             
@@ -72,13 +72,18 @@ class HardwareInterface():
         except Exception as e:
             print('in getting yaw:')
             print(e)
+    
+        rotation = new_euler[1] - 180
 
-        if None in new_euler or self.is_differece_to_big(list(new_euler)[:1], self.euler[:1], 30):
+        if None in new_euler:
             print('None in euler')
+        elif (self.is_differece_to_big([rotation], [self.rotation], 30) \
+                and not (rotation > 100 and self.rotation < -100):
+            print('wrong measurement in give_rotation')
         else:
-            self.yaw = new_euler[0]
+            self.rotation = rotation
 
-        return self.yaw
+        return self.rotation
 
     def is_differece_to_big(self, new_vector, old_vector, cut_of):
         count = 0
