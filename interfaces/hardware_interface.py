@@ -9,13 +9,10 @@ import busio
 import adafruit_bno055
 import adafruit_pca9685
 
-from interface_control import InterfaceControl
-
 import config as conf
-from interface_control import InterfaceControl
 
 
-class HardwareInterface(InterfaceControl):
+class HardwareInterface():
     def __init__(self):
         self.pwm_range = 0xffff
         self.prozent_to_duty_cycle = self.pwm_range / 100
@@ -36,8 +33,8 @@ class HardwareInterface(InterfaceControl):
             time.sleep(1)
             self.base_euler = self.sensor.euler
 
-            self.rotor_angles = [0, 0, 0, 0]
-            self.rotation_vel = 0
+            self.euler = [0, 0, 0]
+            self.yaw = self.base_euler[0]
 
 
         except KeyboardInterrupt:
@@ -46,7 +43,7 @@ class HardwareInterface(InterfaceControl):
 
     def give_rotor_angles(self):
         try:
-            euler = self.sensor.euler
+            new_euler = self.sensor.euler
             
         except KeyboardInterrupt:
             self.reset()
@@ -56,40 +53,41 @@ class HardwareInterface(InterfaceControl):
             print('in getting rotor angles:')
             print(e)
 
-        if None in euler or self.is_differece_to_big(list(euler)[1:]):
-            print('None in rotor angles')
+        if None in new_euler or self.is_differece_to_big(list(new_euler)[1:], self.euler[1:], 30):
+            print('None in euler')
         else:
-            self.rotor_angles = [euler[0] - self.base_euler[0], euler[1] - self.base_euler[1], euler[2] - self.base_euler[2]]
+            self.euler = [new_euler[0] - self.base_euler[0], new_euler[1] - self.base_euler[1], new_euler[2] - self.base_euler[2]]
 
-        return [-self.rotor_angles[1], self.rotor_angles[2], self.rotor_angles[1], -self.rotor_angles[2]]
+        return [-self.euler[1], self.euler[2], self.euler[1], -self.euler[2]]
 
-    def is_differece_to_big(self, new_vector):
-        count = 0
-        for new_val, val in zip(new_vector, self.vector[1:]):
-            count  += 1
-            if abs(new_val - val) > 30:
-                print(f'error in euler {count}')
-                return True
-        return False
 
-    def give_rotation_vel(self):
+    def give_yaw(self):
         try:
-            gyro_vals = self.sensor.gyro
+            new_euler = self.sensor.euler
             
         except KeyboardInterrupt:
             self.reset()
             sys.exit()
 
         except Exception as e:
-            print('in getting rotation vel:')
+            print('in getting yaw:')
             print(e)
 
-        if None in gyro_vals:
-            print('None in anglular vels')
+        if None in new_euler or self.is_differece_to_big(list(new_euler)[:1], self.euler[:1], 30):
+            print('None in euler')
         else:
-            self.rotation_vel = gyro_vals[0]
+            self.yaw = new_euler[0]
 
-        return self.rotation_vel
+        return self.yaw
+
+    def is_differece_to_big(self, new_vector, old_vector, cut_of):
+        count = 0
+        for new_val, val in zip(new_vector, old_vector):
+            count  += 1
+            if abs(new_val - val) > cut_of:
+                print(f'error in euler {count}')
+                return True
+        return False
 
     def _boot_motor_controller(self):
         try:

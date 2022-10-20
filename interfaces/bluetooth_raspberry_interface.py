@@ -25,10 +25,10 @@ class BluetoothRaspberryInterface(InterfaceUser):
             input_value = float(split_data[2]) * -1
 
             if input_value < 0:
-                self.base_output = 400 * (input_value + 1)
+                self.base_output = 100 + 300 * (input_value + 1)
 
             elif input_value >= 0:
-                self.base_output = 400 + 600 * input_value
+                self.base_output = 400 + 300 * input_value
 
         elif split_data[0]=="direction:":
             self.strength_x_slope = float(split_data[1])

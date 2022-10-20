@@ -1,9 +1,7 @@
 import os
 
-from interface_control import InterfaceControl
 
-
-class SimInterface(InterfaceControl):
+class SimInterface():
     def __init__(self):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         path_to_file_with_interface_dir = os.path.join(current_dir, 'sim_interface_dir_path.txt')

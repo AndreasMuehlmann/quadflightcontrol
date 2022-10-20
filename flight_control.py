@@ -48,10 +48,13 @@ class FlightControl():
                 continue
 
             rotor_angle_targets = give_rotor_angle_targets(strength_x_slope_target, strength_y_slope_target)
-            rotation_vel = self.interface_control.give_rotation_vel()
+            # rotation_vel = self.interface_control.give_rotation_vel()
+            # print(round(rotation_vel, 2))
 
             angle_controller_outputs = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
-            rotation_vel_controller_outputs = self._give_outputs_rotation_controller(rotation_vel_target, rotation_vel)
+            rotation_vel_controller_outputs = [0, 0, 0, 0]
+            # rotation_vel_controller_outputs = self._give_outputs_rotation_controller(rotation_vel_target, rotation_vel)
+            # print(rotation_vel_controller_outputs)
 
             outputs = [base_output +  angle_controller_output + rotation_vel_controller_output \
                     for angle_controller_output, rotation_vel_controller_output in zip(angle_controller_outputs, rotation_vel_controller_outputs)]
@@ -64,7 +67,7 @@ class FlightControl():
                 for i, rotor_angle in enumerate(rotor_angles)]
 
     def _give_outputs_rotation_controller(self, rotation_vel_target, rotation_vel):
-        output = self.rotation_vel_controller.give_ouptut(target - rotation_vel, rotation_vel)
+        output = self.rotation_vel_controller.give_output(rotation_vel_target - rotation_vel, rotation_vel)
         return [output, -output, output, -output]
 
 
