@@ -42,9 +42,9 @@ angle_i_faktor = 0.65 # 1.25 #
 angle_d_faktor = 0.6 # 0.6
 
 # ROTATION_PID_CONTROLLER
-rotation_p_faktor = 0.5
-rotation_i_faktor = 0.4
-rotation_d_faktor = 0.8
+rotation_p_faktor = 3.5
+rotation_i_faktor = 2
+rotation_d_faktor = 0
 
 iir_faktor = 0.7
 iir_order = 3

@@ -21,7 +21,7 @@ def main():
 
     except KeyboardInterrupt:
         flight_control.reset()
-        
+
     except Exception as e:
         print(e)
         print('Exception in running flight control')

@@ -30,12 +30,12 @@ class HardwareInterface():
 
             i2c = board.I2C()
             self.sensor = adafruit_bno055.BNO055_I2C(i2c)
-            time.sleep(1)
+            time.sleep(2)
             self.base_euler = self.sensor.euler
 
             self.euler = [0, 0, 0]
-            self.rotation = self.base_euler[0]
 
+            self.rotation = self.calc_rotation(self.base_euler)
 
         except KeyboardInterrupt:
             self.reset()
@@ -73,17 +73,20 @@ class HardwareInterface():
             print('in getting yaw:')
             print(e)
     
-        rotation = new_euler[1] - 180
-
         if None in new_euler:
             print('None in euler')
-        elif (self.is_differece_to_big([rotation], [self.rotation], 30) \
-                and not (rotation > 100 and self.rotation < -100):
+        elif self.is_differece_to_big([self.calc_rotation(new_euler)], [self.rotation], 30) \
+                and not (self.calc_rotation(new_euler) > 100 and self.rotation < -100):
             print('wrong measurement in give_rotation')
         else:
-            self.rotation = rotation
+            self.rotation = self.calc_rotation(new_euler)
 
         return self.rotation
+
+    def calc_rotation(self, euler):
+        yaw = euler[0] - self.base_euler[0]
+        rotation = -360 + yaw if yaw > 180 else yaw
+        return rotation
 
     def is_differece_to_big(self, new_vector, old_vector, cut_of):
         count = 0
