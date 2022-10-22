@@ -5,6 +5,7 @@ from interface_user import InterfaceUser
 
 class BluetoothRaspberryInterface(InterfaceUser):
     def __init__(self):
+        self.flight_control_status = True
         self.base_output = 0
         self.strength_x_slope = 0
         self.strength_y_slope = 0
@@ -16,6 +17,12 @@ class BluetoothRaspberryInterface(InterfaceUser):
                 self.strength_y_slope, self.rotation]
 
     def data_received(self, data):
+        if data == "ON":
+            self.flight_control_status = True
+
+        if data == "OFF":
+            self.flight_control_status = False
+
         split_data = data.split()
 
         if split_data[0]=="rotation:":
@@ -33,6 +40,9 @@ class BluetoothRaspberryInterface(InterfaceUser):
         elif split_data[0]=="direction:":
             self.strength_x_slope = float(split_data[1])
             self.strength_y_slope = float(split_data[2]) * -1
+
+    def should_flight_control_run(self):
+        return self.flight_control_status
 
     def send_message(self, message):
         pass

@@ -35,6 +35,9 @@ class FlightControl():
         while True:
             self.clock.tick(conf.frequency)
 
+            if not self.interface_user.should_flight_control_run():
+                reset() 
+
             inputs = self.interface_user.give_inputs()
             if len(inputs) != self.amount_inputs:
                 print('failure in collecting inputs')
@@ -78,4 +81,7 @@ class FlightControl():
         return new_outputs
 
     def reset(self):
+        for angle_controller in self.angle_controllers:
+            angle_controller.reset()
+        self.rotation_controller.reset()
         self.interface_control.reset()
