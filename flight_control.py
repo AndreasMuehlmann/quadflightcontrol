@@ -1,6 +1,7 @@
 import pygame
 import time
 import sys
+import math
 
 import config as conf
 from sim_interface import SimInterface
@@ -55,7 +56,7 @@ class FlightControl():
 
             angle_controller_outputs = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
             rotation_controller_outputs = self._give_outputs_rotation_controller(rotation_target, rotation)
-
+            base_output = self._compensate_orientation_in_vertical_acc(base_output, rotor_angles[0], rotor_angles[1])
             outputs = [base_output +  angle_controller_output + rotation_controller_output \
                     for angle_controller_output, rotation_controller_output in zip(angle_controller_outputs, rotation_controller_outputs)]
             outputs = self._remove_negatives(outputs)
@@ -69,6 +70,11 @@ class FlightControl():
     def _give_outputs_rotation_controller(self, rotation_target, rotation):
         output = self.rotation_controller.give_output(rotation_target - rotation, rotation)
         return [-output, output, -output, output]
+
+    def _compensate_orientation_in_vertical_acc(self, base_output, roll, pitch):
+        # sin(alpha) = horizontal_acc / base_output
+        # horizontal_acc = sin(alpha) * base_output
+        return base_output + math.sin((abs(roll) + abs(pitch)) / 360 * 2*math.pi) * base_output
 
 
     def _remove_negatives(self, outputs):
