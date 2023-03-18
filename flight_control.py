@@ -37,6 +37,7 @@ class FlightControl():
             self.clock.tick(conf.frequency)
 
             if not self.interface_user.should_flight_control_run():
+                self.interface_control.send_outputs([0, 0, 0, 0])
                 reset() 
 
             inputs = self.interface_user.give_inputs()
@@ -90,4 +91,3 @@ class FlightControl():
         for angle_controller in self.angle_controllers:
             angle_controller.reset()
         self.rotation_controller.reset()
-        self.interface_control.reset()
