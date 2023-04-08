@@ -1,5 +1,6 @@
 import config as conf
 from iir_filter import IirFilter
+from fir_filter import FirFilter
 from controller import Controller
 
 
@@ -20,12 +21,12 @@ class PidController(Controller):
 
         self.delta_time = 1 / conf.frequency
 
-        self.iir_error = IirFilter(iir_faktor, iir_order)
-        self.iir_measurement = IirFilter(iir_faktor, iir_order)
+        self.error_filter = FirFilter(iir_faktor, iir_order)
+        self.measurement_filter = FirFilter(iir_faktor, iir_order)
 
     def give_output(self, error, measurement):
-        error = self.iir_error.give_filtered(error)
-        measurement = self.iir_measurement.give_filtered(measurement)
+        error = self.error_filter.give_filtered(error)
+        measurement = self.measurement_filter.give_filtered(measurement)
 
         self._integral(error)
         if self.integrator > self.max_integrator:
@@ -65,5 +66,5 @@ class PidController(Controller):
         self.integrator = 0
         self.differentiator = 0
 
-        self.iir_error.reset()
-        self.iir_measurement.reset()
+        self.error_filter.reset()
+        self.measurement_filter.reset()
