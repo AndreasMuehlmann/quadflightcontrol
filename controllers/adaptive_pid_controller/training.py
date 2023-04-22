@@ -7,7 +7,6 @@ from append_dirs_to_path import append_dirs_to_path
 append_dirs_to_path()
 
 import config as conf
-from init_controller import init_controller
 from init_env import init_env
 from adaptive_pid_controller import AdaptivePidController
 from run_episode import run_episode
@@ -69,7 +68,8 @@ class Training():
 
         print('prev agent')
 
-        prev_best_controller = init_controller()
+        prev_best_controller = AdaptivePidController(0, 0, 0, conf.iir_faktor, conf.iir_order,
+                                    conf.max_output)
         prev_best_controller.load_agent_checkpoints()
 
         avg_prev_best_controller = self._avg_over_episodes(prev_best_controller)

@@ -1,11 +1,8 @@
 import config as conf
-from iir_filter import IirFilter
-from fir_filter import FirFilter
-from controller import Controller
 
 
-class PidController(Controller):
-    def __init__(self, p_faktor, i_faktor, d_faktor, iir_faktor, iir_order, max_output):
+class PidController():
+    def __init__(self, p_faktor, i_faktor, d_faktor, max_output):
         self.p_faktor = p_faktor
         self.i_faktor = i_faktor
         self.d_faktor = d_faktor
@@ -21,13 +18,7 @@ class PidController(Controller):
 
         self.delta_time = 1 / conf.frequency
 
-        self.error_filter = FirFilter(iir_faktor, iir_order)
-        self.measurement_filter = FirFilter(iir_faktor, iir_order)
-
     def give_output(self, error, measurement):
-        error = self.error_filter.give_filtered(error)
-        measurement = self.measurement_filter.give_filtered(measurement)
-
         self._integral(error)
         if self.integrator > self.max_integrator:
             self.integrator = self.max_integrator
@@ -65,6 +56,3 @@ class PidController(Controller):
 
         self.integrator = 0
         self.differentiator = 0
-
-        self.error_filter.reset()
-        self.measurement_filter.reset()

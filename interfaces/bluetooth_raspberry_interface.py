@@ -1,6 +1,7 @@
 from bluedot.btcomm import BluetoothServer
 
 from interface_user import InterfaceUser
+from give_rotor_angle_targets import give_rotor_angle_targets
 
 
 class BluetoothRaspberryInterface(InterfaceUser):
@@ -13,8 +14,9 @@ class BluetoothRaspberryInterface(InterfaceUser):
         self.bluetooth_server = BluetoothServer(self.data_received)
 
     def give_inputs(self):
-        return [self.base_output, self.strength_x_slope,
-                self.strength_y_slope, self.rotation]
+        rotor_angle_targets = give_rotor_angle_targets(self.strength_x_slope,
+                                                       self.strength_y_slope)
+        return [self.base_output, rotor_angle_targets, self.rotation]
 
     def data_received(self, data):
         if data == "ON":

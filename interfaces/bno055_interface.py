@@ -50,3 +50,6 @@ class BNO055_Interface():
                 print(f'error in euler {count}')
                 return True
         return False
+    
+    def give_height_vel(self):
+        return 0

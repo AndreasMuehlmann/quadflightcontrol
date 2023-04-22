@@ -18,7 +18,7 @@ class PWM_Interface():
         i2c = busio.I2C(board.SCL, board.SDA)
         pwm_generator = adafruit_pca9685.PCA9685(i2c)
         pwm_generator.frequency = 400
-        self.pwm_pins = [pwm_generator.channels[15]] # [pwm_generator.channels[i] for i in range(4)]
+        self.pwm_pins = [pwm_generator.channels[i] for i in range(4)]
 
         # self._calibrate_motor_controllers()
         self._boot_motor_controller()
@@ -39,7 +39,6 @@ class PWM_Interface():
         try:
             for pwm_pin in self.pwm_pins:
                 pwm_pin.duty_cycle = int(self.max_duty)
-                
             time.sleep(5)
 
             input("wait until beeping ends")
@@ -63,7 +62,7 @@ class PWM_Interface():
             pwm_pin.duty_cycle = round(duty_cycle)
 
     def reset(self, counter=0):
-        try: 
+        try:
             for pwm_pin in self.pwm_pins:
                 pwm_pin.duty_cycle = 0
 

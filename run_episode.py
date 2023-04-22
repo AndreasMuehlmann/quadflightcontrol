@@ -3,14 +3,17 @@ import pygame
 from append_dirs_to_path import append_dirs_to_path
 append_dirs_to_path()
 
+from pid_controller import PidController
+from iir_filter import IirFilter
+from fir_filter import FirFilter
 import config as conf
-from init_controller import init_controller
 from init_env import init_env
-from adaptive_pid_controller import AdaptivePidController
+from csv_writer import Csv_Writer
 
 
 def run_episode(env, controller, learn=False):
     clock = pygame.time.Clock()
+    time = 0
 
     observation = env.reset()
     error, measurement = observation
@@ -19,25 +22,28 @@ def run_episode(env, controller, learn=False):
 
     score = 0
     done = False
+
+    csv_writer = Csv_Writer('data.csv', ['time', 'measurement', 'filtered_measurement'])
+    error_filter = FirFilter()
+    measurement_filter = FirFilter()
     while not done:
         clock.tick(conf.frequency)
 
-        output = controller.give_output(error, measurement)
+        filtered_error = error_filter.give_filtered(error)
+        filtered_measurement = measurement_filter.give_filtered(measurement)
+        output = controller.give_output(filtered_error, filtered_measurement)
+        csv_writer.add_line_of_data([time, measurement, filtered_measurement])
 
         observation, reward, done, info = env.step(output)
         error, measurement = observation
         score += reward
         env.render()
-
-        if learn and type(controller) == AdaptivePidController:
-            controller.learn(reward, done)
+        time += 1/conf.frequency
 
     return score
 
 
 if __name__ == '__main__':
-    controller = init_controller()
-    if type(controller) == AdaptivePidController:
-        controller.load_agent_checkpoints()
-    score = run_episode(init_env(), init_controller())
+    controller = PidController(conf.angle_p_faktor, conf.angle_i_faktor, conf.angle_d_faktor, conf.max_output)
+    score = run_episode(init_env(), controller)
     print(score)
