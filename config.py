@@ -37,12 +37,12 @@ iir_order = 3 # for vel_env 5
 
 # REALWORLD
 # ANGLE_PID_CONTROLLER
-# angle_p_faktor = 0.7 # 1.38 #
-# angle_i_faktor = 0.65 # 1.25 # 
-# angle_d_faktor = 0.6 # 0.6
-angle_p_faktor = 0.04
-angle_i_faktor = 0.002268431001890359 
-angle_d_faktor = 0.0991875
+angle_p_faktor = 0.7 # 1.38 #
+angle_i_faktor = 0.65 # 1.25 # 
+angle_d_faktor = 0.6 # 0.6
+# angle_p_faktor = 0.04
+# angle_i_faktor = 0.002268431001890359 
+# angle_d_faktor = 0.0991875
 
 # ROTATION_PID_CONTROLLER
 rotation_p_faktor = 3.5

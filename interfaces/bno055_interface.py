@@ -51,5 +51,5 @@ class BNO055_Interface():
                 return True
         return False
     
-    def give_height_vel(self):
+    def give_height_vel(self, previous_height_vel):
         return 0

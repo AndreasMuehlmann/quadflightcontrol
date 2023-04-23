@@ -6,13 +6,15 @@ from bluetooth_raspberry_interface import BluetoothRaspberryInterface
 from hardware_interface import HardwareInterface
 from fir_filter import FirFilter
 from csv_writer import Csv_Writer
+from pid_flight_control import PidFlightControl
 
 
 class FlightControl():
     def __init__(self):
+        self.controller = PidFlightControl()
 
         self.interface_user = BluetoothRaspberryInterface()
-        self.amount_inputs = 4
+        self.amount_inputs = 3
 
         self.interface_control = HardwareInterface()
         self.amount_rotor_angles = 4

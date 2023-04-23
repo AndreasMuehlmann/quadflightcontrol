@@ -15,7 +15,7 @@ class PidFlightControl:
         
 
     def give_outputs(self, inputs, rotor_angles, rotation, height_vel):
-        height_target, rotor_angle_targets, rotation_target = inputs
+        height_vel_target, rotor_angle_targets, rotation_target = inputs
 
         angle_controller_outputs = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
         rotation_controller_outputs = self._give_outputs_rotation_controller(rotation_target, rotation)
@@ -29,9 +29,9 @@ class PidFlightControl:
 
     def _give_outputs_angle_controllers(self, rotor_angle_targets, rotor_angles):
         outputs = []
-        for rotor_angle, rotor_angle_target, angle_controller, angle_controller_filter in \
+        for rotor_angle, rotor_angle_target, angle_controller in \
         zip(rotor_angles, rotor_angle_targets, self.angle_controllers):
-            outputs.append(angle_controller.give_output(rotor_angle_targets - rotor_angle, rotor_angle))
+            outputs.append(angle_controller.give_output(rotor_angle_target - rotor_angle, rotor_angle))
         return outputs
 
     def _give_outputs_rotation_controller(self, rotation_target, rotation):

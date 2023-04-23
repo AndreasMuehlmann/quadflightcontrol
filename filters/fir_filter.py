@@ -28,4 +28,4 @@ class FirFilter:
         return output
 
     def reset(self):
-        self.inputs = deque(maxlen=self.order)
+        self.inputs = deque(maxlen=len(self.faktors))

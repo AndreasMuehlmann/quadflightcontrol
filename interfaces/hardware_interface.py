@@ -9,9 +9,9 @@ from complimentary_filter import ComplimentaryFilter
 class HardwareInterface():
     def __init__(self):
         try:
+            self.output_interface = PWM_Interface()
             self.imu_interface = BNO055_Interface()
             self.baro_interface = BMP280_Interface()
-            self.output_interface = PWM_Interface()
 
         except KeyboardInterrupt:
             self.reset()
@@ -45,9 +45,10 @@ class HardwareInterface():
             print(e)
 
     def give_height_vel(self):
+        accelerometer_height_vel = self.imu_interface.give_height_vel(self.previous_height_vel)
+        baro_height_vel = self.baro_interface.give_height_vel()
         try:
-            baro_height_vel = self.bmp280_interface.give_height_vel()
-            accelerometer_height_vel = self.bno055_interface.give_height_vel(self.previous_height_vel)
+            pass
 
         except KeyboardInterrupt:
             self.reset()
