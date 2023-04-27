@@ -20,7 +20,6 @@ class PidFlightControl:
 
         angle_controller_outputs = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
         yaw_controller_outputs = self._give_outputs_yaw_controller(rotation_target, yaw)
-        print([round(o, 2) for o in yaw_controller_outputs])
         altitude_controller_output = self.altitude_controller.give_output(altitude_target - altitude, altitude)
         # height_vel_controller_output = self._compensate_orientation_in_vertical_acc(height_vel_controller_output,
         #                                                                            rotor_angles[0], rotor_angles[1])

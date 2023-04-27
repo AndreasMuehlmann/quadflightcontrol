@@ -1,9 +1,11 @@
 import time
+import traceback
 
 import board
 import adafruit_bno055
 
 import config as conf
+from iir_filter import IirFilter
 
 
 class BNO055_Interface():
@@ -34,10 +36,13 @@ class BNO055_Interface():
             print('None in euler')
             return self.yaw
         new_yaw = self.correct_yaw(new_euler[0])
-        if self.is_differece_to_big([self.yaw], [new_yaw], 10):
-            print('give_rotation')
-            return self.yaw
-        self.yaw = new_yaw
+        changed_negativ_positiv = (new_yaw > 0 and self.yaw < 0) or (new_yaw < 0 and self.yaw > 0)
+        if changed_negativ_positiv:
+            self.yaw = new_yaw
+        elif self.is_differece_to_big([self.yaw], [new_yaw], 10):
+            print(f'give_yaw {changed_negativ_positiv}, {new_yaw}, {self.yaw}')
+        else:
+            self.yaw = new_yaw
         return self.yaw
 
     def correct_yaw(self, yaw):
@@ -55,16 +60,32 @@ class BNO055_Interface():
         return False
 
     def give_altitude(self, previous_altitude, altitude_vel):
-        #print(f'{time.time()},{self.bno055.linear_acceleration[0]},{self.bno055.linear_acceleration[1]},{self.bno055.linear_acceleration[2]}')
         linear_acceleration = self.bno055.linear_acceleration
         gravity = self.bno055.gravity
         if None in gravity or None in linear_acceleration:
             print('None in gravity or linear_acceleration')
-            return self.altitude + self.altitude_vel * 1 / conf.frequency
+            return previous_altitude + altitude_vel * 1 / conf.frequency
+        if abs(sum(gravity) * sum(linear_acceleration)) < 0.001:
+            return previous_altitude + altitude_vel * 1 / conf.frequency
+
         absolut_linear_height_acceleration = gravity[2] / sum(gravity) * sum(linear_acceleration)
+        print(round(absolut_linear_height_acceleration, 3), end=', ')
         if self.is_differece_to_big([absolut_linear_height_acceleration], [0], 30):
             print('give_altitude')
-            return self.altitude + self.altitude_vel * 1 / conf.frequency
-        altitude = altitude_vel * conf.frequency + absolut_linear_height_acceleration *  conf.frequency**2 / 2
-        # print(f'{[round(ala, 2) for ala in absolut_linear_height_acceleration] }')
+            return previous_altitude + altitude_vel / conf.frequency
+        altitude = previous_altitude + altitude_vel / conf.frequency + absolut_linear_height_acceleration *  (1/conf.frequency)**2 / 2
+        print(round(altitude, 3))
         return altitude
+
+    def give_height_vel(self, previous_height_vel):
+        linear_acceleration = self.bno055.linear_acceleration
+        gravity = self.bno055.gravity
+        if None in gravity or None in linear_acceleration:
+            return previous_height_vel
+        absolut_linear_height_acceleration = gravity[2] / sum(gravity) * sum(linear_acceleration)
+        if self.is_differece_to_big([absolut_linear_height_acceleration], [0], 30):
+            print('give_height_vel')
+            return previous_height_vel
+        height_vel = previous_height_vel + absolut_linear_height_acceleration / conf.frequency
+        return height_vel
+
