@@ -6,25 +6,26 @@ from pid_controller import PidController
 class PidFlightControl:
     def __init__(self):
         self.angle_controllers = [PidController(conf.angle_p_faktor, conf.angle_i_faktor,
-                                                conf.angle_d_faktor, 50) \
+                                                conf.angle_d_faktor, 300) \
                                                         for _ in range(4)]
-        self.rotation_controller = PidController(conf.rotation_p_faktor, conf.rotation_i_faktor,
-                                                conf.rotation_d_faktor, 500)
-        self.height_vel_controller = PidController(conf.height_vel_p_faktor, conf.height_vel_i_faktor,
+        self.yaw_controller = PidController(conf.rotation_p_faktor, conf.rotation_i_faktor,
+                                                conf.rotation_d_faktor, 100)
+        self.altitude_controller = PidController(conf.height_vel_p_faktor, conf.height_vel_i_faktor,
                                                 conf.height_vel_d_faktor, 600)
-        
+        self.previous_yaw = 0
+        self.previous_yaw_controller_outputs = [0, 0, 0, 0]
 
-    def give_outputs(self, inputs, rotor_angles, rotation, height_vel):
-        height_vel_target, rotor_angle_targets, rotation_target = inputs
+    def give_outputs(self, inputs, rotor_angles, yaw, altitude):
+        altitude_target, rotor_angle_targets, rotation_target = inputs
 
         angle_controller_outputs = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
-        rotation_controller_outputs = self._give_outputs_rotation_controller(rotation_target, rotation)
-        print([round(o, 2) for o in rotation_controller_outputs])
-        height_vel_controller_output = self.height_vel_controller.give_output(height_vel_target - height_vel, height_vel)
+        yaw_controller_outputs = self._give_outputs_yaw_controller(rotation_target, yaw)
+        print([round(o, 2) for o in yaw_controller_outputs])
+        altitude_controller_output = self.altitude_controller.give_output(altitude_target - altitude, altitude)
         # height_vel_controller_output = self._compensate_orientation_in_vertical_acc(height_vel_controller_output,
         #                                                                            rotor_angles[0], rotor_angles[1])
-        outputs = [height_vel_controller_output +  angle_controller_output + rotation_controller_output \
-                for angle_controller_output, rotation_controller_output in zip(angle_controller_outputs, rotation_controller_outputs)]
+        outputs = [altitude_controller_output +  angle_controller_output + rotation_controller_output \
+                for angle_controller_output, rotation_controller_output in zip(angle_controller_outputs, yaw_controller_outputs)]
         outputs = self._remove_negatives(outputs)
         outputs = self._remove_over_max_output(outputs)
         return outputs
@@ -36,9 +37,14 @@ class PidFlightControl:
             outputs.append(angle_controller.give_output(rotor_angle_target - rotor_angle, rotor_angle))
         return outputs
 
-    def _give_outputs_rotation_controller(self, rotation_target, rotation):
-        output = self.rotation_controller.give_output(rotation_target - rotation, rotation)
-        return [-output, output, -output, output]
+    def _give_outputs_yaw_controller(self, yaw_target, yaw):
+        if (self.previous_yaw > 0 and yaw < 0) or (self.previous_yaw < 0 and yaw > 0):
+            return self.previous_yaw_controller_outputs
+        output = self.yaw_controller.give_output(yaw_target - yaw, yaw)
+        outputs = [-output, output, -output, output]
+        self.previous_yaw_controller_outputs = outputs
+        self.previous_yaw = yaw
+        return outputs
 
     def _compensate_orientation_in_vertical_acc(self, base_output, roll, pitch):
         # sin(alpha) = horizontal_acc / base_output
@@ -65,4 +71,4 @@ class PidFlightControl:
     def reset(self):
         for angle_controller in self.angle_controllers:
             angle_controller.reset()
-        self.rotation_controller.reset()
+        self.yaw_controller.reset()

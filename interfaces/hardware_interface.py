@@ -1,5 +1,7 @@
 import sys
+import time
 
+import config as conf
 from bno055_interface import BNO055_Interface
 from pwm_interface import PWM_Interface
 from bmp280_interface import BMP280_Interface
@@ -17,8 +19,11 @@ class HardwareInterface():
             self.reset()
             sys.exit()
 
-        self.previous_height_vel = 0
         self.complimentary_filter = ComplimentaryFilter(0.5)
+        time.sleep(0.5)
+        self.altitude = self.baro_interface.give_altitude()
+        self.base_altitude = self.altitude
+        self.altitude_vel = 0
 
     def give_rotor_angles(self):
         try:
@@ -34,7 +39,7 @@ class HardwareInterface():
 
     def give_rotation(self):
         try:
-            return self.imu_interface.give_rotation()
+            return self.imu_interface.give_yaw()
 
         except KeyboardInterrupt:
             self.reset()
@@ -46,8 +51,8 @@ class HardwareInterface():
 
     def give_height_vel(self):
         try:
-            accelerometer_height_vel = self.imu_interface.give_height_vel(self.previous_height_vel)
-            baro_height_vel = self.baro_interface.give_height_vel()
+            accelerometer_altitude = self.imu_interface.give_height_vel(self.altitude, self.altitude_vel)
+            baro_altitude = self.baro_interface.give_altitude(self.base_altitude)
 
         except KeyboardInterrupt:
             self.reset()
@@ -57,13 +62,15 @@ class HardwareInterface():
             print('in getting height_vel:')
             print(e)
 
-        height_vel = self.complimentary_filter.fuse(accelerometer_height_vel, baro_height_vel)
-        self.previous_height_vel = height_vel
-        return height_vel
+        altitude = self.complimentary_filter.fuse(accelerometer_altitude, baro_altitude)
+        self.altitude_vel = (altitude - self.altitude) * conf.frequency
+        self.altitude = altitude
+        print(round(self.altitude))
+        return self.altitude
 
     def send_outputs(self, outputs):
-        try: 
-            self.output_interface.send_outputs(outputs) 
+        try:
+            self.output_interface.send_outputs(outputs)
 
         except KeyboardInterrupt:
             self.reset()

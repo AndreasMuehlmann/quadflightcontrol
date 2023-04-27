@@ -46,12 +46,12 @@ class FlightControl():
             if len(rotor_angles) != self.amount_rotor_angles:
                 print('failure in collecting rotor angles or in measuring')
                 continue
-            rotation = self.interface_control.give_rotation()
-            height_vel = self.interface_control.give_height_vel()
+            yaw = self.interface_control.give_yaw()
+            height_vel = self.interface_control.give_altitude()
 
             filtered_rotor_angles = self._give_filtered_list(rotor_angles,
                                                              self.angle_filters)
-            filtered_rotation = self.rotation_filter.give_filtered(rotation)
+            filtered_rotation = self.rotation_filter.give_filtered(yaw)
             filtered_height_vel = self.height_vel_filter.give_filtered(height_vel)
 
             outputs = self.controller.give_outputs(inputs, filtered_rotor_angles,
@@ -59,7 +59,7 @@ class FlightControl():
             self.interface_control.send_outputs(outputs)
             self.csv_writer.add_line_of_data([self.time] + rotor_angles +
                                              filtered_rotor_angles +
-                                             [rotation, filtered_rotation,
+                                             [yaw, filtered_rotation,
                                               height_vel, filtered_height_vel] + outputs)
             self.time += 1 / conf.frequency
 
