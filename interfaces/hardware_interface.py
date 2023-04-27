@@ -49,7 +49,7 @@ class HardwareInterface():
             print('in getting yaw:')
             print(e)
 
-    def give_height_vel(self):
+    def give_altitude(self):
         try:
             accelerometer_altitude = self.imu_interface.give_height_vel(self.altitude, self.altitude_vel)
             baro_altitude = self.baro_interface.give_altitude(self.base_altitude)
