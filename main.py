@@ -18,10 +18,8 @@ from flight_control import FlightControl
 
 def main():
     flight_control = FlightControl()
-    flight_control.run()
-
     try:
-        pass
+        flight_control.run()
 
     except KeyboardInterrupt:
         flight_control.reset()

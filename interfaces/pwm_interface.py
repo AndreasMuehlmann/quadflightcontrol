@@ -58,7 +58,7 @@ class PWM_Interface():
 
     def send_outputs(self, outputs):
         for pwm_pin, output in zip(self.pwm_pins, outputs):
-            duty_cycle = self.base_duty + ((self.max_duty - self.base_duty)  / (conf.max_output * 2) * output)
+            duty_cycle = self.base_duty + ((self.max_duty - self.base_duty)  / (conf.max_output) * output)
             pwm_pin.duty_cycle = round(duty_cycle)
 
     def reset(self, counter=0):

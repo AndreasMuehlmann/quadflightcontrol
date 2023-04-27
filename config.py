@@ -4,11 +4,11 @@ import os
 # FLIGHT CONTROL
 frequency = 100 
 max_angle_drone = 10
+max_output = 1000
 
 
 # CONTROLLER
 controller = 'pid_controller'
-max_output = 500
 
 
 # TRAINING
@@ -45,15 +45,15 @@ angle_d_faktor = 0.6 # 0.6
 # angle_d_faktor = 0.0991875
 
 # ROTATION_PID_CONTROLLER
-rotation_p_faktor = 3.5
-rotation_i_faktor = 2
-rotation_d_faktor = 0
+rotation_p_faktor = 1000
+rotation_i_faktor = 500
+rotation_d_faktor = 500
 
 
 # HEIHT_VEL_PID_CONTROLLER
-height_vel_p_faktor = 0
-height_vel_i_faktor = 0
-height_vel_d_faktor = 0
+height_vel_p_faktor = 40
+height_vel_i_faktor = 20
+height_vel_d_faktor = 30
 
 iir_faktor = 0.7
 iir_order = 3

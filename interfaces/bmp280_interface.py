@@ -20,7 +20,7 @@ class BMP280_Interface():
         time.sleep(1)
         self.previous_height = self.bmp280.altitude
         self.previous_height_vel = 0
-        self.sampling_per_second = 2
+        self.sampling_per_second = 20
         self.count_for_recalculation = conf.frequency / self.sampling_per_second
         self.count = 0
 

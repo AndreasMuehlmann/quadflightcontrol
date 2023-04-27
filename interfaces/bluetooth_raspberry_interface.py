@@ -28,7 +28,7 @@ class BluetoothRaspberryInterface(InterfaceUser):
         split_data = data.split()
 
         if split_data[0]=="rotation:":
-            self.rotation = float(split_data[1]) * 45
+            self.rotation = float(split_data[1]) * 0.1
 
         elif split_data[0]=="height:":
             self.height_vel = float(split_data[2]) * -1

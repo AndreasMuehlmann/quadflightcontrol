@@ -26,7 +26,7 @@ class FlightControl():
         self.rotation_filter = FirFilter()
         self.height_vel_filter = FirFilter()
 
-        self.csv_writer = Csv_Writer('data.csv', ['time', 'roll', 'yaw', ])
+        self.csv_writer = Csv_Writer('data.csv', ['time', 'r1', 'r2', 'r3', 'r4', 'fr1', 'fr2', 'fr3', 'fr4', 'rotation', 'frotation', 'height_vel', 'fheight_vel', 'o1', 'o2', 'o3', 'o4'])
 
     def run(self):
         while True:
@@ -60,7 +60,7 @@ class FlightControl():
             self.csv_writer.add_line_of_data([self.time] + rotor_angles +
                                              filtered_rotor_angles +
                                              [rotation, filtered_rotation,
-                                              height_vel, filtered_height_vel])
+                                              height_vel, filtered_height_vel] + outputs)
             self.time += 1 / conf.frequency
 
     def _give_filtered_list(self, values, filters):
