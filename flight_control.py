@@ -3,8 +3,10 @@ import math
 
 import config as conf
 from bluetooth_raspberry_interface import BluetoothRaspberryInterface
+from bluetooth_server_interface import BluetoothServerInterface
 from hardware_interface import HardwareInterface
 from fir_filter import FirFilter
+from iir_filter import IirFilter
 from csv_writer import Csv_Writer
 from pid_flight_control import PidFlightControl
 
@@ -22,11 +24,15 @@ class FlightControl():
         self.clock = pygame.time.Clock()
         self.time = 0
 
-        self.angle_filters = [FirFilter() for _ in range(4)]
-        self.rotation_filter = FirFilter()
-        self.height_vel_filter = FirFilter()
+        self.angle_filters = [IirFilter(0.80, 1) for _ in range(4)]
+        self.rotation_filter = IirFilter(0.80, 1)
+        self.height_vel_filter = IirFilter(0.9, 5)
 
-        self.csv_writer = Csv_Writer('data.csv', ['time', 'r1', 'r2', 'r3', 'r4', 'fr1', 'fr2', 'fr3', 'fr4', 'rotation', 'frotation', 'height_vel', 'fheight_vel', 'o1', 'o2', 'o3', 'o4'])
+        field_names = ['time', 'r1', 'r2', 'r3', 'r4', 'fr1', 'fr2', 'fr3', 'fr4', 'rotation', 'frotation', 'height_vel', 'fheight_vel', 'o1', 'o2', 'o3', 'o4']
+        self.csv_writer = Csv_Writer('data.csv', field_names)
+        
+        self.data_sender = BluetoothServerInterface()
+        self.data_sender.send_message('field_names:' + ''.join(field_names))
 
     def run(self):
         while True:
@@ -60,7 +66,7 @@ class FlightControl():
             self.csv_writer.add_line_of_data([self.time] + rotor_angles +
                                              filtered_rotor_angles +
                                              [yaw, filtered_rotation,
-                                              height_vel, filtered_height_vel] + outputs)
+                                              height_vel * 200, filtered_height_vel * 200] + outputs)
             self.time += 1 / conf.frequency
 
     def _give_filtered_list(self, values, filters):

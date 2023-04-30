@@ -18,6 +18,8 @@ class BNO055_Interface():
         self.euler = [0, 0, 0]
 
         self.yaw = self.correct_yaw(self.base_euler[0])
+        self.staying_error_altitude_acc = 0
+        self.faktor_adding_to_error = 0.0001
 
     def give_rotor_angles(self):
         new_euler = self.bno055.euler
@@ -39,6 +41,7 @@ class BNO055_Interface():
         changed_negativ_positiv = (new_yaw > 0 and self.yaw < 0) or (new_yaw < 0 and self.yaw > 0)
         if changed_negativ_positiv:
             self.yaw = new_yaw
+            print("changed")
         elif self.is_differece_to_big([self.yaw], [new_yaw], 10):
             print(f'give_yaw {changed_negativ_positiv}, {new_yaw}, {self.yaw}')
         else:
@@ -46,7 +49,7 @@ class BNO055_Interface():
         return self.yaw
 
     def correct_yaw(self, yaw):
-        new_yaw = yaw - self.base_euler[0]
+        new_yaw = yaw
         new_yaw = -360 + new_yaw if new_yaw > 180 else new_yaw
         return new_yaw
 
@@ -60,32 +63,31 @@ class BNO055_Interface():
         return False
 
     def give_altitude(self, previous_altitude, altitude_vel):
-        linear_acceleration = self.bno055.linear_acceleration
-        gravity = self.bno055.gravity
-        if None in gravity or None in linear_acceleration:
-            print('None in gravity or linear_acceleration')
-            return previous_altitude + altitude_vel * 1 / conf.frequency
-        if abs(sum(gravity) * sum(linear_acceleration)) < 0.001:
-            return previous_altitude + altitude_vel * 1 / conf.frequency
-
-        absolut_linear_height_acceleration = gravity[2] / sum(gravity) * sum(linear_acceleration)
-        print(round(absolut_linear_height_acceleration, 3), end=', ')
-        if self.is_differece_to_big([absolut_linear_height_acceleration], [0], 30):
-            print('give_altitude')
+        linear_altitude_acceleration = self._give_linear_altitude_acceleration()
+        if linear_altitude_acceleration is None:
             return previous_altitude + altitude_vel / conf.frequency
-        altitude = previous_altitude + altitude_vel / conf.frequency + absolut_linear_height_acceleration *  (1/conf.frequency)**2 / 2
-        print(round(altitude, 3))
+        print(round(linear_altitude_acceleration, 2))
+        altitude = previous_altitude + altitude_vel / conf.frequency +  linear_altitude_acceleration *  (1/conf.frequency)**2 / 2
         return altitude
 
     def give_height_vel(self, previous_height_vel):
+        linear_altitude_acceleration = self._give_linear_altitude_acceleration()
+        if linear_altitude_acceleration is None:
+            return previous_height_vel
+        altitude_vel = previous_height_vel + linear_altitude_acceleration / conf.frequency
+        return altitude_vel
+
+    def _give_linear_altitude_acceleration(self):
         linear_acceleration = self.bno055.linear_acceleration
         gravity = self.bno055.gravity
         if None in gravity or None in linear_acceleration:
-            return previous_height_vel
-        absolut_linear_height_acceleration = gravity[2] / sum(gravity) * sum(linear_acceleration)
-        if self.is_differece_to_big([absolut_linear_height_acceleration], [0], 30):
-            print('give_height_vel')
-            return previous_height_vel
-        height_vel = previous_height_vel + absolut_linear_height_acceleration / conf.frequency
-        return height_vel
-
+            return None
+        absolut_linear_altitude_acceleration = gravity[2] / sum(gravity) * sum(linear_acceleration)
+        if self.is_differece_to_big([absolut_linear_altitude_acceleration], [0], 30):
+            print('_get_linear_altitude_acceleration')
+            return None
+        if abs(sum(gravity) * sum(linear_acceleration)) < 0.001:
+            return None
+        corrected_absolut_linear_altitude_acceleration  = absolut_linear_altitude_acceleration - self.staying_error_altitude_acc
+        self.staying_error_altitude_acc += corrected_absolut_linear_altitude_acceleration * self.faktor_adding_to_error
+        return corrected_absolut_linear_altitude_acceleration

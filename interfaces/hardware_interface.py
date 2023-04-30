@@ -20,13 +20,12 @@ class HardwareInterface():
             self.reset()
             sys.exit()
 
-        self.altitude_complimentary_filter = ComplimentaryFilter(0.9)
+        self.altitude_complimentary_filter = ComplimentaryFilter(0.99)
         time.sleep(0.5)
-        self.altitude = self.baro_interface.give_altitude(0)
-        self.base_altitude = self.altitude
+        self.altitude = self.baro_interface.give_altitude()
         self.altitude_vel = 0
         self.previous_height_vel = 0
-        self.altitude_vel_complimentary_filter = ComplimentaryFilter(0.9)
+        self.altitude_vel_complimentary_filter = ComplimentaryFilter(0.99)
 
     def give_rotor_angles(self):
         try:
@@ -53,7 +52,7 @@ class HardwareInterface():
     def give_altitude(self):
         try:
             accelerometer_altitude = self.imu_interface.give_altitude(self.altitude, self.give_altitude_vel())
-            baro_altitude = self.baro_interface.give_altitude(self.base_altitude)
+            baro_altitude = self.baro_interface.give_altitude()
             # print(round(baro_altitude, 3))
 
         except KeyboardInterrupt:

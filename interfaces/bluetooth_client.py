@@ -14,7 +14,10 @@ class BluetoothClient():
         self.socket.connect((self.bt_addr, self.port))
         print('Connected.')
 
-    def send_data(self, data):
+    def recv(self):
+        return self.client_socket.recv(self.size)
+
+    def send(self, data):
         self.socket.send(data)
 
     def reset(self):

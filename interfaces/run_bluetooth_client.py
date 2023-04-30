@@ -1,6 +1,5 @@
 import sys
 
-from keyboard_interface import KeyboardInterface
 from bluetooth_client import BluetoothClient
 
 
@@ -10,12 +9,17 @@ def main():
     bt_addr = sys.argv[1]
 
     bluetooth_client = BluetoothClient(bt_addr)
-    keyboard_interface = KeyboardInterface()
-
+    csv_writer = None
     try:
         while True:
-            inputs = keyboard_interface.give_inputs()
-            bluetooth_client.send_data(f'{round(inputs[0])},{inputs[1]},{inputs[2]},{inputs[3]}')
+            message = bluetooth_client.recv()
+            if message.startwith('field_names:')
+                print(message[:message.find(':') + 1])
+                csv_writer = Csv_Writer('bluetooth_data', message[:message.find(':')])
+            if csv_writer is None:
+                continue
+            csv_writer.add_line_of_data(message.split(','))
+
     except KeyboardInterrupt:
         bluetooth_client.reset()
 
