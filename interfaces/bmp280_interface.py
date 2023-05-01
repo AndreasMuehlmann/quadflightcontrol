@@ -20,7 +20,7 @@ class BMP280_Interface():
         self.iir_filter_pos = IirFilter(0.8, 1) 
         self.iir_filter_vel = IirFilter(0.8, 1)
 
-        time.sleep(2)
+        time.sleep(1)
         self.previous_height = 0
         self.previous_height_vel = 0
         self.base_altitude = self.bmp280.altitude

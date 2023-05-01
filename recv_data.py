@@ -10,11 +10,9 @@ def main():
     csv_writer = None
     context = zmq.Context()
 
-    print('Connecting Raspberry Pi…')
     socket = context.socket(zmq.SUB)
     socket.connect("tcp://192.168.178.122:5555")
     socket.setsockopt(zmq.SUBSCRIBE, b'flight_data:')
-    print('Connected')
     try:
         while True:
             message = socket.recv().decode()

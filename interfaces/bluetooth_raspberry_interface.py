@@ -1,10 +1,9 @@
 from bluedot.btcomm import BluetoothServer
 
-from interface_user import InterfaceUser
 from give_rotor_angle_targets import give_rotor_angle_targets
 
 
-class BluetoothRaspberryInterface(InterfaceUser):
+class BluetoothRaspberryInterface():
     def __init__(self):
         self.flight_control_status = True
         self.height_vel = 0

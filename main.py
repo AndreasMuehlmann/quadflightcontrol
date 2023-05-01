@@ -6,6 +6,7 @@ append_dirs_to_path()
 from flight_control import FlightControl
 
 
+#TODO: give_euler function
 #TODO: give yaw sometimes doesn't work right
 #TODO: change everything from height_vel to altitude
 #TODO: change everything from rotation to yaw

@@ -12,7 +12,7 @@ class BNO055_Interface():
     def __init__(self):
         i2c = board.I2C()
         self.bno055 = adafruit_bno055.BNO055_I2C(i2c)
-        time.sleep(2)
+        time.sleep(1)
         self.base_euler = self.bno055.euler
 
         self.euler = [0, 0, 0]

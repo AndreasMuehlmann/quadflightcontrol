@@ -32,7 +32,7 @@ class PWM_Interface():
             self.reset()
             sys.exit()
 
-        time.sleep(2)
+        time.sleep(1)
 
     def _calibrate_motor_controllers(self):
         input("CALIBRATION")

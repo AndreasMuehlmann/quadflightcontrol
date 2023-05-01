@@ -1,6 +1,9 @@
-import pygame
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import math
 import time
+
+import pygame
 
 import config as conf
 from bluetooth_raspberry_interface import BluetoothRaspberryInterface

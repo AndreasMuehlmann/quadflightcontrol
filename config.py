@@ -45,15 +45,15 @@ angle_d_faktor = 0.6 # 0.6
 # angle_d_faktor = 0.0991875
 
 # ROTATION_PID_CONTROLLER
-rotation_p_faktor = 1000
-rotation_i_faktor = 500
-rotation_d_faktor = 500
+yaw_p_faktor = 0.1
+yaw_i_faktor = 0.01
+yaw_d_faktor = 0.05
 
 
 # HEIHT_VEL_PID_CONTROLLER
-height_vel_p_faktor = 40
-height_vel_i_faktor = 20
-height_vel_d_faktor = 30
+altitude_p_faktor = 40
+altitude_i_faktor = 20
+altitude_d_faktor = 30
 
 iir_faktor = 0.7
 iir_order = 3

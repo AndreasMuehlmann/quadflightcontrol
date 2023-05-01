@@ -8,10 +8,10 @@ class PidFlightControl:
         self.angle_controllers = [PidController(conf.angle_p_faktor, conf.angle_i_faktor,
                                                 conf.angle_d_faktor, 300) \
                                                         for _ in range(4)]
-        self.yaw_controller = PidController(conf.rotation_p_faktor, conf.rotation_i_faktor,
-                                                conf.rotation_d_faktor, 100)
-        self.altitude_controller = PidController(conf.height_vel_p_faktor, conf.height_vel_i_faktor,
-                                                conf.height_vel_d_faktor, 600)
+        self.yaw_controller = PidController(conf.yaw_p_faktor, conf.yaw_i_faktor,
+                                                conf.yaw_d_faktor, 100)
+        self.altitude_controller = PidController(conf.altitude_p_faktor, conf.altitude_i_faktor,
+                                                conf.altitude_d_faktor, 600)
         self.previous_yaw = 0
         self.previous_yaw_controller_outputs = [0, 0, 0, 0]
 
