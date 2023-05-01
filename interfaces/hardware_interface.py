@@ -2,7 +2,6 @@ import sys
 import time
 import traceback
 
-import config as conf
 from bno055_interface import BNO055_Interface
 from pwm_interface import PWM_Interface
 from bmp280_interface import BMP280_Interface
