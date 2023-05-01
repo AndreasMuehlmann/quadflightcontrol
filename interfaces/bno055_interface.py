@@ -41,7 +41,6 @@ class BNO055_Interface():
         changed_negativ_positiv = (new_yaw > 0 and self.yaw < 0) or (new_yaw < 0 and self.yaw > 0)
         if changed_negativ_positiv:
             self.yaw = new_yaw
-            print("changed")
         elif self.is_differece_to_big([self.yaw], [new_yaw], 10):
             print(f'give_yaw {changed_negativ_positiv}, {new_yaw}, {self.yaw}')
         else:
@@ -66,7 +65,6 @@ class BNO055_Interface():
         linear_altitude_acceleration = self._give_linear_altitude_acceleration()
         if linear_altitude_acceleration is None:
             return previous_altitude + altitude_vel / conf.frequency
-        print(round(linear_altitude_acceleration, 2))
         altitude = previous_altitude + altitude_vel / conf.frequency +  linear_altitude_acceleration *  (1/conf.frequency)**2 / 2
         return altitude
 
@@ -82,11 +80,11 @@ class BNO055_Interface():
         gravity = self.bno055.gravity
         if None in gravity or None in linear_acceleration:
             return None
+        if abs(sum(gravity) * sum(linear_acceleration)) < 0.001:
+            return None
         absolut_linear_altitude_acceleration = gravity[2] / sum(gravity) * sum(linear_acceleration)
         if self.is_differece_to_big([absolut_linear_altitude_acceleration], [0], 30):
             print('_get_linear_altitude_acceleration')
-            return None
-        if abs(sum(gravity) * sum(linear_acceleration)) < 0.001:
             return None
         corrected_absolut_linear_altitude_acceleration  = absolut_linear_altitude_acceleration - self.staying_error_altitude_acc
         self.staying_error_altitude_acc += corrected_absolut_linear_altitude_acceleration * self.faktor_adding_to_error

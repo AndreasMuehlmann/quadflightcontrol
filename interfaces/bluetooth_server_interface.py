@@ -1,11 +1,9 @@
 import socket
 
-from interface_user import InterfaceUser
 
-
-class BluetoothServerInterface(InterfaceUser):
-    def __init__(self, bt_addr):
-        self.bt_addr = bt_addr
+class BluetoothServerInterface():
+    def __init__(self):
+        self.bt_addr = 'E4:5F:01:B1:77:A1'
         self.port = 3
         self.backlog = 1
         self.size = 1024

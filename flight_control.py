@@ -1,11 +1,11 @@
 import pygame
 import math
+import time
 
 import config as conf
 from bluetooth_raspberry_interface import BluetoothRaspberryInterface
-from bluetooth_server_interface import BluetoothServerInterface
+from data_sender import DataSender
 from hardware_interface import HardwareInterface
-from fir_filter import FirFilter
 from iir_filter import IirFilter
 from csv_writer import Csv_Writer
 from pid_flight_control import PidFlightControl
@@ -24,15 +24,16 @@ class FlightControl():
         self.clock = pygame.time.Clock()
         self.time = 0
 
-        self.angle_filters = [IirFilter(0.80, 1) for _ in range(4)]
-        self.rotation_filter = IirFilter(0.80, 1)
-        self.height_vel_filter = IirFilter(0.9, 5)
+        self.altitude_filter = IirFilter(0.9, 5)
 
-        field_names = ['time', 'r1', 'r2', 'r3', 'r4', 'fr1', 'fr2', 'fr3', 'fr4', 'rotation', 'frotation', 'height_vel', 'fheight_vel', 'o1', 'o2', 'o3', 'o4']
+        field_names = ['time', 'angle_rotor1', 'angle_rotor2', 'angle_rotor3', 'angle_rotor4',
+                       'yaw', 'altitude', 'faltitude', 'output_rotor1', 'output_rotor2', 'output_rotor3', 'output_rotor4']
         self.csv_writer = Csv_Writer('data.csv', field_names)
         
-        self.data_sender = BluetoothServerInterface()
-        self.data_sender.send_message('field_names:' + ''.join(field_names))
+        self.data_sender = DataSender()
+        for _ in range(50):
+            self.data_sender.send_message('field_names:' + ','.join(field_names))
+            time.sleep(0.01)
 
     def run(self):
         while True:
@@ -53,31 +54,21 @@ class FlightControl():
                 print('failure in collecting rotor angles or in measuring')
                 continue
             yaw = self.interface_control.give_yaw()
-            height_vel = self.interface_control.give_altitude()
+            altitude = self.interface_control.give_altitude()
 
-            filtered_rotor_angles = self._give_filtered_list(rotor_angles,
-                                                             self.angle_filters)
-            filtered_rotation = self.rotation_filter.give_filtered(yaw)
-            filtered_height_vel = self.height_vel_filter.give_filtered(height_vel)
+            filtered_altitude = self.altitude_filter.give_filtered(altitude)
 
-            outputs = self.controller.give_outputs(inputs, filtered_rotor_angles,
-                                                   filtered_rotation, filtered_height_vel)
+            outputs = self.controller.give_outputs(inputs, rotor_angles,
+                                                   yaw, filtered_altitude)
             self.interface_control.send_outputs(outputs)
-            self.csv_writer.add_line_of_data([self.time] + rotor_angles +
-                                             filtered_rotor_angles +
-                                             [yaw, filtered_rotation,
-                                              height_vel * 200, filtered_height_vel * 200] + outputs)
+            data = [self.time] + rotor_angles + [yaw,
+                 altitude * 200, filtered_altitude * 200] + [output/2 for output in outputs]
+            data = [str(element) for element in data]
+            self.csv_writer.add_line_of_data(data)
+            self.data_sender.send_message(','.join(data))
             self.time += 1 / conf.frequency
-
-    def _give_filtered_list(self, values, filters):
-        filtered_values = []
-        for value, filter in zip(values, filters):
-            filtered_values.append(filter.give_filtered(value))
-        return filtered_values
 
     def reset(self):
         self.controller.reset()
-        for angle_filter in self.angle_filters:
-            angle_filter.reset()
-        self.rotation_filter.reset()
-        self.height_vel_filter.reset()
+        self.altitude_filter.reset()
+        self.data_sender.reset()
