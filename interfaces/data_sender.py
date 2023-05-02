@@ -11,5 +11,5 @@ class DataSender:
     def send_message(self, data):
         self.socket.send_string('flight_data:' + data)
 
-    def reset(self):
+    def turn_off(self):
         self.context.destroy()

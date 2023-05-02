@@ -25,7 +25,7 @@ class BNO055_Interface():
         new_euler = self.bno055.euler
         if None in new_euler:
             print('None in euler')
-        elif self.is_differece_to_big(list(new_euler)[1:], self.euler[1:], 30):
+        elif self.is_differece_to_big(list(new_euler)[1:], self.euler[1:], 10):
             print('give_rotor_angles')
         else:
             self.euler = [new_euler[0] - self.base_euler[0], new_euler[1] - self.base_euler[1], new_euler[2] - self.base_euler[2]]
@@ -38,10 +38,10 @@ class BNO055_Interface():
             print('None in euler')
             return self.yaw
         new_yaw = self.correct_yaw(new_euler[0])
-        changed_negativ_positiv = (new_yaw > 0 and self.yaw < 0) or (new_yaw < 0 and self.yaw > 0)
+        changed_negativ_positiv = (new_yaw > 170 and self.yaw < -170) or (new_yaw < -170 and self.yaw > 170)
         if changed_negativ_positiv:
             self.yaw = new_yaw
-        elif self.is_differece_to_big([self.yaw], [new_yaw], 10):
+        elif self.is_differece_to_big([self.yaw], [new_yaw], 5):
             print(f'give_yaw {changed_negativ_positiv}, {new_yaw}, {self.yaw}')
         else:
             self.yaw = new_yaw

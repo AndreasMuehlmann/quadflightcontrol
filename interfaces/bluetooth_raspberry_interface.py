@@ -18,10 +18,10 @@ class BluetoothRaspberryInterface():
         return [self.height_vel, rotor_angle_targets, self.rotation]
 
     def data_received(self, data):
-        if data == "ON":
+        if data.strip() == 'ON':
             self.flight_control_status = True
 
-        if data == "OFF":
+        if data.strip() == 'OFF':
             self.flight_control_status = False
 
         split_data = data.split()
@@ -30,7 +30,7 @@ class BluetoothRaspberryInterface():
             self.rotation = float(split_data[1]) * 0.1
 
         elif split_data[0]=="height:":
-            self.height_vel = float(split_data[2]) * -1
+            self.height_vel = float(split_data[2]) * -0.1
 
         elif split_data[0]=="direction:":
             self.strength_x_slope = float(split_data[1])
@@ -38,9 +38,3 @@ class BluetoothRaspberryInterface():
 
     def should_flight_control_run(self):
         return self.flight_control_status
-
-    def send_message(self, message):
-        pass
-
-    def reset():
-        pass
