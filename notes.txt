@@ -1,6 +1,0 @@
-TODO adjust the simulation
-give the orientation not the measurements back
-
-TODO Connect with Bluetooth
-Install pybluez with "pip install git+https://github.com/pybluez/pybluez.git#egg=pybluez"
-Making raspberry pi discoverable "sudo hciconfig hci0 piscan"

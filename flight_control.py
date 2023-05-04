@@ -19,17 +19,14 @@ class FlightControl():
         self.controller = PidFlightControl()
 
         self.interface_user = BluetoothRaspberryInterface()
-        self.amount_inputs = 3
-
         self.interface_control = HardwareInterface()
-        self.amount_rotor_angles = 4
 
         self.clock = pygame.time.Clock()
         self.time = 0
 
         self.angle_filters = [IirFilter(0.6, 1) for _ in range(4)]
-        self.altitude_filter = IirFilter(0.9, 5)
         self.yaw_filter = IirFilter(0.6, 1)
+        self.altitude_filter = IirFilter(0.9, 5)
 
         field_names = ['time', 'angle_rotor1', 'angle_rotor2', 'angle_rotor3', 'angle_rotor4',
                        'yaw', 'filtered_yaw', 'altitude', 'faltitude', 'output_rotor1', 'output_rotor2', 'output_rotor3', 'output_rotor4']
@@ -44,23 +41,14 @@ class FlightControl():
         while True:
             self.clock.tick(conf.frequency)
 
-            if not self.interface_user.should_flight_control_run():
-                self.interface_control.send_outputs([0, 0, 0, 0])
-                self.reset() 
-                continue
-
             inputs = self.interface_user.give_inputs()
-            if len(inputs) != self.amount_inputs:
+            if len(inputs) != 3:
                 print('failure in collecting inputs')
                 continue
 
             rotor_angles = self.interface_control.give_rotor_angles()
-            if len(rotor_angles) != self.amount_rotor_angles:
-                print('failure in collecting rotor angles or in measuring')
-                continue
             yaw = self.interface_control.give_yaw()
             altitude = self.interface_control.give_altitude()
-
             
             filtered_rotor_angles = self._give_filtered_list(rotor_angles,
                                                              self.angle_filters)
@@ -69,12 +57,17 @@ class FlightControl():
 
             outputs = self.controller.give_outputs(inputs, filtered_rotor_angles,
                                                    filtered_yaw, filtered_altitude)
-            self.interface_control.send_outputs(outputs)
             data = [self.time] + filtered_rotor_angles + [yaw, filtered_yaw,
                  altitude * 200, filtered_altitude * 200] + [output/2 for output in outputs]
             data = [str(element) for element in data]
             self.csv_writer.add_line_of_data(data)
             self.data_sender.send_message(','.join(data))
+
+            if not self.interface_user.should_flight_control_run():
+                self.reset() 
+                continue
+
+            self.interface_control.send_outputs(outputs)
             self.time += 1 / conf.frequency
 
     def _give_filtered_list(self, values, filters):
