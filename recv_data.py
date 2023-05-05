@@ -17,6 +17,7 @@ def main():
         while True:
             message = socket.recv().decode()
             message = message[message.find(':') + 1:]
+<<<<<<< HEAD
             if message.startswith('field_names:'):
                 message = message[message.find(':') + 1:]
                 measurements_message = message[:message.find(';')]
@@ -26,6 +27,14 @@ def main():
             elif csv_writer is not None:
                 measurements_message = message[:message.find(';')]
                 outputs_message = message[message.find(';') + 1:]
+=======
+            measurements_message = message[:message.find(';')]
+            outputs_message = message[message.find(';') + 1:]
+            if message.startswith('measurements_field_names:'):
+                measurements_csv_writer = Csv_Writer('measurements.csv', measurements_message[measurements_message.find(':') + 1:].split(','))
+                outputs_csv_writer = Csv_Writer('outputs.csv', outputs_message[outputs_message.find(':') + 1:].split(','))
+            elif csv_writer is not None:
+>>>>>>> c5e66aa5d0ba3057fe7d6480244b160b02572544
                 measurements_csv_writer.add_line_of_data(measurements_message.split(','))
                 outputs_csv_writer.add_line_of_data(outputs_message.split(','))
             time.sleep(0.01)
