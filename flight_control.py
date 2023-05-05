@@ -24,12 +24,13 @@ class FlightControl():
         self.clock = pygame.time.Clock()
         self.time = 0
 
-        self.angle_filters = [IirFilter(0.6, 1) for _ in range(4)]
+        self.angle_filters = [IirFilter(0.6, 2) for _ in range(4)]
         self.yaw_filter = IirFilter(0.6, 1)
         self.altitude_filter = IirFilter(0.9, 5)
+        self.rotor_output_filters = [IirFilter(0.6, 1) for _ in range(4)]
 
         '''
-        all outputs and measurements
+        # all outputs and measurements
         measurements_field_names = ['time', 'fangle_rotor1', 'fangle_rotor2', 'fangle_rotor3', 'fangle_rotor4',
                        'yaw', 'fyaw', 'altitude', 'faltitude']
         outputs_field_names = ['time', 'angle_controller_output1', 'angle_controller_output2', 'angle_controller_output3',
@@ -66,8 +67,9 @@ class FlightControl():
 
             rotor_outputs = self.controller.give_outputs(inputs, filtered_rotor_angles,
                                                    filtered_yaw, filtered_altitude)
+            self._give_filtered_list(rotor_outputs, self.rotor_output_filters)
             '''
-            all outputs and measurements
+            # all outputs and measurements
             measurements = [self.time] + filtered_rotor_angles + \
                 [yaw, filtered_yaw, altitude * 200, filtered_altitude * 200]
             outputs = [self.time] + [rotor_output / 2 for rotor_output in rotor_outputs] + self.controller.rotor_outputs_angle_controllers \
