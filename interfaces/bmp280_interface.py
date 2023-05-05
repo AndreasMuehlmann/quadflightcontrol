@@ -22,18 +22,18 @@ class BMP280_Interface():
         self.previous_altitude = 0
         self.previous_vertical_vel = 0
         self.base_altitude = self.bmp280.altitude
-        self.sampling_per_second = 20
+        self.sampling_per_second = 50
         self.count_for_recalculation = conf.frequency / self.sampling_per_second
         self.count = 0
 
     def give_altitude(self):
-        altitude = (self.bmp280.altitude - self.base_altitude) / 10
+        altitude = (self.bmp280.altitude - self.base_altitude) / 5
         return altitude
 
     def give_vertical_vel(self):
         if self.count >= self.count_for_recalculation:
             altitude = self.bmp280.altitude - self.base_altitude
-            vertical_vel = (altitude - self.previous_altitude) / self.sampling_per_second * 10
+            vertical_vel = (altitude - self.previous_altitude) / self.sampling_per_second * 5
             self.previous_altitude = altitude
             self.previous_vertical_vel = altitude
             self.count = 0

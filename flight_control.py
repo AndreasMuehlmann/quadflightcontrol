@@ -28,11 +28,16 @@ class FlightControl():
         self.yaw_filter = IirFilter(0.6, 1)
         self.altitude_filter = IirFilter(0.9, 5)
 
+        '''
+        all outputs and measurements
         measurements_field_names = ['time', 'fangle_rotor1', 'fangle_rotor2', 'fangle_rotor3', 'fangle_rotor4',
                        'yaw', 'fyaw', 'altitude', 'faltitude']
-        outputs_field_names = ['angle_controller_output1', 'angle_controller_output2', 'angle_controller_output3',
+        outputs_field_names = ['time', 'angle_controller_output1', 'angle_controller_output2', 'angle_controller_output3',
                               'angle_controller_output4', 'yaw_controller_output', 'altitude_controller_output',
                               'rotor_output1', 'rotor_output2', 'rotor_output3', 'rotor_output4']
+        '''
+        measurements_field_names = ['time', 'froll', 'fpitch', 'fyaw', 'altitude*100', 'faltitude*100']
+        outputs_field_names = ['time', 'roll_c_o', 'pitch_c_o', 'yaw_c_o', 'altitude_c_o']
         self.measurements_csv_writer = Csv_Writer('measurements.csv', measurements_field_names)
         self.outputs_csv_writer = Csv_Writer('outputs.csv', outputs_field_names)
         self.data_sender = DataSender()
@@ -61,9 +66,16 @@ class FlightControl():
 
             rotor_outputs = self.controller.give_outputs(inputs, filtered_rotor_angles,
                                                    filtered_yaw, filtered_altitude)
+            '''
+            all outputs and measurements
             measurements = [self.time] + filtered_rotor_angles + \
                 [yaw, filtered_yaw, altitude * 200, filtered_altitude * 200]
-            outputs = [rotor_output / 2 for rotor_output in rotor_outputs] + self.controller.rotor_outputs_angle_controllers \
+            outputs = [self.time] + [rotor_output / 2 for rotor_output in rotor_outputs] + self.controller.rotor_outputs_angle_controllers \
+                + [self.controller.yaw_controller_output, self.controller.altitude_controller_output]
+            '''
+            measurements = [self.time] + filtered_rotor_angles[:2] + \
+                [filtered_yaw, altitude * 100, filtered_altitude * 100]
+            outputs = [self.time] + self.controller.rotor_outputs_angle_controllers[:2] \
                 + [self.controller.yaw_controller_output, self.controller.altitude_controller_output]
             measurements = [str(element) for element in measurements]
             outputs = [str(element) for element in outputs]

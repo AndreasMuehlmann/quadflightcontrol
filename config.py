@@ -37,26 +37,23 @@ iir_order = 3 # for vel_env 5
 
 # REALWORLD
 # ANGLE_PID_CONTROLLER
-angle_p_faktor = 0.7 # 1.38 #
-angle_i_faktor = 0.65 # 1.25 # 
-angle_d_faktor = 0.6 # 0.6
+angle_p_faktor = 0.7/2 # 1.38 #
+angle_i_faktor = 0.65/2 # 1.25 # 
+angle_d_faktor = 0.6/2 # 0.6
 # angle_p_faktor = 0.04
 # angle_i_faktor = 0.002268431001890359 
 # angle_d_faktor = 0.0991875
 
 # YAW_PID_CONTROLLER
-yaw_p_faktor = 0.1
-yaw_i_faktor = 0.01
-yaw_d_faktor = 0.05
+yaw_p_faktor = 0.1 / 2
+yaw_i_faktor = 0.01 / 2
+yaw_d_faktor = 0.05 / 2
 
 
 # HEIHT_VEL_PID_CONTROLLER
-altitude_p_faktor = 40
-altitude_i_faktor = 20
-altitude_d_faktor = 30
-
-iir_faktor = 0.7
-iir_order = 3
+altitude_p_faktor = 200
+altitude_i_faktor = 50
+altitude_d_faktor = 500
 
 
 # ADAPTIVE_PID_CONTROLLER

@@ -2,12 +2,12 @@ import config as conf
 
 
 class PidController():
-    def __init__(self, p_faktor, i_faktor, d_faktor, max_integrator):
+    def __init__(self, p_faktor, i_faktor, d_faktor, max_output, max_integrator):
         self.p_faktor = p_faktor
         self.i_faktor = i_faktor
         self.d_faktor = d_faktor
 
-        self.max_output = 1000
+        self.max_output = max_output
         self.max_integrator = max_integrator
 
         self.last_error = 0

@@ -6,11 +6,13 @@ from pid_controller import PidController
 class PidFlightControl:
     def __init__(self):
         self.angle_controllers = [PidController(conf.angle_p_faktor, conf.angle_i_faktor,
-                                                conf.angle_d_faktor, 300) for _ in range(4)]
+                                                conf.angle_d_faktor, 300, 50) for _ in range(4)]
         self.yaw_controller = PidController(conf.yaw_p_faktor, conf.yaw_i_faktor,
-                                            conf.yaw_d_faktor, 100)
+                                            conf.yaw_d_faktor, 200, 100)
         self.altitude_controller = PidController(conf.altitude_p_faktor, conf.altitude_i_faktor,
-                                                 conf.altitude_d_faktor, 600)
+                                                 conf.altitude_d_faktor, 600, 500)
+        self.yaw_target = 0
+        self.altitude_target = 0
         self.rotor_outputs_angle_controllers = [0, 0, 0, 0]
         self.yaw = 0
         self.yaw_controller_output = 0
@@ -20,10 +22,12 @@ class PidFlightControl:
 
     def give_outputs(self, inputs, rotor_angles, yaw, altitude):
         altitude_difference_target, rotor_angle_targets, yaw_difference_target = inputs
+        self.yaw_target += yaw_difference_target / conf.frequency
+        self.altitude_target += altitude_difference_target / conf.frequency
 
         self.rotor_outputs_angle_controllers = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
-        self.rotor_outputs_yaw_controller = self._give_outputs_yaw_controller(yaw_difference_target, yaw)
-        self.rotor_outputs_altitude_controller = self._give_outputs_altitude_controller(altitude_difference_target, altitude)
+        self.rotor_outputs_yaw_controller = self._give_outputs_yaw_controller(self.yaw_target, yaw)
+        self.rotor_outputs_altitude_controller = self._give_outputs_altitude_controller(self.altitude_target, altitude)
         # self.altitude_controller_output = self._compensate_orientation_in_vertical_acc(self.altitude_controller_output,
         #                                                                            rotor_angles[0], rotor_angles[1])
         outputs = [rotor_output_altitude_controller + rotor_output_angle_controller + rotor_output_yaw_controller \
@@ -40,21 +44,21 @@ class PidFlightControl:
             self.rotor_outputs_angle_controllers.append(angle_controller.give_output(rotor_angle_target - rotor_angle, rotor_angle))
         return self.rotor_outputs_angle_controllers
 
-    def _give_outputs_yaw_controller(self, yaw_difference_target, yaw):
+    def _give_outputs_yaw_controller(self, yaw_target, yaw):
         changed_negativ_positiv = (yaw > 170 and self.yaw < -170) \
             or (yaw < -170 and self.yaw > 170)
         if changed_negativ_positiv:
             return self.rotor_outputs_yaw_controller
         self.yaw_controller_output = self.yaw_controller \
-            .give_output(yaw + yaw_difference_target, yaw)
+            .give_output(yaw - yaw_target, yaw)
         self.rotor_outputs_yaw_controller = [-self.yaw_controller_output, self.yaw_controller_output,
                                              -self.yaw_controller_output, self.yaw_controller_output]
         self.yaw = yaw
         return self.rotor_outputs_yaw_controller
 
-    def _give_outputs_altitude_controller(self, altitude_difference_target, altitude):
+    def _give_outputs_altitude_controller(self, altitude_target, altitude):
         self.altitude_controller_output = self.altitude_controller \
-            .give_output(altitude + altitude_difference_target, altitude)
+            .give_output(-altitude + altitude_target, altitude)
         return [self.altitude_controller_output for _ in range(4)]
 
     def _compensate_orientation_in_vertical_acc(self, base_output, roll, pitch):

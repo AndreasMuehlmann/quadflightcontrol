@@ -17,7 +17,8 @@ class BNO055_Interface():
         euler = self.bno055.euler
         if None in euler:
             print('None in euler')
-        return self.euler
+            return self.euler
+        return euler
 
     def give_rotor_angles(self):
         euler = self._give_euler()
@@ -35,7 +36,7 @@ class BNO055_Interface():
             or (yaw < -170 and self.yaw > 170)
         if changed_negativ_positiv:
             self.yaw = yaw
-        elif self.is_differece_to_big([self.yaw], [yaw], 5):
+        elif self.is_differece_to_big([self.yaw], [yaw], 10):
             print(f'give_yaw {changed_negativ_positiv}, {yaw}, {self.yaw}')
         else:
             self.yaw = yaw
