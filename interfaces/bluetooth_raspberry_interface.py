@@ -6,16 +6,16 @@ from give_rotor_angle_targets import give_rotor_angle_targets
 class BluetoothRaspberryInterface():
     def __init__(self):
         self.flight_control_status = True
-        self.height_vel = 0
+        self.altitude_difference = 0
         self.strength_x_slope = 0
         self.strength_y_slope = 0
-        self.rotation = 0
+        self.yaw_difference = 0
         self.bluetooth_server = BluetoothServer(self.data_received)
 
     def give_inputs(self):
         rotor_angle_targets = give_rotor_angle_targets(self.strength_x_slope,
                                                        self.strength_y_slope)
-        return [self.height_vel, rotor_angle_targets, self.rotation]
+        return [self.altitude_difference, rotor_angle_targets, self.yaw_difference]
 
     def data_received(self, data):
         if data.strip() == 'ON':
@@ -27,10 +27,10 @@ class BluetoothRaspberryInterface():
         split_data = data.split()
 
         if split_data[0]=="rotation:":
-            self.rotation = float(split_data[1]) * 0.1
+            self.yaw_difference = float(split_data[1]) * 0.1
 
         elif split_data[0]=="height:":
-            self.height_vel = float(split_data[2]) * -0.1
+            self.altitude_difference = float(split_data[2]) * -0.1
 
         elif split_data[0]=="direction:":
             self.strength_x_slope = float(split_data[1])
