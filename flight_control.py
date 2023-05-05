@@ -63,21 +63,13 @@ class FlightControl():
                                                    filtered_yaw, filtered_altitude)
             measurements = [self.time] + filtered_rotor_angles + \
                 [yaw, filtered_yaw, altitude * 200, filtered_altitude * 200]
-<<<<<<< HEAD
             outputs = [rotor_output / 2 for rotor_output in rotor_outputs] + self.controller.rotor_outputs_angle_controllers \
-=======
-            outputs = [output/2 for output in outputs] + self.controller.angle_controller_outputs \
->>>>>>> c5e66aa5d0ba3057fe7d6480244b160b02572544
                 + [self.controller.yaw_controller_output, self.controller.altitude_controller_output]
             measurements = [str(element) for element in measurements]
             outputs = [str(element) for element in outputs]
             self.measurements_csv_writer.add_line_of_data(measurements)
             self.outputs_csv_writer.add_line_of_data(outputs)
-<<<<<<< HEAD
             self.data_sender.send_message('measurements:' + ','.join(measurements) + ';outputs:' + ','.join(outputs))
-=======
-            self.data_sender.send_message(','.join(measurements), ','.join(outputs))
->>>>>>> c5e66aa5d0ba3057fe7d6480244b160b02572544
 
             if not self.interface_user.should_flight_control_run():
                 self.reset() 
