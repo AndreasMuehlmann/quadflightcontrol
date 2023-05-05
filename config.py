@@ -44,7 +44,7 @@ angle_d_faktor = 0.6 # 0.6
 # angle_i_faktor = 0.002268431001890359 
 # angle_d_faktor = 0.0991875
 
-# ROTATION_PID_CONTROLLER
+# YAW_PID_CONTROLLER
 yaw_p_faktor = 0.1
 yaw_i_faktor = 0.01
 yaw_d_faktor = 0.05

@@ -19,11 +19,11 @@ class HardwareInterface():
             self.reset()
             sys.exit()
 
-        self.altitude_complimentary_filter = ComplimentaryFilter(0.9)
+        self.altitude_complimentary_filter = ComplimentaryFilter(0.8)
         self.altitude = self.baro_interface.give_altitude()
-        self.altitude_vel = 0
-        self.previous_height_vel = 0
-        self.altitude_vel_complimentary_filter = ComplimentaryFilter(0.9)
+        self.vertical_vel = 0
+        self.previous_vertical_vel = 0
+        self.vertical_vel_complimentary_filter = ComplimentaryFilter(0.8)
 
     def give_rotor_angles(self):
         try:
@@ -49,9 +49,8 @@ class HardwareInterface():
 
     def give_altitude(self):
         try:
-            accelerometer_altitude = self.imu_interface.give_altitude(self.altitude, self.give_altitude_vel())
+            accelerometer_altitude = self.imu_interface.give_altitude(self.altitude, self.give_vertical_vel())
             baro_altitude = self.baro_interface.give_altitude()
-            # print(round(baro_altitude, 3))
 
         except KeyboardInterrupt:
             self.reset()
@@ -61,13 +60,12 @@ class HardwareInterface():
             print(traceback.format_exc())
 
         self.altitude = self.altitude_complimentary_filter.fuse(accelerometer_altitude, baro_altitude)
-        # print(round(self.altitude, 3))
         return self.altitude
 
-    def give_altitude_vel(self):
+    def give_vertical_vel(self):
         try:
-            accelerometer_height_vel = self.imu_interface.give_height_vel(self.previous_height_vel)
-            baro_height_vel = self.baro_interface.give_height_vel()
+            accelerometer_vertical_vel = self.imu_interface.give_vertical_vel(self.previous_vertical_vel)
+            baro_vertical_vel = self.baro_interface.give_vertical_vel()
         except KeyboardInterrupt:
             self.reset()
             sys.exit()
@@ -75,9 +73,9 @@ class HardwareInterface():
         except Exception as e:
             print(traceback.format_exc())
 
-        height_vel = self.altitude_vel_complimentary_filter.fuse(accelerometer_height_vel, baro_height_vel)
-        self.previous_height_vel = height_vel
-        return height_vel
+        vertical_vel = self.vertical_vel_complimentary_filter.fuse(accelerometer_vertical_vel, baro_vertical_vel)
+        self.previous_vertical_vel = vertical_vel
+        return vertical_vel
 
 
     def send_outputs(self, outputs):
