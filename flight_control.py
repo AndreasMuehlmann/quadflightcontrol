@@ -37,8 +37,8 @@ class FlightControl():
         self.outputs_csv_writer = Csv_Writer('outputs.csv', outputs_field_names)
         self.data_sender = DataSender()
         for _ in range(50):
-            self.data_sender.send_message('field_names:measurements:' + ','.join(measurements_field_names) \
-                                          + ';outputs:' + ','.join(measurements_field_names))
+            self.data_sender.send_message('field_names:' + ','.join(measurements_field_names) \
+                                          + ';' + ','.join(outputs_field_names))
             time.sleep(0.01)
 
     def run(self):
@@ -69,7 +69,7 @@ class FlightControl():
             outputs = [str(element) for element in outputs]
             self.measurements_csv_writer.add_line_of_data(measurements)
             self.outputs_csv_writer.add_line_of_data(outputs)
-            self.data_sender.send_message('measurements:' + ','.join(measurements) + ';outputs:' + ','.join(outputs))
+            self.data_sender.send_message(','.join(measurements) + ';' + ','.join(outputs))
 
             if not self.interface_user.should_flight_control_run():
                 self.reset() 

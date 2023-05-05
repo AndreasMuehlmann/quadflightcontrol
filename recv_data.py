@@ -7,7 +7,6 @@ from csv_writer import Csv_Writer
 
 
 def main():
-    csv_writer = None
     context = zmq.Context()
 
     socket = context.socket(zmq.SUB)
@@ -21,9 +20,9 @@ def main():
                 message = message[message.find(':') + 1:]
                 measurements_message = message[:message.find(';')]
                 outputs_message = message[message.find(';') + 1:]
-                measurements_csv_writer = Csv_Writer('measurements.csv', measurements_message[measurements_message.find(':') + 1:].split(','))
-                outputs_csv_writer = Csv_Writer('outputs.csv', outputs_message[outputs_message.find(':') + 1:].split(','))
-            elif csv_writer is not None:
+                measurements_csv_writer = Csv_Writer('measurements.csv', measurements_message.split(','))
+                outputs_csv_writer = Csv_Writer('outputs.csv', outputs_message.split(','))
+            else:
                 measurements_message = message[:message.find(';')]
                 outputs_message = message[message.find(';') + 1:]
                 measurements_csv_writer.add_line_of_data(measurements_message.split(','))
