@@ -3,6 +3,8 @@ import adafruit_bno055
 
 import config as conf
 
+from measurement_validator import Measurement_Validator
+
 
 class BNO055_Interface():
     def __init__(self):
@@ -12,47 +14,33 @@ class BNO055_Interface():
         self.yaw = self.correct_yaw(self.euler[0])
         self.staying_error_vertical_acc = 0
         self.faktor_adding_to_error = 0.0001
-
-    def _give_euler(self):
-        euler = self.bno055.euler
-        if None in euler:
-            print('None in euler')
-            return self.euler
-        return euler
+        self.measurement_validator_yaw = Measurement_Validator(5, 15)
+        self.measurement_validator_roll = Measurement_Validator(5, 15)
+        self.measurement_validator_pitch = Measurement_Validator(5, 15)
+        self.measurement_validator_absolut_linear_vertical_acceleration = Measurement_Validator(30, 60)
 
     def give_rotor_angles(self):
         euler = self._give_euler()
-        if self.is_differece_to_big(list(euler)[1:], self.euler[1:], 10):
-            print('give_rotor_angles')
-        else:
-            self.euler = euler
-            # self.euler = [euler[0] - self.base_euler[0], euler[1] - self.base_euler[1], euler[2] - self.base_euler[2]]
-        return [-self.euler[1], self.euler[2], self.euler[1], -self.euler[2]]
+        roll = self.measurement_validator_roll.give_validatet_measurement(euler[1])
+        pitch = self.measurement_validator_pitch.give_validatet_measurement(euler[2])
+        return [-roll, pitch]
 
     def give_yaw(self):
         euler = self._give_euler()
         yaw = self.correct_yaw(euler[0])
+        if abs(yaw) > 180:
+            return self.yaw
         changed_negativ_positiv = (yaw > 170 and self.yaw < -170) \
             or (yaw < -170 and self.yaw > 170)
         if changed_negativ_positiv:
-            self.yaw = yaw
-        elif self.is_differece_to_big([self.yaw], [yaw], 10):
-            print(f'give_yaw {changed_negativ_positiv}, {yaw}, {self.yaw}')
+            self.measurement_validator_pitch.measurement = yaw
         else:
-            self.yaw = yaw
+            yaw = self.measurement_validator_pitch.give_validatet_measurement(yaw)
+        self.yaw = yaw
         return self.yaw
 
     def correct_yaw(self, yaw):
         return -360 + yaw if yaw > 180 else yaw
-
-    def is_differece_to_big(self, new_vector, old_vector, cut_of):
-        count = 0
-        for new_val, val in zip(new_vector, old_vector):
-            count += 1
-            if abs(new_val - val) > cut_of:
-                print(f'unlogical value in measurement at index {count} in ', end='')
-                return True
-        return False
 
     def give_altitude(self, previous_altitude, vertical_vel):
         linear_vertical_acceleration = self._give_linear_vertical_acceleration()
@@ -77,9 +65,7 @@ class BNO055_Interface():
         if abs(sum(gravity) * sum(linear_acceleration)) < 0.001:
             return None
         absolut_linear_vertical_acceleration = gravity[2] / sum(gravity) * sum(linear_acceleration)
-        if self.is_differece_to_big([absolut_linear_vertical_acceleration], [0], 30):
-            print('_get_linear_vertical_acceleration')
-            return None
+        self.measurement_validator_absolut_linear_vertical_acceleration.give_validatet_measurement(absolut_linear_vertical_acceleration)
         corrected_absolut_linear_vertical_acceleration  = absolut_linear_vertical_acceleration - self.staying_error_vertical_acc
         self.staying_error_vertical_acc += corrected_absolut_linear_vertical_acceleration * self.faktor_adding_to_error
         return corrected_absolut_linear_vertical_acceleration
