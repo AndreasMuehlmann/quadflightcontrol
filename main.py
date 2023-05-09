@@ -7,12 +7,10 @@ from flight_control import FlightControl
 
 
 #TODO: integrate better baro
-#TODO: better cut_of by implementing class with algorithm: cut of when to huge change,
-#           but accept if second cut of is greater than first. But also get there slowly (maybe not digital filter?)
-#TODO: yaw_controller_output goes up when changing from 180 to -180
-#TODO: reimplement base euler
-#TODO: better algorithm to filter out wrong measurements
-#TODO: compensate_orientation is wrong
+#TODO: make tests and tune PID-Controllers
+#TODO: use PI-Controller / PID-Controller for Yaw and PD-Controller for angle and PID-Controller for altitude
+#TODO: make a take-off phase
+#TODO: build models for altitude yaw, altitude, roll, pitch from logged data
 #TODO: improve recv_data
 #TODO: resetting measurement
 #TODO: edge cases like app turning off

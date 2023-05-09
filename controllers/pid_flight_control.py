@@ -1,4 +1,4 @@
-import math
+import numpy as np
 import config as conf
 from pid_controller import PidController
 
@@ -6,7 +6,7 @@ from pid_controller import PidController
 class PidFlightControl:
     def __init__(self):
         self.angle_controllers = [PidController(conf.angle_p_faktor, conf.angle_i_faktor,
-                                                conf.angle_d_faktor, 300, 50) for _ in range(4)]
+                                                conf.angle_d_faktor, 300, 50) for _ in range(2)]
         self.yaw_controller = PidController(conf.yaw_p_faktor, conf.yaw_i_faktor,
                                             conf.yaw_d_faktor, 200, 100)
         self.altitude_controller = PidController(conf.altitude_p_faktor, conf.altitude_i_faktor,
@@ -42,12 +42,15 @@ class PidFlightControl:
         for rotor_angle, rotor_angle_target, angle_controller in \
                 zip(rotor_angles, rotor_angle_targets, self.angle_controllers):
             self.rotor_outputs_angle_controllers.append(angle_controller.give_output(rotor_angle_target - rotor_angle, rotor_angle))
-        return self.rotor_outputs_angle_controllers
+        return self.rotor_outputs_angle_controllers.extend(
+                [-self.rotor_outputs_angle_controllers[0] + -self.rotor_outputs_angle_controllers[0]])
 
     def _give_outputs_yaw_controller(self, yaw_target, yaw):
         changed_negativ_positiv = (yaw > 170 and self.yaw < -170) \
             or (yaw < -170 and self.yaw > 170)
         if changed_negativ_positiv:
+            self.yaw_controller.give_output(yaw - yaw_target, yaw)
+            self.yaw = yaw
             return self.rotor_outputs_yaw_controller
         self.yaw_controller_output = self.yaw_controller \
             .give_output(yaw - yaw_target, yaw)
@@ -61,11 +64,14 @@ class PidFlightControl:
             .give_output(-altitude + altitude_target, altitude)
         return [self.altitude_controller_output for _ in range(4)]
 
-    def _compensate_orientation_in_vertical_acc(self, base_output, roll, pitch):
-        # sin(alpha) = horizontal_acc / base_output
-        # horizontal_acc = sin(alpha) * base_output
-        print(math.sin(abs(roll) + abs(pitch)))
-        return math.sin((abs(roll) + abs(pitch)) / 360 * 2*math.pi) * base_output
+    def _compensate_orientation_in_vertical_acc(self, altitude_output, roll, pitch):
+        unit_vektor_roll = np.array([np.cos(roll), 0, np.sin(roll)])
+        unit_vektor_pitch = np.array([0, np.cos(pitch), np.sin(pitch)])
+        n_vektor = np.cross(unit_vektor_roll, unit_vektor_pitch)
+        unit_n_vektor = n_vektor / np.linalg.norm(n_vektor)
+        angle_quadcopter_plane_to_x1_x2_plane = np.arccos(np.dot(np.array([0, 0, 1]), unit_n_vektor))
+        print(f'{angle_quadcopter_plane_to_x1_x2_plane}, {altitude_output}, {altitude_output / np.cos(angle_quadcopter_plane_to_x1_x2_plane)}')
+        return altitude_output / np.cos(angle_quadcopter_plane_to_x1_x2_plane)
 
     def _remove_negatives(self, outputs):
         new_outputs = []

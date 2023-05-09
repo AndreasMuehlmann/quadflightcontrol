@@ -24,7 +24,7 @@ class FlightControl():
         self.clock = pygame.time.Clock()
         self.time = 0
 
-        self.angle_filters = [IirFilter(0.6, 2) for _ in range(4)]
+        self.angle_filters = [IirFilter(0.6, 2) for _ in range(2)]
         self.yaw_filter = IirFilter(0.6, 1)
         self.altitude_filter = IirFilter(0.9, 5)
         self.rotor_output_filters = [IirFilter(0.6, 1) for _ in range(4)]
@@ -66,7 +66,7 @@ class FlightControl():
             filtered_yaw = self.yaw_filter.give_filtered(yaw)
 
             rotor_outputs = self.controller.give_outputs(inputs, filtered_rotor_angles,
-                                                   filtered_yaw, filtered_altitude)
+                                                         filtered_yaw, filtered_altitude)
             self._give_filtered_list(rotor_outputs, self.rotor_output_filters)
             '''
             # all outputs and measurements
@@ -88,6 +88,12 @@ class FlightControl():
             if not self.interface_user.should_flight_control_run():
                 self.reset() 
                 continue
+
+            shutdown_condition = abs(filtered_altitude) > 2 or abs(filtered_yaw) > 140 \
+                or abs(rotor_angles[0]) > 30 or abs(rotor_angles[1]) > 30
+            if shutdown_condition:
+                self.turn_off()
+                break
 
             self.interface_control.send_outputs(rotor_outputs)
             self.time += 1 / conf.frequency
