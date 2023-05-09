@@ -19,6 +19,13 @@ class BNO055_Interface():
         self.measurement_validator_pitch = Measurement_Validator(5, 15)
         self.measurement_validator_absolut_linear_vertical_acceleration = Measurement_Validator(30, 60)
 
+    def _give_euler(self):
+        euler = self.bno055.euler
+        if None in euler:
+            print('None in euler')
+            return self.euler
+        return euler
+
     def give_rotor_angles(self):
         euler = self._give_euler()
         roll = self.measurement_validator_roll.give_validatet_measurement(euler[1])
