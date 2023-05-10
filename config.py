@@ -51,9 +51,9 @@ yaw_d_faktor = 0.05 / 2
 
 
 # HEIHT_VEL_PID_CONTROLLER
-altitude_p_faktor = 200
-altitude_i_faktor = 50
-altitude_d_faktor = 500
+altitude_p_faktor = 50
+altitude_i_faktor = 20
+altitude_d_faktor = 5
 
 
 # ADAPTIVE_PID_CONTROLLER

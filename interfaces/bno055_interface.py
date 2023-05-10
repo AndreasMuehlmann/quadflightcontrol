@@ -14,9 +14,9 @@ class BNO055_Interface():
         self.yaw = self.correct_yaw(self.euler[0])
         self.staying_error_vertical_acc = 0
         self.faktor_adding_to_error = 0.0001
-        self.measurement_validator_yaw = Measurement_Validator(5, 15)
-        self.measurement_validator_roll = Measurement_Validator(5, 15)
-        self.measurement_validator_pitch = Measurement_Validator(5, 15)
+        self.measurement_validator_yaw = Measurement_Validator(2, 15)
+        self.measurement_validator_roll = Measurement_Validator(2, 15)
+        self.measurement_validator_pitch = Measurement_Validator(2, 15)
         self.measurement_validator_absolut_linear_vertical_acceleration = Measurement_Validator(30, 60)
 
     def _give_euler(self):
@@ -40,9 +40,9 @@ class BNO055_Interface():
         changed_negativ_positiv = (yaw > 170 and self.yaw < -170) \
             or (yaw < -170 and self.yaw > 170)
         if changed_negativ_positiv:
-            self.measurement_validator_pitch.measurement = yaw
+            self.measurement_validator_yaw.measurement = yaw
         else:
-            yaw = self.measurement_validator_pitch.give_validatet_measurement(yaw)
+            yaw = self.measurement_validator_yaw.give_validatet_measurement(yaw)
         self.yaw = yaw
         return self.yaw
 

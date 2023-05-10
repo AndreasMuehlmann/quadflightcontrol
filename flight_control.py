@@ -26,7 +26,7 @@ class FlightControl():
 
         self.angle_filters = [IirFilter(0.6, 2) for _ in range(2)]
         self.yaw_filter = IirFilter(0.6, 1)
-        self.altitude_filter = IirFilter(0.9, 5)
+        self.altitude_filter = IirFilter(0.8, 1)
         self.rotor_output_filters = [IirFilter(0.6, 1) for _ in range(4)]
 
         measurements_field_names = ['time', 'froll', 'fpitch', 'fyaw', 'altitude*100', 'faltitude*100']
@@ -76,7 +76,7 @@ class FlightControl():
                 continue
 
             shutdown_condition = abs(filtered_altitude) > 2 or abs(filtered_yaw) > 140 \
-                or abs(rotor_angles[0]) > 30 or abs(rotor_angles[1]) > 30
+                or abs(rotor_angles[0]) > 60 or abs(rotor_angles[1]) > 60
             if shutdown_condition:
                 self.turn_off()
                 break

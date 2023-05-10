@@ -4,7 +4,7 @@ import traceback
 
 from bno055_interface import BNO055_Interface
 from pwm_interface import PWM_Interface
-from bmp280_interface import BMP280_Interface
+from bmp390_interface import BMP390_Interface
 from complimentary_filter import ComplimentaryFilter
 
 
@@ -13,17 +13,17 @@ class HardwareInterface():
         try:
             self.output_interface = PWM_Interface()
             self.imu_interface = BNO055_Interface()
-            self.baro_interface = BMP280_Interface()
+            self.baro_interface = BMP390_Interface()
 
         except KeyboardInterrupt:
             self.reset()
             sys.exit()
 
-        self.altitude_complimentary_filter = ComplimentaryFilter(0.7)
+        self.altitude_complimentary_filter = ComplimentaryFilter(0.9)
         self.altitude = self.baro_interface.give_altitude()
         self.vertical_vel = 0
         self.previous_vertical_vel = 0
-        self.vertical_vel_complimentary_filter = ComplimentaryFilter(0.7)
+        self.vertical_vel_complimentary_filter = ComplimentaryFilter(0.9)
 
     def give_rotor_angles(self):
         try:

@@ -30,7 +30,7 @@ class BluetoothRaspberryInterface():
             self.yaw_difference = float(split_data[1]) * 0.1
 
         elif split_data[0]=="height:":
-            self.altitude_difference = float(split_data[2]) * 0.1
+            self.altitude_difference = float(split_data[2]) * -0.1
 
         elif split_data[0]=="direction:":
             self.strength_x_slope = float(split_data[1])

@@ -13,7 +13,7 @@ rotor3 -> - ° - <- rotor1
 def give_rotor_angle_targets(x, y):
     radius = _give_radius(x, y)
     if radius == 0:
-        return [0, 0, 0, 0]
+        return [0, 0]
 
     angle_drone = radius * conf.max_angle_drone
     angle_alpha =  _calc_angle(x, y)
@@ -27,17 +27,17 @@ def give_rotor_angle_targets(x, y):
 
     if x >= 0:
         if y >= 0:
-            angles = [-angle_rotor_horiz, -angle_rotor_verti, angle_rotor_horiz, angle_rotor_verti]
+            angles = [-angle_rotor_horiz, -angle_rotor_verti]
 
         if y <= 0:
-            angles = [-angle_rotor_horiz, angle_rotor_verti, angle_rotor_horiz, -angle_rotor_verti]
+            angles = [-angle_rotor_horiz, angle_rotor_verti]
 
     if x <= 0:
         if y >= 0:
-            angles = [angle_rotor_horiz, -angle_rotor_verti, -angle_rotor_horiz, angle_rotor_verti]
+            angles = [angle_rotor_horiz, -angle_rotor_verti]
 
         if y <= 0:
-            angles = [angle_rotor_horiz, angle_rotor_verti, -angle_rotor_horiz, -angle_rotor_verti]
+            angles = [angle_rotor_horiz, angle_rotor_verti]
 
     return angles
 
