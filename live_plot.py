@@ -30,7 +30,6 @@ def animate(i):
         plt.xlim([data[x_axis_column][len(data[x_axis_column]) - STEPS_SHOWN + 10],
                   data[x_axis_column][len(data[x_axis_column]) - 1]])
     plt.legend(loc='upper left')
-    plt.xlim
     plt.tight_layout()
 
 
