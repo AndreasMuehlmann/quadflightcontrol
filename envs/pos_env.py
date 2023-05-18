@@ -19,8 +19,8 @@ class PosEnv(ControllerEnv):
         self.time_without_big_target_change = 4
         self.time_without_env_output_change = 3
 
-        self.max_faktor = 0.1
-        self.min_faktor = 0.02
+        self.max_faktor = 1/50
+        self.min_faktor = self.max_faktor
 
         self.max_env_output = 10 # strength is same as out
         self.min_env_output = -self.max_env_output
@@ -47,8 +47,12 @@ class PosEnv(ControllerEnv):
         
     def _calc_physical_values(self):
         self.acc = self.faktor * self.output + self.faktor * self.env_output
-        self.vel += (self.acc + self.last_acc) / 2 * self.delta_time
-        self.pos += (self.vel + self.last_vel) / 2 * self.delta_time
+        self.vel += self.acc * self.delta_time
+
+        self.pos += self.vel * self.delta_time + 1/2 * self.acc * self.delta_time**2
+        if self.vel <= 0 and self.pos <= 0:
+            self.pos = 0
+            self.vel = 0
 
     def _should_reset(self):
         return abs(self.output) > 10000 or abs(self.acc) > 500 or \
