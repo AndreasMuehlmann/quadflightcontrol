@@ -20,9 +20,9 @@ count_episodes_avg_over_for_competing = 10
 
 
 # TESTING ENVIRONMENT
-env = 'real_world_env' # The environments should be configured in quadflightcontrol/envs
+env = 'real_world_altitude_env' # The environments should be configured in quadflightcontrol/envs
 total_time = 30 # per episode in s
-delay = 0.05 # in s
+delay = 0.2 # in s
 
 
 '''
@@ -34,6 +34,11 @@ d_faktor = 8
 iir_faktor = 0.7 # for vel_env 0.85
 iir_order = 3 # for vel_env 5
 '''
+
+# PID-CONTROLLER FOR GRAPH-SIMULATION
+p_faktor = 58.6 # 150 # 84.375 # 37.5
+i_faktor = 12.2 # 50 # 21.09 # 6.25
+d_faktor = 93.75 # 150 # 112.5 # 75
 
 # REALWORLD
 # ANGLE_PID_CONTROLLER

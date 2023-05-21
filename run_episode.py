@@ -44,6 +44,6 @@ def run_episode(env, controller, learn=False):
 
 
 if __name__ == '__main__':
-    controller = PidController(conf.angle_p_faktor, conf.angle_i_faktor, conf.angle_d_faktor, conf.max_output)
+    controller = PidController(conf.p_faktor, conf.i_faktor, conf.d_faktor, conf.max_output, conf.max_output)
     score = run_episode(init_env(), controller)
     print(score)

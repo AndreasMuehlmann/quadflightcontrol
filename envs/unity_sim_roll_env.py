@@ -1,9 +1,9 @@
 from pos_env import PosEnv
 
 
-class UnitySimEnv(PosEnv):
+class UnitySimRollEnv(PosEnv):
     def __init__(self):
-        super(UnitySimEnv, self).__init__()
+        super(UnitySimRollEnv, self).__init__()
 
     def _init_values(self):
         self.inaccuracy = 0.2
