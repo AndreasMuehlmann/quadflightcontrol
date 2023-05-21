@@ -13,7 +13,6 @@ D = np.array([[0]])
 
 plant_sys = control.ss(A, B, C, D)
 plant_sys = control.ss2tf(plant_sys)
-print(plant_sys)
 
 
 '''
@@ -35,21 +34,22 @@ print(plant_sys)
 # Transferfunction Plant: G(s) = 0.02/s^2
 # Transferfunction Closed Loop = G(s) = (0.02*(Kd*s^2 + Kp*s + Ki))/(s^3 + 0.02*(Kd*s^2 + Kp*s + Ki))
 
-Kp = 95.375 # 150.0 # 37.5
-Ki = 21.09 # 50.0 # 6.25
-Kd = 140.5 # 150.0 # 75
+Kp = 150.0 # 150.0 # 37.5
+Ki = 50.0 # 21.09 # 6.25
+Kd = 150.0 # 140.5 # 75
 
-numerator = [0.02 * Kd, 0.02 * Kp, 0.02*Ki]
-denomanator = [1, 0.02 * Kd, 0.02 * Kp, 0.02*Ki]
-closed_loop_sys = control.TransferFunction(numerator, denomanator)
-print(control.poles(closed_loop_sys))
-print(control.zeros(closed_loop_sys))
+controller = control.tf([Kd, Kp, Ki], [1, 0])
+closed_loop_sys = control.feedback(controller * plant_sys, 1)
+print(closed_loop_sys)
+print(f'poles: {control.poles(closed_loop_sys)}')
+# print(f'zeros: {control.zeros(closed_loop_sys)}')
+print(f'margin: {control.margin(closed_loop_sys)}')
 
-T = 0.01
-t = np.arange(0, 30, T)
+t = np.arange(0, 10, T)
 
-u = np.ones_like(t) * 50
-t, y = control.forced_response(plant_sys, T=t, U=u)
+u = np.linspace(0, 10, len(t)) + np.sin(t)
+
+t, y = control.forced_response(closed_loop_sys, T=t, U=u)
 
 plt.plot(t, y)
 plt.plot(t, u, label='input')
