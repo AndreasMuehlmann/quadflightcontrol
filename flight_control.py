@@ -9,7 +9,7 @@ from hardware_interface import HardwareInterface
 from iir_filter import IirFilter
 from pid_flight_control import PidFlightControl
 from calibration_controller import CalibrationController
-from logging import Logging
+from data_logger import DataLogger
 
 
 class FlightControl():
@@ -17,7 +17,7 @@ class FlightControl():
         self.controller = CalibrationController()
         self.interface_user = BluetoothRaspberryInterface()
         self.interface_control = HardwareInterface()
-        self.logging = Logging()
+        self.data_logger = DataLogger()
 
         self.clock = pygame.time.Clock()
         self.time = 0
@@ -49,12 +49,12 @@ class FlightControl():
                                                          self.filtered_yaw, self.filtered_altitude)
             # self.rotor_outputs = self._give_filtered_list(self.rotor_outputs, self.rotor_output_filters)
 
-            self.logging.log(self._give_to_log_measurements(), self._give_to_log_outputs())
+            self.data_logger.log(self._give_to_log_measurements(), self._give_to_log_outputs())
             if not self.interface_user.should_flight_control_run():
                 self.reset()
                 continue
 
-            if self.should_turn_off():
+            if self._should_turn_off():
                 self.turn_off()
                 break
 
@@ -84,5 +84,5 @@ class FlightControl():
         self.interface_control.reset()
 
     def turn_off(self):
-        self.data_sender.turn_off()
+        self.data_logger.turn_off()
         self.interface_control.reset()

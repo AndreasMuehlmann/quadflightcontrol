@@ -14,6 +14,10 @@ class CalibrationController:
         self.sleep_start_time = 0
         self.sleep_time = 10
 
+        self.rotor_outputs_angle_controllers = [0, 0, 0, 0]
+        self.yaw_controller_output = 0
+        self.altitude_controller_output = 0
+
     def give_outputs(self, inputs, rotor_angles, yaw, altitude):
         outputs = [0, 0, 0, 0]
         if self.sleep_time > time.time() - self.sleep_start_time:

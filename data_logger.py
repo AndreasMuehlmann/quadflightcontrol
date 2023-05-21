@@ -4,7 +4,7 @@ from csv_writer import Csv_Writer
 from data_sender import DataSender
 
 
-class Logging:
+class DataLogger:
     def __init__(self):
         measurements_field_names = ['time', 'froll', 'fpitch', 'fyaw', 'altitude*100', 'faltitude*100']
         outputs_field_names = ['time', 'roll_c_o', 'pitch_c_o', 'yaw_c_o', 'altitude_c_o', 'ro1', 'ro2', 'ro3', 'ro4']
@@ -23,4 +23,6 @@ class Logging:
         self.outputs_csv_writer.add_line_of_data(outputs)
         self.data_sender.send_message(','.join(measurements) + ';' + ','.join(outputs))
 
-
+    def turn_off(self):
+        self.data_sender.turn_off()
+        
