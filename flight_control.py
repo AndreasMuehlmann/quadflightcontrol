@@ -29,8 +29,8 @@ class FlightControl():
         self.altitude_filter = IirFilter(0.8, 1)
         self.rotor_output_filters = [IirFilter(0.6, 1) for _ in range(4)]
 
-        measurements_field_names = ['time', 'froll', 'fpitch', 'fyaw', 'altitude*100', 'faltitude*100']
-        outputs_field_names = ['time', 'roll_c_o', 'pitch_c_o', 'yaw_c_o', 'altitude_c_o']
+        measurements_field_names = ['time', 'froll', 'fpitch', 'fyaw', 'altitude*10', 'faltitude*10', 'altitude_target*10', 'yaw_target', 'roll_target', 'pitch_target']
+        outputs_field_names = ['time', 'roll_c_o', 'pitch_c_o', 'yaw_c_o', 'altitude_c_o', 'ro1', 'ro2', 'ro3', 'ro4']
         self.measurements_csv_writer = Csv_Writer('measurements.csv', measurements_field_names)
         self.outputs_csv_writer = Csv_Writer('outputs.csv', outputs_field_names)
         self.data_sender = DataSender()
@@ -52,19 +52,22 @@ class FlightControl():
             yaw = self.interface_control.give_yaw()
             altitude = self.interface_control.give_altitude()
 
-            filtered_rotor_angles = self._give_filtered_list(rotor_angles,
-                                                             self.angle_filters)
+            filtered_rotor_angles = rotor_angles# self._give_filtered_list(rotor_angles,
+                                                             #self.angle_filters)
             filtered_altitude = self.altitude_filter.give_filtered(altitude)
             filtered_yaw = self.yaw_filter.give_filtered(yaw)
 
             rotor_outputs = self.controller.give_outputs(inputs, filtered_rotor_angles,
                                                          filtered_yaw, filtered_altitude)
-            rotor_outputs = self._give_filtered_list(rotor_outputs, self.rotor_output_filters)
+            # rotor_outputs = self._give_filtered_list(rotor_outputs, self.rotor_output_filters)
 
             measurements = [self.time] + filtered_rotor_angles[:2] + \
-                [filtered_yaw, altitude * 100, filtered_altitude * 100]
+                [filtered_yaw, altitude * 10, filtered_altitude * 10, \
+                 self.controller.altitude_target * 10, self.controller.yaw_target] \
+                 + self.controller.rotor_angle_targets
             outputs = [self.time] + self.controller.rotor_outputs_angle_controllers[:2] \
-                + [self.controller.yaw_controller_output, self.controller.altitude_controller_output]
+                + [self.controller.yaw_controller_output, self.controller.altitude_controller_output] \
+                + rotor_outputs
             measurements = [str(element) for element in measurements]
             outputs = [str(element) for element in outputs]
             self.measurements_csv_writer.add_line_of_data(measurements)
@@ -76,7 +79,7 @@ class FlightControl():
                 continue
 
             shutdown_condition = abs(filtered_altitude) > 2 or abs(filtered_yaw) > 140 \
-                or abs(rotor_angles[0]) > 60 or abs(rotor_angles[1]) > 60
+                or abs(rotor_angles[0]) > 30 or abs(rotor_angles[1]) > 30
             if shutdown_condition:
                 self.turn_off()
                 break
@@ -91,9 +94,6 @@ class FlightControl():
         return filtered_values
 
     def reset(self):
-        self.altitude_filter.reset()
-        self.yaw_filter.reset()
-        self.controller.reset()
         self.interface_control.reset()
 
     def turn_off(self):

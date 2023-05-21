@@ -6,13 +6,14 @@ from pid_controller import PidController
 class PidFlightControl:
     def __init__(self):
         self.angle_controllers = [PidController(conf.angle_p_faktor, conf.angle_i_faktor,
-                                                conf.angle_d_faktor, 300, 50) for _ in range(2)]
+                                                conf.angle_d_faktor, 200, 50) for _ in range(2)]
         self.yaw_controller = PidController(conf.yaw_p_faktor, conf.yaw_i_faktor,
-                                            conf.yaw_d_faktor, 200, 100)
+                                            conf.yaw_d_faktor, 120, 50)
         self.altitude_controller = PidController(conf.altitude_p_faktor, conf.altitude_i_faktor,
                                                  conf.altitude_d_faktor, 600, 500)
         self.yaw_target = 0
         self.altitude_target = 0
+        self.rotor_angle_targets = [0, 0]
         self.rotor_outputs_angle_controllers = [0, 0, 0, 0]
         self.yaw = 0
         self.yaw_controller_output = 0
@@ -22,13 +23,14 @@ class PidFlightControl:
 
     def give_outputs(self, inputs, rotor_angles, yaw, altitude):
         altitude_difference_target, rotor_angle_targets, yaw_difference_target = inputs
-        self.yaw_target += yaw_difference_target / conf.frequency
+        self.yaw_target += yaw_difference_target * 10 / conf.frequency
         self.altitude_target += altitude_difference_target / conf.frequency
+        self.rotor_angle_targets = rotor_angle_targets
 
         self.rotor_outputs_angle_controllers = self._give_outputs_angle_controllers(rotor_angle_targets, rotor_angles)
         self.rotor_outputs_yaw_controller = self._give_outputs_yaw_controller(self.yaw_target, yaw)
         self.rotor_outputs_altitude_controller = self._give_outputs_altitude_controller(self.altitude_target, altitude, rotor_angles[0], rotor_angles[1])
-        outputs = [rotor_output_altitude_controller + rotor_output_angle_controller + rotor_output_yaw_controller \
+        outputs = [100 + rotor_output_altitude_controller + rotor_output_angle_controller + rotor_output_yaw_controller \
                    for rotor_output_angle_controller, rotor_output_yaw_controller, rotor_output_altitude_controller \
                    in zip(self.rotor_outputs_angle_controllers, self.rotor_outputs_yaw_controller, self.rotor_outputs_altitude_controller)]
         outputs = self._remove_negatives(outputs)
@@ -41,7 +43,7 @@ class PidFlightControl:
                 zip(rotor_angles, rotor_angle_targets, self.angle_controllers):
             self.rotor_outputs_angle_controllers.append(angle_controller.give_output(rotor_angle_target - rotor_angle, rotor_angle))
         self.rotor_outputs_angle_controllers.extend(
-            [-self.rotor_outputs_angle_controllers[0] + -self.rotor_outputs_angle_controllers[0]])
+            [-self.rotor_outputs_angle_controllers[0], -self.rotor_outputs_angle_controllers[1]])
         return self.rotor_outputs_angle_controllers
 
     def _give_outputs_yaw_controller(self, yaw_target, yaw):

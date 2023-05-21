@@ -21,14 +21,14 @@ class BMP390_Interface():
         self.bmp390.temperature_oversampling = 2
 
         time.sleep(3)
-        self.base_altitude = self._calculate_base_altitude()
+        self.base_altitude = self._calculate_base_altitude(2)
         self.altitude = self.bmp390.altitude - self.base_altitude
         self.previous_altitude = self.altitude
 
-    def _calculate_base_altitude(self):
+    def _calculate_base_altitude(self, time_for_average):
         altitudes = []
         start_time = time.time()
-        while time.time() - start_time < 10:
+        while time.time() - start_time < time_for_average:
             altitudes.append(self.bmp390.altitude)
         return np.mean(altitudes)
 
@@ -43,3 +43,6 @@ class BMP390_Interface():
     def give_vertical_vel(self):
         vertical_vel = (self.altitude - self.previous_altitude) * conf.frequency
         return vertical_vel
+
+    def reset(self):
+        self.base_altitude = self._calculate_base_altitude(0.2)

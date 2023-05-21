@@ -19,11 +19,11 @@ class HardwareInterface():
             self.reset()
             sys.exit()
 
-        self.altitude_complimentary_filter = ComplimentaryFilter(0.9)
+        self.altitude_complimentary_filter = ComplimentaryFilter(0.8)
         self.altitude = self.baro_interface.give_altitude()
         self.vertical_vel = 0
         self.previous_vertical_vel = 0
-        self.vertical_vel_complimentary_filter = ComplimentaryFilter(0.9)
+        self.vertical_vel_complimentary_filter = ComplimentaryFilter(0.95)
 
     def give_rotor_angles(self):
         try:

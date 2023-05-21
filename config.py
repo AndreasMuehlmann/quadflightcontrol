@@ -3,7 +3,7 @@ import os
 
 # FLIGHT CONTROL
 frequency = 100 
-max_angle_drone = 10
+max_angle_drone = 5
 max_output = 1000
 
 
@@ -37,23 +37,20 @@ iir_order = 3 # for vel_env 5
 
 # REALWORLD
 # ANGLE_PID_CONTROLLER
-angle_p_faktor = 0.7/2 # 1.38 #
-angle_i_faktor = 0.65/2 # 1.25 # 
-angle_d_faktor = 0.6/2 # 0.6
-# angle_p_faktor = 0.04
-# angle_i_faktor = 0.002268431001890359 
-# angle_d_faktor = 0.0991875
+angle_p_faktor = 3.2
+angle_i_faktor = 0
+angle_d_faktor = 0.14333
 
 # YAW_PID_CONTROLLER
-yaw_p_faktor = 0.1 / 2
-yaw_i_faktor = 0.01 / 2
-yaw_d_faktor = 0.05 / 2
+yaw_p_faktor = 0
+yaw_i_faktor = 0
+yaw_d_faktor = 0
 
 
 # HEIHT_VEL_PID_CONTROLLER
-altitude_p_faktor = 50
-altitude_i_faktor = 20
-altitude_d_faktor = 5
+altitude_p_faktor = 20
+altitude_i_faktor = 10
+altitude_d_faktor = 0
 
 
 # ADAPTIVE_PID_CONTROLLER

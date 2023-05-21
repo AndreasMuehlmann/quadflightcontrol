@@ -6,7 +6,6 @@ append_dirs_to_path()
 from flight_control import FlightControl
 
 
-#TODO: integrate better baro
 #TODO: make tests and tune PID-Controllers
 #TODO: use PI-Controller / PID-Controller for Yaw and PD-Controller for angle and PID-Controller for altitude
 #TODO: make a take-off phase

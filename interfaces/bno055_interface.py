@@ -12,8 +12,10 @@ class BNO055_Interface():
         self.bno055 = adafruit_bno055.BNO055_I2C(i2c)
         self.euler = [0, 0, 0]
         self.yaw = self.correct_yaw(self.euler[0])
-        self.staying_error_vertical_acc = 0
-        self.faktor_adding_to_error = 0.0001
+        self.correction_roll = 0
+        self.correction_pitch = 0
+        self.staying_error_vertical_acc = -0.25
+        self.faktor_adding_to_error = 0.001
         self.measurement_validator_yaw = Measurement_Validator(2, 15)
         self.measurement_validator_roll = Measurement_Validator(2, 15)
         self.measurement_validator_pitch = Measurement_Validator(2, 15)
@@ -24,7 +26,7 @@ class BNO055_Interface():
         if None in euler:
             print('None in euler')
             return self.euler
-        return euler
+        return [euler[0], euler[1] - self.correction_roll, euler[2] - self.correction_pitch]
 
     def give_rotor_angles(self):
         euler = self._give_euler()
