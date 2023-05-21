@@ -8,12 +8,13 @@ from bluetooth_raspberry_interface import BluetoothRaspberryInterface
 from hardware_interface import HardwareInterface
 from iir_filter import IirFilter
 from pid_flight_control import PidFlightControl
+from calibration_controller import CalibrationController
 from logging import Logging
 
 
 class FlightControl():
     def __init__(self):
-        self.controller = PidFlightControl()
+        self.controller = CalibrationController()
         self.interface_user = BluetoothRaspberryInterface()
         self.interface_control = HardwareInterface()
         self.logging = Logging()
@@ -44,15 +45,11 @@ class FlightControl():
             self.filtered_altitude = self.altitude_filter.give_filtered(self.altitude)
             self.filtered_yaw = self.yaw_filter.give_filtered(yaw)
 
-            rotor_outputs = self.controller.give_outputs(inputs, self.filtered_rotor_angles,
+            self.rotor_outputs = self.controller.give_outputs(inputs, self.filtered_rotor_angles,
                                                          self.filtered_yaw, self.filtered_altitude)
-            rotor_outputs = self._give_filtered_list(rotor_outputs, self.rotor_output_filters)
+            self.rotor_outputs = self._give_filtered_list(self.rotor_outputs, self.rotor_output_filters)
 
-<<<<<<< HEAD
             self.logging.log(self._give_to_log_measurements(), self._give_to_log_outputs())
-
-=======
->>>>>>> b1f45825eb26655c47b0400307834defc1b79f06
             if not self.interface_user.should_flight_control_run():
                 self.reset()
                 continue
@@ -61,7 +58,7 @@ class FlightControl():
                 self.turn_off()
                 break
 
-            self.interface_control.send_outputs(rotor_outputs)
+            self.interface_control.send_outputs(self.rotor_outputs)
             self.time += 1 / conf.frequency
 
     def _give_to_log_measurements(self):
@@ -70,7 +67,8 @@ class FlightControl():
 
     def _give_to_log_outputs(self):
         return [self.time] + self.controller.rotor_outputs_angle_controllers[:2] \
-            + [self.controller.yaw_controller_output, self.controller.altitude_controller_output]
+            + [self.controller.yaw_controller_output, self.controller.altitude_controller_output] \
+            + self.rotor_outputs
 
     def _should_turn_off(self):
         return abs(self.filtered_altitude) > 2 or abs(self.filtered_yaw) > 140 \
