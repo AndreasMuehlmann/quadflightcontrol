@@ -48,8 +48,11 @@ class FlightControl():
                                                          self.filtered_yaw, self.filtered_altitude)
             rotor_outputs = self._give_filtered_list(rotor_outputs, self.rotor_output_filters)
 
+<<<<<<< HEAD
             self.logging.log(self._give_to_log_measurements(), self._give_to_log_outputs())
 
+=======
+>>>>>>> b1f45825eb26655c47b0400307834defc1b79f06
             if not self.interface_user.should_flight_control_run():
                 self.reset()
                 continue
